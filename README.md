@@ -31,7 +31,7 @@ fig.savefig("lv.pdf")
 ```
 
 
-Also see [smfsb on PyPI](https://pypi.org/project/smfsb/)
+You can see this package on [PyPI](https://pypi.org/project/smfsb/) or [GitHub](https://github.com/darrenjw/python-smfsb).
 
 
 **Copyright (2023) Darren J Wilkinson**
