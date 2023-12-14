@@ -14,6 +14,8 @@ pip install smfsb
 
 ## Basic usage
 
+Note that **the book**, and its associated [github repo](https://github.com/darrenjw/smfsb) is the main source of documentation for this library. The code in the book is in R, but the code in this library is supposed to mirror the R code, but in Python.
+
 ### Using a model built-in to the library
 
 First, see how to simulate a built-in model:
