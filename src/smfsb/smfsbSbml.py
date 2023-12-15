@@ -22,6 +22,15 @@ def mod2Spn(filename, verb=False):
         sys.exit(1)
     return(model2Spn(m, verb))
 
+def sh2Spn(shString, verb=False):
+    p = mod2sbml.Parser()
+    d = p.parse(shString)
+    m = d.getModel()
+    if (m == None):
+        sys.stderr.write("Error: couldn't parse the shorthand string\n")
+        sys.exit(1)
+    return(model2Spn(m, verb))
+
 def file2Spn(filename, verb=False):
     d = libsbml.readSBML(filename)
     m = d.getModel()
