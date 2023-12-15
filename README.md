@@ -60,7 +60,7 @@ Note that you can read in SBML or SBML-shorthand models that have been designed 
 ```python
 m = smfsb.file2Spn("myModel.xml")
 ```
-Note that if you are working with SBML model in Python using [libsbml](), then there is also a function `model2Spn` which takes a libsbml model object.
+Note that if you are working with SBML model in Python using [libsbml](https://pypi.org/project/python-libsbml/), then there is also a function `model2Spn` which takes a libsbml model object.
 
 To read and parse an SBML-shorthand model, use
 ```python
