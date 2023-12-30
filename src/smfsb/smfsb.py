@@ -61,6 +61,20 @@ class Spn:
                     return x
         return step
     
+    def stepEuler(self, dt = 0.01):
+        S = (self.post - self.pre).T
+        def step(x0, t0, deltat):
+            x = x0
+            t = t0
+            termt = t0 + deltat
+            while(True):
+                h = self.h(x, t)
+                x = np.add(x, S.dot(h*dt).A1)
+                t = t + dt
+                if (t > termt):
+                    return x
+        return step
+
 
     
 # some simulation functions
