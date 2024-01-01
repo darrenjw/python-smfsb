@@ -2,7 +2,7 @@
 
 Python library for the book, Stochastic modelling for systems biology, third edition
 
-**Please note that this package is still in the early stages of development. There will be bugs, there is very limited documentation, and the coverage of the book is still quite incomplete.**
+**Please note that this package is still in the early stages of development. There will be bugs, there is very limited documentation, and the coverage of the book is still quite incomplete. Currently, the package covers the code from Chapters 1 to 8 (inclusive). I will be adding code to cover the rest of the book in due course, but I have not set a deadline.**
 
 ## Install
 
