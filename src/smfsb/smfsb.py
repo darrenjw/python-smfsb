@@ -99,6 +99,13 @@ def simSample(n, x0, t0, deltat, stepFun):
         mat[i,:] = stepFun(x0, t0, deltat)
     return mat
 
+# misc utility functions
+
+import inspect
+
+def showSource(fun):
+    print(inspect.getsource(fun))
+
 
 # some example SPN models
     
