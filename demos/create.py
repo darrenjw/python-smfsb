@@ -1,0 +1,20 @@
+#!/usr/bin/env python3
+
+import smfsb
+import numpy as np
+import matplotlib.pyplot as plt
+
+sir = smfsb.Spn(["S", "I", "R"], ["S->I", "I->R"],
+	[[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
+	lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
+	[197, 3, 0])
+stepSir = sir.stepPTS()
+sample = smfsb.simSample(500, sir.m, 0, 20, stepSir)
+fig, axis = plt.subplots()
+axis.hist(sample[:,1],30)
+axis.set_title("Infected at time 20")
+plt.savefig("sIr.pdf")
+
+# eof
+
+
