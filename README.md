@@ -21,10 +21,11 @@ Note that **the book**, and its associated [github repo](https://github.com/darr
 First, see how to simulate a built-in model:
 ```python
 import smfsb
+import smfsb.models as mod
 
-print(smfsb.lv)
-stepLv = smfsb.lv.stepGillespie()
-out = smfsb.simTs(smfsb.lv.m, 0, 100, 0.1, stepLv)
+print(mod.lv)
+stepLv = mod.lv.stepGillespie()
+out = smfsb.simTs(mod.lv.m, 0, 100, 0.1, stepLv)
 ```
 Now, if `matplotlib` is installed, you can plot the output with
 ```python
@@ -33,7 +34,7 @@ fig, axis = plt.subplots()
 for i in range(2):
 	axis.plot(range(out.shape[0]), out[:,i])
 
-axis.legend(smfsb.lv.n)
+axis.legend(mod.lv.n)
 fig.savefig("lv.pdf")
 ```
 
