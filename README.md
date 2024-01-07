@@ -1,8 +1,6 @@
 # smfsb for python
 
-Python library for the book, Stochastic modelling for systems biology, third edition
-
-**Please note that this package is still in the early stages of development. There will be bugs, there is very limited documentation, and the coverage of the book is still quite incomplete. Currently, the package covers the code from Chapters 1 to 8 (inclusive). I will be adding code to cover the rest of the book in due course, but I have not set a deadline.**
+Python library for the book, [Stochastic modelling for systems biology, third edition](https://github.com/darrenjw/smfsb/). *Please note that this package is still in the early stages of development. There will be bugs, there is limited documentation, and the coverage of the book is still quite incomplete. Currently, the package covers the code from Chapters 1 to 8 (inclusive). I will be adding code to cover the rest of the book in due course, but I have not set a deadline.*
 
 ## Install
 
@@ -115,6 +113,6 @@ A [collection of appropriate models](https://github.com/darrenjw/smfsb/tree/mast
 You can see this package on [PyPI](https://pypi.org/project/smfsb/) or [GitHub](https://github.com/darrenjw/python-smfsb).
 
 
-**Copyright (2023) Darren J Wilkinson**
+**Copyright (2023-2024) Darren J Wilkinson**
 
 
