@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
 import smfsb
-import smfsb.models as mod
+import smfsb.models
 
-print(mod.lv)
-stepLv = mod.lv.stepGillespie()
-out = smfsb.simTs(mod.lv.m, 0, 100, 0.1, stepLv)
+lv = smfsb.models.lv()
+print(lv)
+stepLv = lv.stepGillespie()
+out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
 for i in range(2):
 	axis.plot(range(out.shape[0]), out[:,i])
 
-axis.legend(mod.lv.n)
+axis.legend(lv.n)
 fig.savefig("lv.pdf")
 
 # eof
