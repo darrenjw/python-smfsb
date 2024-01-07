@@ -5,8 +5,8 @@ import smfsb.models
 
 sir = smfsb.models.sir()
 print(sir)
-stepLv = sir.stepGillespie()
-out = smfsb.simTs(sir.m, 0, 100, 0.1, stepLv)
+step = sir.stepGillespie()
+out = smfsb.simTs(sir.m, 0, 100, 0.1, step)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
