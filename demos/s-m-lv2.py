@@ -3,7 +3,7 @@
 import smfsb
 import smfsb.models
 
-lv = smfsb.models.lv()
+lv = smfsb.models.lv([0.2, 0.001, 0.1])
 print(lv)
 stepLv = lv.stepGillespie()
 out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
@@ -14,6 +14,6 @@ for i in range(2):
 	axis.plot(range(out.shape[0]), out[:,i])
 
 axis.legend(lv.n)
-fig.savefig("s-m-lv.pdf")
+fig.savefig("s-m-lv2.pdf")
 
 # eof

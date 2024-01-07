@@ -10,7 +10,7 @@ seirSH = """
  Pop
 @species
  Pop:S=100 s
- Pop:E=0 s	  
+ Pop:E=0 s
  Pop:I=5 s
  Pop:R=0 s
 @reactions
@@ -35,7 +35,7 @@ for i in range(len(seir.m)):
 	axis.plot(np.arange(0, 40, 0.05), out[:,i])
 
 axis.legend(seir.n)
-fig.savefig("seir.pdf")
+fig.savefig("sbmlsh.pdf")
 
 # eof
 

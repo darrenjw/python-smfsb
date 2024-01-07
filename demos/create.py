@@ -13,7 +13,7 @@ sample = smfsb.simSample(100, sir.m, 0, 20, stepSir)
 fig, axis = plt.subplots()
 axis.hist(sample[:,1],30)
 axis.set_title("Infected at time 20")
-plt.savefig("sIr.pdf")
+plt.savefig("create.pdf")
 
 # eof
 
