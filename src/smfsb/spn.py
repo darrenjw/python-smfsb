@@ -318,9 +318,25 @@ def simSample(n, x0, t0, deltat, stepFun):
 
 import inspect
 
-
 def showSource(fun):
-    """Simple utility to print to console the source code of a function or method.
+    """Print to console the source code of a function or method.
+
+    Called for the side-effect of printing the function source to standard
+    output.
+
+    Parameters
+    ----------
+    fun: function or method
+        The function of interest
+
+    Returns
+    -------
+    None
+    
+    Examples
+    --------
+    >>> import smfsb
+    >>> smfsb.showSource(smfsb.Spn.stepGillespie)
     """
     print(inspect.getsource(fun))
 
