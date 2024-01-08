@@ -1,4 +1,4 @@
-from smfsb.smfsb import *
+from smfsb.spn import *
 from smfsb.smfsbSbml import *
 
 import smfsb.models
