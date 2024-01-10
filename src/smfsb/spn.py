@@ -211,6 +211,58 @@ class Spn:
         return step
 
 
+    def stepCLE(self, dt = 0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        Euler-Maruyama integration method for the associated CLE
+
+        This method returns a function for advancing the state of an SPN
+        model using a simple Euler-Maruyama integration method
+        method for the chemical Langevin equation form of the model.The 
+        resulting function (closure) can be used in
+        conjunction with other functions (such as ‘simTs’) for simulating
+        realisations of SPN models.
+
+        Parameters
+        ----------
+        dt : float
+            The time step for the time-stepping integration method. Defaults to 0.01.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using an Euler-Maruyama method with step size ‘dt’. The
+        function closure has interface ‘function(x0, t0, deltat)’, where
+        ‘x0’ and ‘t0’ represent the initial state and time, and ‘deltat’
+        represents the amount of time by which the process should be
+        advanced. The function closure returns a vector representing the
+        simulated state of the system at the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> lv = smfsb.models.lv()
+        >>> stepLv = lv.stepCLE(0.001)
+        >>> stepLv([50, 100], 0, 1)
+        """
+        S = (self.post - self.pre).T
+        v = S.shape[1]
+        sdt = np.sqrt(dt)
+        def step(x0, t0, deltat):
+            x = x0
+            t = t0
+            termt = t0 + deltat
+            while(True):
+                h = self.h(x, t)
+                dw = np.random.normal(scale=sdt, size=v)
+                x = np.add(x, S.dot(h*dt + np.sqrt(h)*dw).A1)
+                x[x<0] = -x[x<0]
+                t = t + dt
+                if (t > termt):
+                    return x
+        return step
+
+
+
 
 
 

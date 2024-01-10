@@ -22,3 +22,15 @@ Python packaging tutorials: https://packaging.python.org/en/latest/tutorials/
 
 
 
+## Documentation
+
+From the `docs` folder:
+```bash
+sphinx-apidoc -o source ../src/smfsb/
+# to create stubs. Then
+make clean
+make html
+
+xdg-open _build/html/index.html
+```
+
