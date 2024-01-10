@@ -8,7 +8,30 @@ import sys
 import numpy as np
 import smfsb.mod2sbml as mod2sbml
 
+
 def mod2Spn(filename, verb=False):
+    """Convert an SBML-shorthand model into a Spn object
+
+    Read a file containing a model in SBML-shorthand and convert into
+    an Spn object for simulation and analysis.
+
+    Parameters
+    ----------
+    filename: string
+        String name of file containing the model
+    verb: boolean
+        Output some debugging info
+
+    Returns
+    -------
+    An Spn object
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> myMod = smfsb.mod2spn("myModel.mod")
+    >>> step = myMod.stepGillespie()
+    """
     try:
         s = open(filename, "r")
     except:
@@ -22,7 +45,34 @@ def mod2Spn(filename, verb=False):
         sys.exit(1)
     return(model2Spn(m, verb))
 
+
+
 def sh2Spn(shString, verb=False):
+    """Convert an SBML-shorthand model string into a Spn object
+
+    Parse a string containing a model in SBML-shorthand and convert into
+    an Spn object for simulation and analysis.
+
+    Parameters
+    ----------
+    shString: string
+        String containing the model
+    verb: boolean
+        Output some debugging info
+
+    Returns
+    -------
+    An Spn object
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> file = open('myModel.mod', 'r')
+    >>> myModStr = file.read()
+    >>> file.close()
+    >>> myMod = smfsb.sh2spn(myModStr)
+    >>> step = myMod.stepGillespie()
+    """
     p = mod2sbml.Parser()
     d = p.parse(shString)
     m = d.getModel()
@@ -31,7 +81,31 @@ def sh2Spn(shString, verb=False):
         sys.exit(1)
     return(model2Spn(m, verb))
 
+
+
 def file2Spn(filename, verb=False):
+    """Convert an SBML model into a Spn object
+
+    Read a file containing a model in SBML and convert into
+    an Spn object for simulation and analysis.
+
+    Parameters
+    ----------
+    filename: string
+        String name of file containing the model
+    verb: boolean
+        Output some debugging info
+
+    Returns
+    -------
+    An Spn object
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> myMod = smfsb.mod2spn("myModel.xml")
+    >>> step = myMod.stepGillespie()
+    """
     d = libsbml.readSBML(filename)
     m = d.getModel()
     if (m == None):
@@ -39,7 +113,33 @@ def file2Spn(filename, verb=False):
         sys.exit(1)
     return(model2Spn(m, verb))
 
+
+
 def model2Spn(m, verb=False):
+    """Convert a libSBML model into a Spn object
+
+    Convert a libSBML model into a Spn object for simulation and analysis.
+
+    Parameters
+    ----------
+    m: model
+        A libsbml model (not document) object
+    verb: boolean
+        Output some debugging info
+
+    Returns
+    -------
+    An Spn object
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import libsbml
+    >>> d = libsbml.readSBML("myModel.xml")
+    >>> m = d.getModel()
+    >>> myMod = smfsb.model2Spn(m)
+    >>> step = myMod.stepGillespie()
+    """
     # Species and initial amounts
     ns = m.getNumSpecies()
     if (verb):
@@ -124,25 +224,6 @@ def model2Spn(m, verb=False):
     return(spn)
 
 
-
-# Test code
-
-if (__name__ == '__main__'):
-    #spn = file2Spn("lambda.xml", True)
-    spn = mod2Spn("lambda.mod", True)
-    print("\n\n\nModel created:\n\n")
-    print(spn)
-    print(spn.h(spn.m, 0))
-    step = spn.stepGillespie()
-    print(step(spn.m, 0, 20.0))
-    out = smfsb.simTs(spn.m, 0, 100, 0.1, step)
-    import matplotlib.pyplot as plt
-    figure, axis = plt.subplots()
-    for i in range(len(spn.m)):
-        axis.plot(range(out.shape[0]), out[:,i])
-    axis.legend(spn.n)
-    plt.savefig("lambda.png")
-    
 # eof
 
 
