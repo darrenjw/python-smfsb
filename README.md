@@ -19,7 +19,6 @@ Note that **the book**, and its associated [github repo](https://github.com/darr
 First, see how to simulate a built-in model:
 ```python
 import smfsb
-import smfsb.models
 
 lv = smfsb.models.lv()
 print(lv)
