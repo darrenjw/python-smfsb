@@ -23,5 +23,6 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/darrenjw/python-smfsb"
+Documentation = "https://python-smfsb.readthedocs.io/"
 Issues = "https://github.com/darrenjw/python-smfsb/issues"
 
