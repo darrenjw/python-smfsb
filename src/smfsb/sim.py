@@ -105,6 +105,56 @@ def simSample(n, x0, t0, deltat, stepFun):
 
 
 
+# Illustrative functions from early in the book
+
+
+def rfmc(n, P, pi0):
+    """Simulate a finite state space Markov chain
+
+    This function simulates a single realisation from a discrete time
+    Markov chain having a finite state space based on a given
+    transition matrix.
+
+    Parameters
+    ----------
+    n: int
+        The number of states to be sampled from the Markov chain,
+        including the initial state, which will be sampled using
+        ‘pi0’.
+    P: matrix
+        The transition matrix of the Markov chain. This is assumed to
+        be a stochastic matrix, having non-negative elements and rows
+        summing to one, though in fact, the rows will in any case be
+        normalised by the sampling procedure.
+    pi0: array
+        A vector representing the probability distribution of the
+        initial state of the Markov chain. If this vector is of
+        length ‘r’, then the transition matrix ‘P’ is assumed to be
+        ‘r x r’. The elements of this vector are assumed to be
+        non-negative and sum to one, though in fact, they will be
+        normalised by the sampling procedure.
+
+    Returns
+    -------
+    A numpy array containing the sampled values from the Markov chain.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> P = np.array([[0.9,0.1],[0.2,0.8]])
+    >>> pi0 = np.array([0.5,0.5])
+    >>> smfsb.rfmc(200, P, pi0)
+    """
+    v = np.zeros(n)
+    r = len(pi0)
+    v[0] = np.random.choice(r, p=pi0)
+    for i in range(1,n):
+        v[i] = np.random.choice(r, p=P[int(v[i-1]),:])
+    return v
+
+
+
 
 # Misc utility functions
 
