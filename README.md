@@ -5,9 +5,12 @@ Python library for the book, [Stochastic modelling for systems biology, third ed
 ## Install
 
 Latest stable version:
-
 ```bash
 pip install smfsb
+```
+To upgrade already installed package:
+```bash
+pip install --upgrade smfsb
 ```
 
 ## Basic usage
