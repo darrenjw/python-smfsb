@@ -8,7 +8,6 @@ import numpy as np
     
 # Some simulation functions
 
-
 def simTs(x0, t0, tt, dt, stepFun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
@@ -58,8 +57,6 @@ def simTs(x0, t0, tt, dt, stepFun):
     return mat
 
 
-
-
 def simSample(n, x0, t0, deltat, stepFun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
@@ -103,10 +100,7 @@ def simSample(n, x0, t0, deltat, stepFun):
     return mat
 
 
-
-
 # Illustrative functions from early in the book
-
 
 def rfmc(n, P, pi0):
     """Simulate a finite state space Markov chain
@@ -150,7 +144,6 @@ def rfmc(n, P, pi0):
     for i in range(1,n):
         v[i] = np.random.choice(r, p=P[int(v[i-1]),:])
     return v
-
 
 
 def rcfmc(n, Q, pi0):
@@ -204,6 +197,58 @@ def rcfmc(n, Q, pi0):
         xvec[i+1] = x
         tvec[i] = t
     return tvec, xvec
+
+
+def imdeath(n=20, x0=0, lamb=1, mu=0.1):
+    """Simulate a sample path from the homogeneous immigration-death process
+
+    This function simulates a single realisation from a
+    time-homogeneous immigration-death process.
+
+    Parameters
+    ----------
+    n: int
+        The number of states to be sampled from the process, not
+        including the initial state, ‘x0’
+    x0: int
+        The initial state of the process, which defaults to zero.
+    lamb: float
+        The rate at which new individual immigrate into the
+        population. Defaults to 1.
+    mu: float
+        The rate at which individuals within the population die,
+        independently of all other individuals. Defaults to 0.1.
+    
+    Returns
+    -------
+    A tuple, `(tvec, xvec)`, where `tvec` is a vector of event times of
+    length `n` and `xvec` is a vector of states, of length `n+1`.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> smfsb.imdeath(100)
+    """
+    xvec = np.zeros(n+1)
+    tvec = np.zeros(n)
+    t = 0
+    x = x0
+    xvec[0] = x
+    for i in range(n):
+        t = t + np.random.exponential(lamb + x*mu)
+        if (np.random.random() < lamb/(lamb + x*mu)):
+            x = x + 1
+        else:
+            x = x - 1
+        xvec[i+1] = x
+        tvec[i] = t
+    return tvec, xvec
+
+
+
+
+
+
 
 
 # Misc utility functions
