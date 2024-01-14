@@ -57,7 +57,31 @@ def dimer(th=[0.00166, 0.2]):
                lambda x, t: np.array([th[0]*x[0]*(x[0]-1)/2, th[1]*x[1]]),
                [301, 0])
 
+def id(th=[1, 0.1]):
+    """Create an immigration-death model
 
+    Create and return a Spn object representing a discrete stochastic
+    immigration-death model.
+
+    Parameters
+    ----------
+    th: array
+        array of length 2 containing the immigration and death rates
+
+    Returns
+    -------
+    Spn model object with rates `th`
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> id = smfsb.models.id()
+    >>> step = id.stepGillespie()
+    >>> smfsb.simTs(id.m, 0, 50, 0.1, step)
+    """
+    return Spn(["X"], ["Immigration", "Death"], [[0],[1]], [[1],[0]],
+               lambda x, t: np.array([th[0], th[1]*x[0]]),
+               [0])
 
 
 def lv(th=[1, 0.005, 0.6]):
