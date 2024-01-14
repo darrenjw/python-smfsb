@@ -124,15 +124,13 @@ def rfmc(n, P, pi0):
     P: matrix
         The transition matrix of the Markov chain. This is assumed to
         be a stochastic matrix, having non-negative elements and rows
-        summing to one, though in fact, the rows will in any case be
-        normalised by the sampling procedure.
+        summing to one.
     pi0: array
         A vector representing the probability distribution of the
         initial state of the Markov chain. If this vector is of
         length ‘r’, then the transition matrix ‘P’ is assumed to be
         ‘r x r’. The elements of this vector are assumed to be
-        non-negative and sum to one, though in fact, they will be
-        normalised by the sampling procedure.
+        non-negative and sum to one.
 
     Returns
     -------
@@ -154,6 +152,58 @@ def rfmc(n, P, pi0):
     return v
 
 
+
+def rcfmc(n, Q, pi0):
+    """Simulate a continuous time finite state space Markov chain
+
+    This function simulates a single realisation from a continuous
+    time Markov chain having a finite state space based on a given
+    transition rate matrix.
+    
+    Parameters
+    ----------
+    n: int
+        The number of states to be sampled from the Markov chain,
+        including the initial state, which will be sampled using
+        ‘pi0’.
+    Q: matrix
+        The transition rate matrix of the Markov chain, where each
+        off-diagonal element ‘Q[i,j]’ represents the rate of
+        transition from state ‘i’ to state ‘j’. This matrix is
+        assumed to be square, having rows summing to zero.
+    pi0: array
+        A vector representing the probability distribution of the
+        initial state of the Markov chain. If this vector is of
+        length ‘r’, then the transition matrix ‘P’ is assumed to be
+        ‘r x r’. The elements of this vector are assumed to be
+        non-negative and sum to one.
+
+    Returns
+    -------
+    A tuple, `(tvec, xvec)`, where `tvec` is a vector of event times of
+    length `n` and `xvec` is a vector of states, of length `n+1`.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> smfsb.rcfmc(200, np.array([[-0.5,0.5],[1,-1]]), np.array([1,0]))
+    """
+    xvec = np.zeros(n+1)
+    tvec = np.zeros(n)
+    r = len(pi0)
+    x = np.random.choice(r, p=pi0)
+    t = 0
+    xvec[0] = x
+    for i in range(n):
+        t = t + np.random.exponential(-Q[int(x),int(x)])
+        weights = Q[int(x),:].copy()
+        weights[x] = 0
+        weights = weights / np.sum(weights)
+        x = np.random.choice(r, p=weights)
+        xvec[i+1] = x
+        tvec[i] = t
+    return tvec, xvec
 
 
 # Misc utility functions
