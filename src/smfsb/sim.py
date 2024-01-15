@@ -245,7 +245,53 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     return tvec, xvec
 
 
+def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
+    """Simulate a sample path from a univariate diffusion process
 
+    This function simulates a single realisation from a
+    time-homogeneous univariate diffusion process.
+
+    Parameters
+    ----------
+    aFun: function
+        A scalar-valued function representing the infinitesimal mean
+        (drift) of the diffusion process. The argument is the current
+        state of the process.
+    bFun: function
+        A scalar-valued function representing the infinitesimal
+        standard deviation of the process. The argument is the current
+        state of the process.
+    x0: float
+        The initial state of the diffusion process.
+    t: float
+        The length of the time interval over which the diffusion process
+        is to be simulated.
+    dt: float
+        The step size to be used _both_ for the time step of the Euler
+        integration method _and_ the recording interval for the output.
+        It would probably be better to have separate parameters for
+        these two things. Defaults to 0.01 time units.
+
+    Returns
+    -------
+    A vector of states of the diffusion process on the required time grid.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> smfsb.rdiff(lambda x: 1 - 0.1*x, lambda x: np.sqrt(1 + 0.1*x))
+    """
+    n = int(t/dt)
+    xvec = np.zeros(n)
+    x = x0
+    sdt = np.sqrt(dt)
+    for i in range(n):
+        t = i*dt
+        x = x + aFun(x)*dt + bFun(x)*np.random.normal(0, sdt)
+        xvec[i] = x
+    return xvec
+    
 
 
 
