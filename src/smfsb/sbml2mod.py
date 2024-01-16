@@ -33,21 +33,23 @@ ParseError="Parsing error"
 
 class Parser(object):
     """Parser class
-Has constructor:
- Parser(sbmldoc)
-where sbmldoc is a libsbml sbmldocument object,
-and the following public methods:
- parseStream(outStream)
- parse()
-"""
 
+    Has constructor:
+    Parser(sbmldoc)
+    where sbmldoc is a libsbml sbmldocument object,
+    and the following public methods:
+    parseStream(outStream)
+    parse()
+    """
+    
     def __init__(self,d):
         self.d=d
         self.m=d.getModel()
 
     def parseStream(self,outS):
         """parseStream(outStream)
-parses SBML model and writes SBML-shorthand to outStream"""
+        parses SBML model and writes SBML-shorthand to outStream
+        """
         outS.write('@model:')
         outS.write(str(self.d.getLevel())+'.')
         outS.write(str(self.d.getVersion())+'.')

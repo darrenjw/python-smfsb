@@ -4,14 +4,6 @@ smfsb package
 Submodules
 ----------
 
-smfsb.mod2sbml module
----------------------
-
-.. automodule:: smfsb.mod2sbml
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 smfsb.models module
 -------------------
 
@@ -20,18 +12,18 @@ smfsb.models module
    :undoc-members:
    :show-inheritance:
 
-smfsb.sbml2mod module
----------------------
+smfsb.spn module
+------------------
 
-.. automodule:: smfsb.sbml2mod
+.. automodule:: smfsb.spn
    :members:
    :undoc-members:
    :show-inheritance:
 
-smfsb.smfsb module
+smfsb.sim module
 ------------------
 
-.. automodule:: smfsb.smfsb
+.. automodule:: smfsb.sim
    :members:
    :undoc-members:
    :show-inheritance:

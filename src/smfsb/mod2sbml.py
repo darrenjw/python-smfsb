@@ -34,12 +34,13 @@ ParseError="Parsing error"
 
 class Parser(object):
     """Parser class
-Has constructor:
- Parser()
-and the following public methods:
- parseStream(inStream)
- parse(inString)
-"""
+
+    Has constructor:
+    Parser()
+    and the following public methods:
+    parseStream(inStream)
+    parse(inString)
+    """
     # context
     SBML=1
     MODEL=2
@@ -61,15 +62,16 @@ and the following public methods:
 
     def parse(self,inString):
         """parse(inString)
-parses SBML-shorthand model in inString and returns a libSBML SBMLDocument
-object"""
+        parses SBML-shorthand model in inString and returns a libSBML SBMLDocument
+        object"""
         inS=io.StringIO(inString)
         return self.parseStream(inS)
 
     def parseStream(self,inS):
         """parseStream(inStream)
-parses SBML-shorthand model on inStream and returns a libSBML SBMLDocument
-object"""
+        parses SBML-shorthand model on inStream and returns a libSBML SBMLDocument
+        object
+        """
         self.inS=inS
         line=self.inS.readline()
         while (line):
