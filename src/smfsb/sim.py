@@ -347,6 +347,55 @@ def simpleEuler(rhs, ic, t=50, dt=0.001):
     return xMat
 
 
+def discretise(times, states, dt=1, start=0):
+    """Discretise output from a discrete event simulation algorithm
+
+    This function discretises output from a discrete event simulation
+    algorithm such as ‘gillespie’ onto a regular time grid, and
+    returns the results as a matrix.
+
+    Parameters
+    ----------
+    times: array
+        A vector of event times.
+    states: array
+        A matrix of states. There should be one more row than the length of times.
+    dt: float
+        The time step required for the output of the discretisation
+        process. Defaults to one time unit.
+    start: float
+        The start time for the output. Defaults to zero.
+
+    Returns
+    -------
+    A matrix with rows corresponding to the state of the system on a regular
+    grid.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import smfsb.models
+    >>> lv = smfsb.models.lv()
+    >>> times, states = lv.gillespie(1000)
+    >>> smfsb.discretise(times, states, 0.1)
+    """
+    events = len(times)
+    end = times[events-1]
+    length = int((end - start) // dt) + 1
+    x = np.zeros((length, states.shape[1]))
+    target = 0
+    j = 0
+    for i in range(events):
+        while (times[i] >= target):
+            x[j,:] = states[i,:]
+            j = j + 1
+            target = target + dt
+    return x
+
+
+
+
+
 
 # Misc utility functions
 
