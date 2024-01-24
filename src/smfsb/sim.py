@@ -293,7 +293,58 @@ def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
     return xvec
     
 
+def simpleEuler(rhs, ic, t=50, dt=0.001):
+    """Simulate a sample path from an ODE model
 
+    This function integrates an Ordinary Differential Equation (ODE)
+    model using a simple first order Euler method. The function is
+    pedagogic and not intended for serious use. See scipy.integrate.solve_ivp
+    for better, more robust ODE solvers.
+
+    Parameters
+    ----------
+    rhs: function
+        A vector-valued function representing the right hand side of
+        the ODE model.  The first argument is a vector representing
+        the current state of the model, ‘x’.  The second argument of
+        ‘rhs’ is the current simulation time, ‘t’. In the case of a
+        homogeneous ODE model, this argument will be unused within
+        the function. The output of ‘rhs’ should be a vector of the 
+        same dimension as ‘x’.
+    ic: array
+        The initial conditions for the ODE model. This should be a
+        vector of the same dimensions as the output from ‘rhs’, and
+        the first argument of ‘rhs’.
+    t: float
+        The length of the time interval over which the ODE model is
+        to be integrated. Defaults to 50 time units.
+    dt: float
+        The step size to be used both for the time step of the Euler
+        integration method and the recording interval for the output.
+        It would probably be better to have separate parameters for
+        these two things. Defaults to 0.001 time units.
+    
+    Returns
+    -------
+    A matrix with rows representing the states at each time step.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> smfsb.simpleEuler(lambda x,t: 1-0.1*x[0], np.array([0]))
+    """
+    p = len(ic)
+    n = int(t/dt)
+    xMat = np.zeros((n,p))
+    x = ic
+    t = 0
+    xMat[0,:] = x
+    for i in range(1,n):
+        t = t + dt
+        x = x + rhs(x,t)*dt
+        xMat[i,:] = x
+    return xMat
 
 
 
