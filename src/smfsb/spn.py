@@ -113,8 +113,7 @@ class Spn:
                 x = np.add(x, S[:,j].A1)
         return step
 
-
-    
+        
     def stepPTS(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a 
         simple approximate Poisson time stepping method
@@ -263,8 +262,54 @@ class Spn:
 
 
 
+    
+    # some illustrative functions, not intended for serious use
+            
+    
+    def gillespie(self, n):
+        """Simulate a sample path from a stochastic kinetic model 
+        described by a stochastic Petri net
 
+        This function simulates a single realisation from a discrete
+        stochastic kinetic model described by a stochastic Petri net
+        (SPN).
+        
+        Parameters
+        ----------
+        n: int
+        An integer representing the number of events to simulate,
+        excluding the initial state
 
+        Returns
+        -------
+        A tuple consisting of a first component, a vector of length n
+        containing the event times, and a second component, a matrix 
+        with n+1 rows containing the state of the system. The first 
+        row is the intial state prior to the first event.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> lv = smfsb.models.lv()
+        >>> lv.gillespie(1000)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        t = 0
+        x = self.m
+        tVec = np.zeros(n)
+        xMat = np.zeros((n+1, u))
+        xMat[0,:] = x
+        for i in range(n):
+            h = self.h(x, t)
+            h0 = h.sum()
+            t = t + np.random.exponential(1.0/h0)
+            j = np.random.choice(v, p=h/h0)
+            x = np.add(x, S[:,j].A1)
+            xMat[i+1,:] = x
+            tVec[i] = t
+        return tVec, xMat
+    
 
 
 
