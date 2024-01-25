@@ -100,6 +100,77 @@ def simSample(n, x0, t0, deltat, stepFun):
     return mat
 
 
+def stepSDE(drift, diffusion, dt=0.01):
+    """Create a function for advancing the state of an SDE model by using a
+    simple Euler-Maruyama integration method
+
+    This function creates a function for advancing the state of an SDE
+    model using a simple Euler-Maruyama integration method. The
+    resulting function (closure) can be used in conjunction with other
+    functions (such as ‘simTs’) for simulating realisations of SDE
+    models.
+
+    Parameters
+    ----------
+    drift: function
+        A function representing the drift vector of the SDE model
+        (corresponding roughly to the RHS of an ODE model). ‘drift’
+        should have arguments `x` and `t`, with ‘x’ representing
+        current system state and ‘t’ representing current system
+        time.  The value of the function should be a vector of the
+        same dimension as ‘x’, representing the infinitesimal mean of
+        the Ito SDE.
+    diffusion: function
+        A function representing the diffusion matrix of the SDE
+        model (the square root of the infinitesimal variance matrix).
+        ‘diffusion’ should have arguments `x` and `t`, with
+        ‘x’ representing current system state and ‘t’ representing
+        current system time. The value of the function should be a
+        square matrix with both dimensions the same as the length of
+        ‘x’.
+    dt: float
+        Time step to be used by the simple Euler-Maruyama integration
+        method. Defaults to 0.01.
+
+    Returns
+    -------
+    A function which can be used to advance the state of the SDE
+    model with given drift vector and diffusion matrix, by using an
+    Euler-Maruyama method with step size ‘dt’. The function closure 
+    returns a vector representing the simulated state of the system 
+    at the new time.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> lamb = 2; alpha = 1; mu = 0.1; sig = 0.2
+    >>> def myDrift(x, t):
+    >>>     return np.array([lamb - x[0]*x[1],
+    >>>                      alpha*(mu - x[1])])
+    >>> 
+    >>> def myDiff(x, t):
+    >>>     return np.array([[np.sqrt(lamb + x[0]*x[1]), 0],
+    >>>                      [0 ,sig*np.sqrt(x[1])]])
+    >>>
+    >>> stepProc = smfsb.stepSDE(myDrift, myDiff, dt=0.001)
+    >>> smfsb.simTs(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+    """
+    sdt = np.sqrt(dt)
+    def step(x0, t0, deltat):
+        x = x0
+        t = t0
+        termt = t0 + deltat
+        v = len(x)
+        while (True):
+            dw = np.random.normal(scale=sdt, size=v)
+            x = np.add(x, drift(x, t)*dt + diffusion(x, t).dot(dw))
+            t = t + dt
+            if (t > termt):
+                return x
+    return step
+
+
 # Illustrative functions from early in the book
 
 def rfmc(n, P, pi0):
