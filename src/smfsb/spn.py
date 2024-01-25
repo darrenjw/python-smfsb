@@ -311,7 +311,55 @@ class Spn:
         return tVec, xMat
     
 
+    def gillespied(self, T, dt=1):
+        """Simulate a sample path from a stochastic kinetic model described by 
+        a stochastic Petri net
 
+        This function simulates a single realisation from a discrete
+        stochastic kinetic model described by a stochastic Petri net and
+        discretises the output onto a regular time grid.
+
+        Parameters
+        ----------
+        T: float
+        The required length of simulation time.
+        dt: float
+        The grid size for the output. Note that this parameter simply
+        determines the volume of output. It has no bearing on the
+        correctness of the simulation algorithm. Defaults to one time
+        unit.
+        
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> lv = smfsb.models.lv()
+        >>> lv.gillespied(30, 0.1)        
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        t = 0
+        n = int(T / dt)
+        x = self.m
+        xMat = np.zeros((n, u))
+        i = 0
+        target = 0
+        while True:
+            h = self.h(x, t)
+            h0 = h.sum()
+            if (h0 < 1e-10):
+                t = 1e99
+            else:
+                t = t + np.random.exponential(1.0/h0)
+            while (t >= target):
+                xMat[i,:] = x
+                i = i + 1
+                target = target + dt
+                if (i >= n):
+                    return xMat
+            j = np.random.choice(v, p=h/h0)
+            x = np.add(x, S[:,j].A1)
+
+    
 
 # eof
 
