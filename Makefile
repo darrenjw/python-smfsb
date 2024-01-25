@@ -12,6 +12,9 @@ install:
 	make build
 	python3 -m pip install ./dist/smfsb-$(VERSION).tar.gz
 
+test:
+	pytest tests/
+
 publish:
 	make build
 	python3 -m twine upload dist/*$(VERSION)*
