@@ -113,7 +113,50 @@ class Spn:
                 x = np.add(x, S[:,j].A1)
         return step
 
+
+
+    def stepFRM(self):
+        """Create a function for advancing the state of an SPN by using
+        Gillespie's first reaction method
+
+        This function creates a function for advancing the state of an SPN
+        model using Gillespie's first reaction method. The resulting
+        function (closure) can be used in conjunction with other functions
+        (such as ‘simTs’) for simulating realisations of SPN models.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using Gillespie's first reaction method. The
+        function closure returns a vector representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> lv = smfsb.models.lv()
+        >>> stepLv = lv.stepFRM()
+        >>> stepLv([50, 100], 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        def step(x0, t0, deltat):
+            t = t0
+            x = x0
+            termt = t0 + deltat
+            while(True):
+                h = self.h(x, t)
+                h0 = h.sum()
+                pu = np.random.exponential(1.0/h)
+                j = np.argmin(pu)
+                t = t + pu[j]
+                if (t > termt):
+                    return(x)
+                x = np.add(x, S[:,j].A1)
+        return step
         
+
+    
     def stepPTS(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a 
         simple approximate Poisson time stepping method
