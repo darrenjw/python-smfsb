@@ -50,8 +50,8 @@ class Spn:
         """
         self.n = n # species names
         self.t = t # reaction names
-        self.pre = np.matrix(pre)
-        self.post = np.matrix(post)
+        self.pre = np.array(pre)
+        self.post = np.array(post)
         self.h = h # hazard function
         self.m = np.array(m) # initial marking
 
@@ -110,7 +110,7 @@ class Spn:
                 if (t > termt):
                     return(x)
                 j = np.random.choice(v, p=h/h0)
-                x = np.add(x, S[:,j].A1)
+                x = np.add(x, S[:,j])
         return step
 
 
@@ -152,7 +152,7 @@ class Spn:
                 t = t + pu[j]
                 if (t > termt):
                     return(x)
-                x = np.add(x, S[:,j].A1)
+                x = np.add(x, S[:,j])
         return step
         
 
@@ -199,7 +199,7 @@ class Spn:
             while(True):
                 h = self.h(x, t)
                 r = np.random.poisson(h * dt)
-                x = np.add(x, S.dot(r).A1)
+                x = np.add(x, S.dot(r))
                 t = t + dt
                 if (t > termt):
                     return x
@@ -246,7 +246,7 @@ class Spn:
             termt = t0 + deltat
             while(True):
                 h = self.h(x, t)
-                x = np.add(x, S.dot(h*dt).A1)
+                x = np.add(x, S.dot(h*dt))
                 t = t + dt
                 if (t > termt):
                     return x
@@ -296,7 +296,7 @@ class Spn:
             while(True):
                 h = self.h(x, t)
                 dw = np.random.normal(scale=sdt, size=v)
-                x = np.add(x, S.dot(h*dt + np.sqrt(h)*dw).A1)
+                x = np.add(x, S.dot(h*dt + np.sqrt(h)*dw))
                 x[x<0] = -x[x<0]
                 t = t + dt
                 if (t > termt):
@@ -348,7 +348,7 @@ class Spn:
             h0 = h.sum()
             t = t + np.random.exponential(1.0/h0)
             j = np.random.choice(v, p=h/h0)
-            x = np.add(x, S[:,j].A1)
+            x = np.add(x, S[:,j])
             xMat[i+1,:] = x
             tVec[i] = t
         return tVec, xMat
@@ -400,7 +400,7 @@ class Spn:
                 if (i >= n):
                     return xMat
             j = np.random.choice(v, p=h/h0)
-            x = np.add(x, S[:,j].A1)
+            x = np.add(x, S[:,j])
 
     
 

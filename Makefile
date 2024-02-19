@@ -3,7 +3,8 @@
 VERSION=0.1.3
 
 FORCE:
-	make build
+	make install
+	make test
 
 build:
 	python3 -m build
@@ -21,7 +22,7 @@ publish:
 
 
 edit:
-	emacs Makefile *.toml *.md src/smfsb/*.py &
+	emacs Makefile *.toml *.md src/smfsb/*.py tests/*.py &
 
 
 # eof
