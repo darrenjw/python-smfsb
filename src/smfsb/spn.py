@@ -146,7 +146,7 @@ class Spn:
             termt = t0 + deltat
             while(True):
                 h = self.h(x, t)
-                h0 = h.sum()
+                h[h == 0.0] = 1e-10
                 pu = np.random.exponential(1.0/h)
                 j = np.argmin(pu)
                 t = t + pu[j]

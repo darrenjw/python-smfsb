@@ -45,8 +45,8 @@ def test_simpleEuler():
 
 def test_rdiff():
     out = smfsb.rdiff(lambda x: 1 - 0.1*x, lambda x: np.sqrt(1 + 0.1*x))
-    assert(len(out) > 50)
-    assert(out[50] >= 0.0)
+    assert(len(out) > 500)
+    assert(out[500] >= 0.0)
 
     
 lamb = 2; alpha = 1; mu = 0.1; sig = 0.2
