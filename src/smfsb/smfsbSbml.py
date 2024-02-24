@@ -6,7 +6,7 @@ import libsbml
 import smfsb
 import sys
 import numpy as np
-import smfsb.mod2sbml as mod2sbml
+from sbmlsh import mod2sbml
 
 
 def mod2Spn(filename, verb=False):

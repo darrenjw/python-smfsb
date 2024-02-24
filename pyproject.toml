@@ -12,7 +12,7 @@ description = "Python code relating to the textbook, Stochastic modelling for sy
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
-  "python-libsbml",
+  "sbmlsh",
   "numpy<2"
 ]
 classifiers = [
