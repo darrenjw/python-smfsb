@@ -3,8 +3,8 @@
 # Import SBML models into an smfsb Spn
 
 import libsbml
-import smfsb
 import sys
+from smfsb import Spn
 import numpy as np
 from sbmlsh import mod2sbml
 
@@ -216,7 +216,7 @@ def model2Spn(m, verb=False):
         for i in range(nr):
             h[i] = eval(kl[i], glob, lpl[i])
         return(h)
-    spn = smfsb.Spn(nl, rn, pre, post, haz, ml)
+    spn = Spn(nl, rn, pre, post, haz, ml)
     spn.comp = cd
     spn.gp = gpd
     spn.kl = kl
