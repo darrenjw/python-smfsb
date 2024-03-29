@@ -28,6 +28,14 @@ smfsb.sim module
    :undoc-members:
    :show-inheritance:
 
+smfsb.spatial module
+--------------------
+
+.. automodule:: smfsb.spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 smfsb.smfsbSbml module
 ----------------------
 
