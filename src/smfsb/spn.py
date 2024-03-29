@@ -304,6 +304,88 @@ class Spn:
         return step
 
 
+    # spatial simulation functions, from chapter 9
+
+    def stepGillespie1D(self, d):
+        """Create a function for advancing the state of an SPN by using the
+        Gillespie algorithm on a 1D regular grid
+
+        This method creates a function for advancing the state of an SPN
+        model using the Gillespie algorithm. The resulting function
+        (closure) can be used in conjunction with other functions (such as
+        ‘simTs1D’) for simulating realisations of SPN models in space and
+        time.
+
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using the Gillespie algorithm. The function closure
+        has arguments `x0`, `t0`, `deltat`, where `x0` is a matrix
+        with rows corresponding to species and columns corresponding to
+        voxels, representing the initial condition, `t0` represent the
+        initial state and time, and `deltat` represents the amount of time
+        by which the process should be advanced. The function closure
+        returns a matrix representing the simulated state of the system at
+        the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> lv = smfsb.models.lv()
+        >>> stepLv1d = lv.stepGillespie1D()
+        >>> ... TODO:!
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        def step(x0, t0, deltat):
+            t = t0
+            x = x0
+            n = x.shape[1]
+            termt = t0 + deltat
+            while(True):
+                hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                hrs = np.apply_along_axis(np.sum, 0, hr)
+                hrss = hrs.sum()
+                hd = np.apply_along_axis(lambda xi: xi*d*2, 0, x)
+                hds = np.apply_along_axis(np.sum, 0, hd)
+                hdss = hds.sum()
+                h0 = hrss + hdss
+                if (h0 > 1e07):
+                    print("WARNING: hazard too large - terminating!")
+                    return(x)
+                if (h0 < 1e-10):
+                    t = 1e99
+                else:
+                    t = t + np.random.exponential(1.0/h0)
+                if (t > termt):
+                    return(x)
+                if (np.random.uniform(0, h0) < hdss):
+                    # diffuse
+                    j = np.random.choice(n, p=hds/hdss) # pick a box
+                    i = np.random.choice(u, p=hd[:,j]/hds[j]) # pick species
+                    x[i,j] = x[i,j]-1 # decrement chosen box
+                    if (np.random.uniform(0,1) < 0.5):
+                        # left
+                        if (j>0):
+                            x[i,j-1] = x[i,j-1] + 1
+                        else:
+                            x[i,n-1] = x[i,n-1] + 1
+                    else:
+                        # right
+                        if (j<n-1):
+                            x[i,j+1] = x[i,j+1] + 1
+                        else:
+                            x[i,0] = x[i,0] + 1
+                else:
+                    # react
+                    j = np.random.choice(n, p=hrs/hrss) # pick a box
+                    i = np.random.choice(v, p=hr[:,j]/hrs[j]) # pick a reaction
+                    x[:,j] = np.add(x[:,j], S[:,i])
+        return step
+
+    
+    
 
     
     # some illustrative functions, not intended for serious use
