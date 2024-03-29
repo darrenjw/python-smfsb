@@ -10,7 +10,7 @@ def simTs1D(x0, t0, tt, dt, stepFun, verb=False):
     This function simulates single realisation of a model on a 1D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `StepGillespie1D`.
+    `stepGillespie1D`.
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ def simTs1D(x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `StepGillespie1D`.
+      such as produced by `stepGillespie1D`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
