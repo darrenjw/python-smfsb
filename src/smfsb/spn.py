@@ -397,7 +397,44 @@ class Spn:
                     x[:,j] = np.add(x[:,j], S[:,i])
         return step
 
-    
+    def stepCLE1D(d, dt = 0.01):
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        sdt = math.sqrt(dt)
+        def forward(m):
+            n = m.shape[1]
+            return np.concat(m[:,range(1,n)], m[:,0])
+        def back(m):
+            n = m.shape[1]
+            return np.concat(m[:,n-1], m[:,range(n-1)])
+        def laplacian(n):
+            return forward(m) + back(m) - 2*m
+        def rectify(m):
+            m[m < 0] = 0
+            return m
+        def diffuse(m):
+            n = m.shape[1]
+            noise = np.random.normal(0, sdt, (u, n))
+            m = m + (np.diag(d) @ laplacian(m))*dt + \
+              np.diag(np.sqrt(d))@(np.sqrt(m + forward(m))*noise -
+                                   np.sqrt(m + back(m))*back(noise))
+            m = rectify(m)
+            return m
+        def step(x0, t0, deltat):
+            x = x0
+            t = t0
+            n = m.shape[1]
+            termt = t0 + deltat
+            while True:
+                x = diffuse(x)
+                hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                dwt = np.random.normal(0, sdt, (v, n))
+                x = x + S @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
+                x = rectify(x)
+                t = t + dt
+                if (t > termt):
+                    return x
+        return step
     
 
     
