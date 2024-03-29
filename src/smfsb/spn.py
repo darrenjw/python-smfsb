@@ -316,6 +316,15 @@ class Spn:
         ‘simTs1D’) for simulating realisations of SPN models in space and
         time.
 
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore twice this value (as it can leave to
+          the left or the right).
 
         Returns
         -------
@@ -332,9 +341,13 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.stepGillespie1D()
-        >>> ... TODO:!
+        >>> stepLv1d = lv.stepGillespie1D(np.array([0.6,0.6]))
+        >>> N = 20
+        >>> x0 = np.zeros((2,N))
+        >>> x0[:,int(N/2)] = lv.m
+        >>> stepLv1d(x0, 0, 1)
         """
         S = (self.post - self.pre).T
         u, v = S.shape
