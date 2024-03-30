@@ -94,7 +94,7 @@ def test_pts():
 def test_lv():
     lv = smfsb.models.lv()
     stepLv = lv.stepGillespie()
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    out = smfsb.simTs(lv.m, 0, 10, 0.01, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
 

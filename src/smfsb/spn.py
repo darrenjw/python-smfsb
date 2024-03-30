@@ -313,7 +313,7 @@ class Spn:
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        ‘simTs1D’) for simulating realisations of SPN models in space and
+        `simTs1D`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -397,6 +397,116 @@ class Spn:
                     x[:,j] = np.add(x[:,j], S[:,i])
         return step
 
+    
+    def stepGillespie2D(self, d):
+        """Create a function for advancing the state of an SPN by using the
+        Gillespie algorithm on a 2D regular grid
+
+        This method creates a function for advancing the state of an SPN
+        model using the Gillespie algorithm. The resulting function
+        (closure) can be used in conjunction with other functions (such as
+        `simTs2D`) for simulating realisations of SPN models in space and
+        time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore four times this value (as it can leave in
+          one of 4 directions).
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using the Gillespie algorithm. The function closure
+        has arguments `x0`, `t0`, `deltat`, where `x0` is a 3d array
+        with dimensions corresponding to species then two spatial dimensions,
+        representing the initial condition, `t0` represent the
+        initial state and time, and `deltat` represents the amount of time
+        by which the process should be advanced. The function closure
+        returns an array representing the simulated state of the system at
+        the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> import numpy as np
+        >>> lv = smfsb.models.lv()
+        >>> stepLv2d = lv.stepGillespie2D(np.array([0.6, 0.6]))
+        >>> N = 20
+        >>> x0 = np.zeros((2, N, N))
+        >>> x0[:, int(N/2), int(N/2)] = lv.m
+        >>> stepLv2d(x0, 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        def step(x0, t0, deltat):
+            t = t0
+            x = x0
+            uu, m, n = x.shape
+            termt = t0 + deltat
+            while(True):
+                hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                hrs = np.sum(hr, axis=(0))
+                hrss = hrs.sum()
+                hd = np.apply_along_axis(lambda xi: xi*d*4, 0, x)
+                hds = np.sum(hd, axis=(0))
+                hdss = hds.sum()
+                h0 = hrss + hdss
+                if (h0 > 1e07):
+                    print("WARNING: hazard too large - terminating!")
+                    return(x)
+                if (h0 < 1e-10):
+                    t = 1e99
+                else:
+                    t = t + np.random.exponential(1.0/h0)
+                if (t > termt):
+                    return(x)
+                if (np.random.uniform(0, h0) < hdss):
+                    # diffuse
+                    r = np.random.choice(m*n, p=hds.flatten()/hdss) # pick a box
+                    i = r // n
+                    j = r % n
+                    k = np.random.choice(u, p=hd[:,i,j]/hds[i,j]) # pick species
+                    x[k,i,j] = x[k,i,j] - 1 # decrement chosen box
+                    un = np.random.uniform(0,1)
+                    if (un < 0.25):
+                        # left
+                        if (j > 0):
+                            x[k,i,j-1] = x[k,i,j-1] + 1
+                        else:
+                            x[k,i,n-1] = x[k,i,n-1] + 1
+                    elif (un < 0.5):
+                        # right
+                        if (j < n-1):
+                            x[k,i,j+1] = x[k,i,j+1] + 1
+                        else:
+                            x[k,i,0] = x[k,i,0] + 1
+                    elif (un < 0.75):
+                        # up
+                        if (i > 0):
+                            x[k,i-1,j] = x[k,i-1,j] + 1
+                        else:
+                            x[k,m-1,j] = x[k,m-1,j] + 1
+                    else:
+                        # down
+                        if (i < m-1):
+                            x[k,i+1,j] = x[k,i+1,j] + 1
+                        else:
+                            x[k,0,j] = x[k,0,j] + 1
+                else:
+                    # react
+                    r = np.random.choice(m*n, p=hrs.flatten()/hrss) # pick a box
+                    i = r // n
+                    j = r % n
+                    k = np.random.choice(v, p=hr[:,i,j]/hrs[i,j]) # pick a reaction
+                    x[:,i,j] = np.add(x[:,i,j], S[:,k])
+        return step
+
+    
     def stepCLE1D(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 1D regular grid
