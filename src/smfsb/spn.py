@@ -588,6 +588,88 @@ class Spn:
                     return x
         return step
     
+    def stepCLE2D(self, d, dt = 0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        Euler-Maruyama discretisation of the CLE on a 2D regular grid
+        
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler-Maruyama discretisation of the CLE on a
+        2D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `simTs2D`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore four times this value (as it can leave
+          in one of 4 directions).
+        dt : float
+          Time step for the Euler-Maruyama discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple Euler-Maruyama algorithm. The function
+        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        a 3d array with indices species, then rows and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> import numpy as np
+        >>> lv = smfsb.models.lv()
+        >>> stepLv2d = lv.stepCLE2D(np.array([0.6,0.6]))
+        >>> M = 15
+        >>> N = 20
+        >>> x0 = np.zeros((2,M,N))
+        >>> x0[:,int(M/2),int(N/2)] = lv.m
+        >>> stepLv2d(x0, 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        sdt = np.sqrt(dt)
+        def forward(m):
+            return np.roll(m, -1, axis=1)
+        def back(m):
+            return np.roll(m, +1, axis=1)
+        def laplacian(m):
+            return forward(m) + back(m) - 2*m
+        def rectify(m):
+            m[m < 0] = 0
+            return m
+        def diffuse(m):
+            n = m.shape[1]
+            noise = np.random.normal(0, sdt, (u, n))
+            m = m + (np.diag(d) @ laplacian(m))*dt + \
+              np.diag(np.sqrt(d))@(np.sqrt(m + forward(m))*noise -
+                                   np.sqrt(m + back(m))*back(noise))
+            m = rectify(m)
+            return m
+        def step(x0, t0, deltat):
+            x = x0
+            t = t0
+            n = x0.shape[1]
+            termt = t0 + deltat
+            while True:
+                x = diffuse(x)
+                hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                dwt = np.random.normal(0, sdt, (v, n))
+                x = x + S @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
+                x = rectify(x)
+                t = t + dt
+                if (t > termt):
+                    return x
+        return step
+    
 
     
     # some illustrative functions, not intended for serious use
