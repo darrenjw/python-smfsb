@@ -38,7 +38,7 @@ for i in range(2):
 axis.legend(lv.n)
 fig.savefig("lv.pdf")
 ```
-Standard python docstring documentation is available. Usage information can be obtained from the python REPL with commands like `help(smfsb.Spn)`, `help(smfsb.Spn.stepGillespie)` or `help(smfsb.simTs)`. Much of this documentation is available on [ReadTheDocs](https://python-smfsb.readthedocs.io/), but the formatting is currently sub-optimal.
+Standard python docstring documentation is available. Usage information can be obtained from the python REPL with commands like `help(smfsb.Spn)`, `help(smfsb.Spn.stepGillespie)` or `help(smfsb.simTs)`. This documentation is also available on [ReadTheDocs](https://python-smfsb.readthedocs.io/). The API documentation contains very minimal usage examples. For more interesting examples, see the [demos directory](https://github.com/darrenjw/python-smfsb/tree/main/demos).
 
 ### Creating and simulating a model
 
