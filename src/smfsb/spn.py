@@ -397,17 +397,15 @@ class Spn:
                     x[:,j] = np.add(x[:,j], S[:,i])
         return step
 
-    def stepCLE1D(d, dt = 0.01):
+    def stepCLE1D(self, d, dt = 0.01):
         S = (self.post - self.pre).T
         u, v = S.shape
-        sdt = math.sqrt(dt)
+        sdt = np.sqrt(dt)
         def forward(m):
-            n = m.shape[1]
-            return np.concat(m[:,range(1,n)], m[:,0])
+            return np.roll(m, -1, axis=1)
         def back(m):
-            n = m.shape[1]
-            return np.concat(m[:,n-1], m[:,range(n-1)])
-        def laplacian(n):
+            return np.roll(m, +1, axis=1)
+        def laplacian(m):
             return forward(m) + back(m) - 2*m
         def rectify(m):
             m[m < 0] = 0
@@ -423,7 +421,7 @@ class Spn:
         def step(x0, t0, deltat):
             x = x0
             t = t0
-            n = m.shape[1]
+            n = x0.shape[1]
             termt = t0 + deltat
             while True:
                 x = diffuse(x)
