@@ -398,6 +398,50 @@ class Spn:
         return step
 
     def stepCLE1D(self, d, dt = 0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        Euler-Maruyama discretisation of the CLE on a 1D regular grid
+        
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler-Maruyama discretisation of the CLE on a
+        1D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `simTs1D`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore twice this value (as it can leave to
+          the left or the right).
+        dt : float
+          Time step for the Euler-Maruyama discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple Euler-Maruyama algorithm. The function
+        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        a matrix with rows corresponding to species and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import smfsb.models
+        >>> import numpy as np
+        >>> lv = smfsb.models.lv()
+        >>> stepLv1d = lv.stepCLE1D(np.array([0.6,0.6]))
+        >>> N = 20
+        >>> x0 = np.zeros((2,N))
+        >>> x0[:,int(N/2)] = lv.m
+        >>> stepLv1d(x0, 0, 1)
+        """
         S = (self.post - self.pre).T
         u, v = S.shape
         sdt = np.sqrt(dt)
