@@ -36,6 +36,14 @@ smfsb.spatial module
    :undoc-members:
    :show-inheritance:
 
+smfsb.inference module
+----------------------
+
+.. automodule:: smfsb.inference
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 smfsb.smfsbSbml module
 ----------------------
 

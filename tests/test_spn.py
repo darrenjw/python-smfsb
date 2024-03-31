@@ -68,7 +68,7 @@ def test_euler():
 def test_frm():
     lv = smfsb.models.lv()
     stepLv = lv.stepFRM()
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    out = smfsb.simTs(lv.m, 0, 10, 0.01, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
 

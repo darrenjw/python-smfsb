@@ -114,7 +114,7 @@ def stepSDE(drift, diffusion, dt=0.01):
     ----------
     drift: function
         A function representing the drift vector of the SDE model
-        (corresponding roughly to the RHS of an ODE model). ‘drift’
+        (corresponding roughly to the RHS of ante ODE model). ‘drift’
         should have arguments `x` and `t`, with ‘x’ representing
         current system state and ‘t’ representing current system
         time.  The value of the function should be a vector of the
