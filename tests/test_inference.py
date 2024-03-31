@@ -19,6 +19,25 @@ def test_metropolisHastings():
     prop = lambda x: np.random.normal(x, 0.1, 2)
     out = smfsb.metropolisHastings([1,1], llik, prop, iters=1000, thin=2, verb=False)
     assert(out.shape == (1000, 2))
+
+def test_abcRun():
+    data = np.random.normal(5, 2, 250)
+    def rpr():
+      return np.exp(np.random.uniform(-3, 3, 2))
+    def rmod(th):
+      return np.random.normal(th[0], th[1], 250)
+    def sumStats(dat):
+      return np.array([np.mean(dat), np.std(dat)])
+    ssd = sumStats(data)
+    def dist(ss):
+      diff = ss - ssd
+      return np.sqrt(np.sum(diff*diff))
+    def rdis(th):
+      return dist(sumStats(rmod(th)))
+    p, d = smfsb.abcRun(100, rpr, rdis)
+    assert(len(p) == 100)
+    assert(len(d) == 100)
+
     
 # eof
 

@@ -106,6 +106,69 @@ def metropolisHastings(init, logLik, rprop,
     return mat
     
 
+def abcRun(n, rprior, rdist):
+    """Run a set of simulations initialised with parameters sampled from a
+    given prior distribution, and compute statistics required for an ABC
+    analaysis
+
+    Run a set of simulations initialised with parameters sampled from
+    a given prior distribution, and compute statistics required for an
+    ABC analaysis. Typically used to calculate "distances" of
+    simulated synthetic data from observed data.
+    
+    Parameters
+    ----------
+    n : int
+      An integer representing the number of simulations to run.
+    rprior : function
+      A function without arguments generating a single parameter
+      (vector) from prior distribution.
+    rdist: function
+      A function taking a parameter (vector) as argument and
+      returning the required statistic of interest. This will
+      typically be computed by first using the parameter to run a
+      forward model, then computing required summary statistics,
+      then computing a distance. See the example for details.
+    
+    Returns
+    -------
+    A tuple with first component a list of parameters and second component
+    a list of corresponding distances.
+ 
+    Examples
+    --------
+    >>> import smfsb
+    >>> import numpy as np
+    >>> import scipy as sp
+    >>> data = np.random.normal(5, 2, 250)
+    >>> def rpr():
+    >>>   return np.exp(np.random.uniform(-3, 3, 2))
+    >>>
+    >>> def rmod(th):
+    >>>   return np.random.normal(th[0], th[1], 250)
+    >>>
+    >>> def sumStats(dat):
+    >>>   return np.array([np.mean(dat), np.std(dat)])
+    >>>
+    >>> ssd = sumStats(data)
+    >>> def dist(ss):
+    >>>   diff = ss - ssd
+    >>>   return np.sqrt(np.sum(diff*diff))
+    >>>
+    >>> def rdis(th):
+    >>>   return dist(sumStats(rmod(th)))
+    >>>
+    >>> smfsb.abcRun(100, rpr, rdis)
+    """
+    p = list()
+    d = list()
+    for i in range(n):
+        pi = rprior()
+        di = rdist(pi)
+        p.append(pi)
+        d.append(di)
+    return (p, d)
+
 
 
 # Some illustrative functions not intended for serious use...
