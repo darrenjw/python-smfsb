@@ -637,33 +637,44 @@ class Spn:
         S = (self.post - self.pre).T
         u, v = S.shape
         sdt = np.sqrt(dt)
-        def forward(m):
-            return np.roll(m, -1, axis=1)
-        def back(m):
-            return np.roll(m, +1, axis=1)
-        def laplacian(m):
-            return forward(m) + back(m) - 2*m
-        def rectify(m):
-            m[m < 0] = 0
-            return m
-        def diffuse(m):
-            n = m.shape[1]
-            noise = np.random.normal(0, sdt, (u, n))
-            m = m + (np.diag(d) @ laplacian(m))*dt + \
-              np.diag(np.sqrt(d))@(np.sqrt(m + forward(m))*noise -
-                                   np.sqrt(m + back(m))*back(noise))
-            m = rectify(m)
-            return m
+        def left(a):
+            return np.roll(a, -1, axis=1)
+        def right(a):
+            return np.roll(a, +1, axis=1)
+        def up(a):
+            return np.roll(a, -1, axis=2)
+        def down(a):
+            return np.roll(a, +1, axis=2)
+        def laplacian(a):
+            return left(a) + right(a) + up(a) + down(a) - 4*a
+        def rectify(a):
+            a[a < 0] = 0
+            return a
+        def diffuse(a):
+            uu, m, n = a.shape
+            dwt = np.random.normal(0, sdt, (u, m, n))
+            dwts = np.random.normal(0, sdt, (u, m, n))
+            a = a + (np.apply_along_axis(lambda xi: xi*d, 0, laplacian(a)))*dt + \
+              np.apply_along_axis(lambda xi: xi*np.sqrt(d), 0,
+                                  (np.sqrt(a + left(a))*dwt -
+                                   np.sqrt(a + right(a))*right(dwt) +
+                                   np.sqrt(a + up(a))*dwts -
+                                np.sqrt(a + down(a))*down(dwts)))
+            a = rectify(a)
+            return a
         def step(x0, t0, deltat):
             x = x0
             t = t0
-            n = x0.shape[1]
+            uu, m , n = x0.shape
             termt = t0 + deltat
             while True:
                 x = diffuse(x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
-                dwt = np.random.normal(0, sdt, (v, n))
-                x = x + S @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
+                dwt = np.random.normal(0, sdt, (v, m, n))
+                for i in range(m):
+                    for j in range(n):
+                        x[:,i,j] = x[:,i,j] + S @ (hr[:,i,j] * dt +
+                                                   np.sqrt(hr[:,i,j]) * dwt[:,i,j])
                 x = rectify(x)
                 t = t + dt
                 if (t > termt):
