@@ -3,6 +3,15 @@
 
 import numpy as np
 
+
+
+
+
+
+
+# Some illustrative functions not intended for serious use...
+
+
 def normgibbs(N, n, a, b, c, d, xbar, ssquared):
     """A simple Gibbs sampler for Bayesian inference for the mean and
     precision of a normal random sample
@@ -53,6 +62,45 @@ def normgibbs(N, n, a, b, c, d, xbar, ssquared):
         tau = np.random.gamma(a + n/2, 1/taub)
         mat[i,:] = [mu, tau]
     return mat
+
+from scipy.stats import norm
+
+def metrop(n, alpha):
+    """Run a simple Metropolis sampler with standard normal target and uniform
+    innovations
+
+    This function runs a simple Metropolis sampler with standard
+    normal target distribution and uniform innovations.
+
+    Parameters
+    ----------
+    n : int
+      The number of iterations of the Metropolis sampler.
+    alpha: float
+      The tuning parameter of the sampler. The innovations of the sampelr are
+      of the form U(-alpha, alpha).
+
+    Returns
+    -------
+    A vector containing the output of the sampler.
+
+    Examples
+    --------
+    >>> import smfsb
+    >>> smfsb.metrop(100, 1)
+    """
+    vec = np.zeros((n))
+    x = 0
+    vec[0] = x
+    for i in range(1, n):
+        can = x + np.random.uniform(-alpha, alpha)
+        aprob = norm.pdf(can)/norm.pdf(x)
+        u = np.random.uniform()
+        if (u < aprob):
+            x = can
+        vec[i] = x
+    return vec
+
 
 
 # eof
