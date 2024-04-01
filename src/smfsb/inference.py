@@ -86,7 +86,7 @@ def metropolisHastings(init, logLik, rprop,
         print(f"{iters} iterations")
     for i in range(iters):
         if (verb):
-            print(f"{i} ", end='')
+            print(f"{i} ", end='', flush=True)
         for j in range(thin):
             prop = rprop(x)
             if (ldprior(prop) > -math.inf):
@@ -168,7 +168,7 @@ def abcRun(n, rprior, rdist):
     return (p, d)
 
 
-def pfMLLik(n, simX0, t0, stepFun, dataLLik, data):
+def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     """Create a function for computing the log of an unbiased estimate of
     marginal likelihood of a time course data set
 
@@ -217,7 +217,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data):
     >>> import scipy as sp
     >>> import smfsb
     >>> def obsll(x, t, y, th):
-    >>>     return np.sum(sp.stats.norm.logpdf((y-x)/10))
+    >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10)
     >>> 
     >>> def simX(t0, th):
     >>>     return np.array([np.random.poisson(50), np.random.poisson(100)])
@@ -230,14 +230,24 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data):
     >>> mll(np.array([1, 0.005, 0.6]))
     >>> mll(np.array([2, 0.005, 0.6]))
     """
-    m = data.shape[1] - 1
+    no = data.shape[1]
     times = np.concatenate(([t0], data[:,0]))
     deltas = np.diff(times)
-    obs = data[:,range(1,m)]
+    obs = data[:,range(1,no)]
+    if (debug):
+        print(data.shape)
+        print(times[range(5)])
+        print(deltas[range(5)])
+        print(len(deltas))
+        print(obs[range(5),:])
     def go(th):
         ll = 0
         xmat = np.zeros((n,1))
         xmat = np.apply_along_axis(lambda x: simX0(t0, th), 1, xmat)
+        sh = xmat.shape
+        if (debug):
+            print(xmat.shape)
+            print(xmat[range(5),:])
         for i in range(len(deltas)):
             xmat = np.apply_along_axis(lambda x: stepFun(
                 x, times[i], deltas[i], th), 1, xmat)
@@ -249,6 +259,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data):
             ll = ll + m + np.log(ssw/n)
             rows = np.random.choice(n, n, p=sw/ssw)
             xmat = xmat[rows,:]
+            assert(xmat.shape == sh)
         return ll
     return go
 
