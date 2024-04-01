@@ -38,6 +38,17 @@ def test_abcRun():
     assert(len(p) == 100)
     assert(len(d) == 100)
 
+def test_pfmllik():
+    def obsll(x, t, y, th):
+        return np.sum(sp.stats.norm.logpdf((y-x)/10))
+    def simX(t0, th):
+        return np.array([np.random.poisson(50), np.random.poisson(100)])
+    def step(x, t, dt, th):
+        sf = smfsb.models.lv(th).stepCLE()
+        return sf(x, t, dt)
+    mll = smfsb.pfMLLik(50, simX, 0, step, obsll, smfsb.data.LVnoise10)
+    assert (mll(np.array([1, 0.005, 0.6])) > mll(np.array([2, 0.005, 0.6])))
+
     
 # eof
 

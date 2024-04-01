@@ -6,10 +6,8 @@ import math
 
 
 
-# TODO: default lambdas for ldprop and ldprior
 def metropolisHastings(init, logLik, rprop,
-                       ldprop=lambda n, o: 1,
-                       ldprior=lambda x: 1,
+                       ldprop=lambda n, o: 1, ldprior=lambda x: 1,
                        iters=10000, thin=10, verb=True, debug=False):
     """Run a Metropolis-Hastings MCMC algorithm for the parameters of a
     Bayesian posterior distribution
@@ -168,6 +166,101 @@ def abcRun(n, rprior, rdist):
         p.append(pi)
         d.append(di)
     return (p, d)
+
+
+def pfMLLik(n, simX0, t0, stepFun, dataLLik, data):
+    """Create a function for computing the log of an unbiased estimate of
+    marginal likelihood of a time course data set
+
+    Create a function for computing the log of an unbiased estimate of
+    marginal likelihood of a time course data set using a simple
+    bootstrap particle filter.
+
+    Parameters
+    ----------
+    n :  int
+      An integer representing the number of particles to use in the
+      particle filter.
+    simX0 : function
+      A function with arguments `t0` and `th`, where ‘t0’ is a time 
+      at which to simulate from an initial distribution for the state of the
+      particle filter and `th` is a vector of parameters. The return value 
+      should be a state vector randomly sampled from the prior distribution.
+      The function therefore represents a prior distribution on the initial
+      state of the Markov process.
+    t0 : float
+      The time corresponding to the starting point of the Markov
+      process. Can be no bigger than the smallest observation time.
+    stepFun : function
+      A function for advancing the state of the Markov process, with
+      arguments `x`, `t0`, `deltat` and `th`, with `th` representing a
+      vector of parameters.
+    dataLLik : function
+      A function with arguments `x`, `t`, `y`, `th`,
+      where `x` and `t` represent the true state and time of the
+      process, `y` is the observed data, and `th` is a parameter vector. 
+      The return value should be the log of the likelihood of the observation. The
+      function therefore represents the observation model.
+    data : matrix
+      A matrix with first column an increasing set of times. The remaining
+      columns represent the observed values of `y` at those times.
+
+    Returns
+    -------
+    A function with single argument `th`, representing a parameter vector, which
+    evaluates to the log of the particle filters unbiased estimate of the
+    marginal likelihood of the data (for parameter `th`).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import scipy as sp
+    >>> import smfsb
+    >>> def obsll(x, t, y, th):
+    >>>     return np.sum(sp.stats.norm.logpdf((y-x)/10))
+    >>> 
+    >>> def simX(t0, th):
+    >>>     return np.array([np.random.poisson(50), np.random.poisson(100)])
+    >>> 
+    >>> def step(x, t, dt, th):
+    >>>     sf = smfsb.models.lv(th).stepGillespie()
+    >>>     return sf(x, t, dt)
+    >>> 
+    >>> mll = smfsb.pfMLLik(80, simX, 0, step, obsll, smfsb.data.LVnoise10)
+    >>> mll(np.array([1, 0.005, 0.6]))
+    >>> mll(np.array([2, 0.005, 0.6]))
+    """
+    m = data.shape[1] - 1
+    times = np.concatenate(([t0], data[:,0]))
+    deltas = np.diff(times)
+    obs = data[:,range(1,m)]
+    def go(th):
+        ll = 0
+        xmat = np.zeros((n,1))
+        xmat = np.apply_along_axis(lambda x: simX0(t0, th), 1, xmat)
+        for i in range(len(deltas)):
+            xmat = np.apply_along_axis(lambda x: stepFun(
+                x, times[i], deltas[i], th), 1, xmat)
+            lw = np.apply_along_axis(lambda x: dataLLik(
+                x, times[i+1], obs[i,], th), 1, xmat)
+            m = np.max(lw)
+            sw = np.exp(lw - m)
+            ssw = np.sum(sw)
+            ll = ll + m + np.log(ssw/n)
+            rows = np.random.choice(n, n, p=sw/ssw)
+            xmat = xmat[rows,:]
+        return ll
+    return go
+
+
+
+
+
+
+
+
+
+
 
 
 
