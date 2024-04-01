@@ -12,6 +12,14 @@ smfsb.models module
    :undoc-members:
    :show-inheritance:
 
+smfsb.data module
+-----------------
+
+.. automodule:: smfsb.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 smfsb.spn module
 ------------------
 

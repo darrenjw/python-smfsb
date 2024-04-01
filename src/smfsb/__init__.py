@@ -5,4 +5,5 @@ from smfsb.spatial import *
 from smfsb.inference import *
 
 import smfsb.models
+import smfsb.data
 
