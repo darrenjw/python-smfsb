@@ -4,6 +4,7 @@
 import smfsb
 import numpy as np
 import scipy as sp
+import math
 
 print("ABC with calibrated summary stats")
 
@@ -29,7 +30,7 @@ def ss1d(vec):
   #print(mean)
   #print(var)
   #print(acs)
-  return np.array([mean, np.log(var+1), acs[0], acs[1], acs[2]])
+  return np.array([np.log(mean+1), np.log(var+1), acs[0], acs[1], acs[2]])
 
 def ssi(ts):
   return np.concatenate((ss1d(ts[:,0]), ss1d(ts[:,1]),
@@ -37,11 +38,12 @@ def ssi(ts):
 
 print("Pilot run")
 
-p, d = smfsb.abcRun(1000, rpr, lambda th: ssi(rmod(th)))
+p, d = smfsb.abcRun(100000, rpr, lambda th: ssi(rmod(th)), verb=True)
 prmat = np.vstack(p)
 dmat = np.vstack(d)
 print(prmat.shape)
 print(dmat.shape)
+dmat[dmat == math.inf] = math.nan
 sds = np.nanstd(dmat, 0)
 print(sds)
 
@@ -60,9 +62,9 @@ def dist(ss):
 def rdis(th):
   return dist(sumStats(rmod(th)))
 
-p, d = smfsb.abcRun(10000, rpr, rdis, verb=True)
+p, d = smfsb.abcRun(1000000, rpr, rdis, verb=True)
 
-q = np.nanquantile(d, 0.1)
+q = np.nanquantile(d, 0.01)
 prmat = np.vstack(p)
 postmat = prmat[d < q,:]
 its, var = postmat.shape
