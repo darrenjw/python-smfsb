@@ -29,7 +29,7 @@ def prop(th, tune=0.01):
     return th*np.exp(np.random.normal(0, tune, (3)))
 
 thmat = smfsb.metropolisHastings([1, 0.005, 0.6], mll, prop,
-                                 iters=10000, thin=1, verb=True)
+                                 iters=5000, thin=1, verb=True)
 
 print("MCMC done. Now processing the results...")
 

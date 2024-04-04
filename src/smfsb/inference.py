@@ -104,7 +104,7 @@ def metropolisHastings(init, logLik, rprop,
     return mat
     
 
-def abcRun(n, rprior, rdist):
+def abcRun(n, rprior, rdist, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
     given prior distribution, and compute statistics required for an ABC
     analaysis
@@ -121,12 +121,14 @@ def abcRun(n, rprior, rdist):
     rprior : function
       A function without arguments generating a single parameter
       (vector) from prior distribution.
-    rdist: function
+    rdist : function
       A function taking a parameter (vector) as argument and
       returning the required statistic of interest. This will
       typically be computed by first using the parameter to run a
       forward model, then computing required summary statistics,
       then computing a distance. See the example for details.
+    verb : boolean
+      Print progress information to console?
     
     Returns
     -------
@@ -161,10 +163,14 @@ def abcRun(n, rprior, rdist):
     p = list()
     d = list()
     for i in range(n):
+        if (verb):
+            print(n-i, end=' ', flush=True)
         pi = rprior()
         di = rdist(pi)
         p.append(pi)
         d.append(di)
+    if (verb):
+        print(" - Done.")
     return (p, d)
 
 

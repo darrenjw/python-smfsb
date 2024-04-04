@@ -11,6 +11,9 @@ FORCE:
 %.txt: %.py
 	python3 $< > $@
 
+edit:
+	emacs Makefile *.py &
+
 clean:
 	rm -f *.txt *.pdf
 
