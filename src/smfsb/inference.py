@@ -270,11 +270,119 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     return go
 
 
+def abcSmcStep(dprior, priorSample, priorLW, rdist, rperturb,
+               dperturb, factor):
+    """Carry out one step of an ABC-SMC algorithm
+
+    Not meant to be directly called by users. See abcSmc.
+    """
+    n = priorSample.shape[0]
+    mx = np.max(priorLW)
+    rw = np.exp(priorLW - mx)
+    #print(priorSample.shape)
+    #print(len(rw))
+    priorInd = np.random.choice(range(n), n*factor, p=rw/np.sum(rw))
+    prior = priorSample[priorInd,:]
+    #print(prior.shape)
+    prop = np.apply_along_axis(rperturb, 1, prior)
+    #print(prop.shape)
+    dist = np.apply_along_axis(rdist, 1, prop)
+    #print(dist.shape)
+    qCut = np.quantile(dist, 1/factor)
+    new = prop[dist < qCut,:]
+    def logWeight(th):
+        terms = priorLW + np.apply_along_axis(lambda x: dperturb(th, x),
+                                              1, priorSample)
+        mt = np.max(terms)
+        denom = mt + np.log(np.sum(np.exp(terms-mt)))
+        return dprior(th) - denom
+    lw = np.apply_along_axis(logWeight, 1, new)
+    mx = np.max(lw)
+    rw = np.exp(lw - mx)
+    nlw = np.log(rw/np.sum(rw))
+    #print(f"new: {new.shape}")
+    #print(f"nlw: {nlw.shape}")
+    #print(nlw)
+    return new, nlw
 
 
+def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
+           factor=10, steps=15, verb=False):
+    """Run an ABC-SMC algorithm for infering the parameters of a forward model
 
+    Run an ABC-SMC algorithm for infering the parameters of a forward
+    model. This sequential Monte Carlo algorithm often performs better
+    than simple rejection-ABC in practice.
 
+    Parameters
+    ----------
+    N : int
+      An integer representing the number of simulations to pass on
+      at each stage of the SMC algorithm. Note that the TOTAL
+      number of forward simulations required by the algorithm will
+      be (roughly) 'N*steps*factor'.
+    rprior : function
+      A function without arguments generating single parameter
+      (vector) from the prior.
+    dprior : function
+      A function taking a parameter vector as argumnent and returning
+      the log of the prior density.
+    rdist : function
+      A function taking a parameter (vector) as argument and
+      returning a scalar "distance" representing a measure of how
+      good the chosen parameter is. This will typically be computed
+      by first using the parameter to run a forward model, then
+      computing required summary statistics, then computing a
+      distance. See the example for details.
+    rperturb : function
+      A function which takes a parameter as its argument and
+      returns a perturbed parameter from an appropriate kernel.
+    dperturb : function
+      A function which takes a pair of parameters as its first two
+      arguments (new first and old second), and has an optional
+      argument 'log' for whether to return the log of the density
+      associated with this perturbation kernel.
+    factor : int
+      At each step of the algorithm, 'N*factor' proposals are
+      generated and the best 'N' of these are weighted and passed
+      on to the next stage. Note that the effective sample size of
+      the parameters passed on to the next step may be (much)
+      smaller than 'N', since some of the particles may be assigned
+      small (or zero) weight.
+    steps : int
+      The number of steps of the ABC-SMC algorithm. Typically,
+      somewhere between 5 and 100 steps seems to be used in
+      practice.
+    verb : boolean
+      Boolean indicating whether some progress should be printed to
+      the console (the number of steps remaining).
+    
+    Returns
+    -------
+    A matrix with rows representing samples from the approximate posterior
+    distribution.
 
+    Examples
+    --------
+    TODO: do after writing test
+    
+    """
+    priorLW = np.log(np.zeros((N)) + 1/N)
+    priorSample = np.zeros((N,1))
+    priorSample = np.apply_along_axis(lambda x: rprior(), 1, priorSample)
+    for i in range(steps):
+        if (verb):
+            print(steps-i, end=' ')
+        priorSample, priorLW = abcSmcStep(dprior, priorSample, priorLW,
+                                          rdist, rperturb, dperturb, factor)
+    if (verb):
+        print("Done.")
+    #print(priorSample.shape)
+    #print(priorLW.shape)
+    #print(priorLW)
+    ind = np.random.choice(N, N, p = np.exp(priorLW))
+    #print(ind)
+    return priorSample[ind,:]
 
 
 
