@@ -69,7 +69,7 @@ To read and parse an SBML-shorthand model, use
 ```python
 m = smfsb.mod2Spn("myModel.mod")
 ```
-There is also a function `sh2Spn` which expects a python string containing a shorthand model. This is convenient for embedding shorthand models inside python scripts, and is particularly convenient when working with things like Jupyter notebooks. Below follows a complete session to illustrate the idea by creating and simulating a realisation from a discrete stochastic SIER model.
+There is also a function `sh2Spn` which expects a python string containing a shorthand model. This is convenient for embedding shorthand models inside python scripts, and is particularly convenient when working with things like Jupyter notebooks. Below follows a complete session to illustrate the idea by creating and simulating a realisation from a discrete stochastic SEIR model.
 ```python
 import smfsb
 import numpy as np
