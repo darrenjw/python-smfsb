@@ -363,8 +363,30 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
 
     Examples
     --------
-    TODO: do after writing test
-    
+    >>> import smfsb
+    >>> import numpy as np
+    >>> import scipy as sp
+    >>> data = np.random.normal(5, 2, 250)
+    >>> def rpr():
+    >>>   return np.exp(np.random.uniform(-3, 3, 2))
+    >>> 
+    >>> def rmod(th):
+    >>>   return np.random.normal(np.exp(th[0]), np.exp(th[1]), 250)
+    >>> 
+    >>> def sumStats(dat):
+    >>>   return np.array([np.mean(dat), np.std(dat)])
+    >>> 
+    >>> ssd = sumStats(data)
+    >>> def dist(ss):
+    >>>   diff = ss - ssd
+    >>>   return np.sqrt(np.sum(diff*diff))
+    >>> 
+    >>> def rdis(th):
+    >>>   return dist(sumStats(rmod(th)))
+    >>> 
+    >>> smfsb.abcSmc(100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
+    >>>                           rdis, lambda x: np.random.normal(x, 0.1),
+    >>>                           lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     """
     priorLW = np.log(np.zeros((N)) + 1/N)
     priorSample = np.zeros((N,1))
