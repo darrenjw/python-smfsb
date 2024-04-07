@@ -288,7 +288,7 @@ def abcSmcStep(dprior, priorSample, priorLW, rdist, rperturb,
     #print(prop.shape)
     dist = np.apply_along_axis(rdist, 1, prop)
     #print(dist.shape)
-    qCut = np.quantile(dist, 1/factor)
+    qCut = np.nanquantile(dist, 1/factor)
     new = prop[dist < qCut,:]
     def logWeight(th):
         terms = priorLW + np.apply_along_axis(lambda x: dperturb(th, x),
@@ -307,7 +307,7 @@ def abcSmcStep(dprior, priorSample, priorLW, rdist, rperturb,
 
 
 def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
-           factor=10, steps=15, verb=False):
+           factor=10, steps=15, verb=False, debug=False):
     """Run an ABC-SMC algorithm for infering the parameters of a forward model
 
     Run an ABC-SMC algorithm for infering the parameters of a forward
@@ -339,8 +339,7 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
       returns a perturbed parameter from an appropriate kernel.
     dperturb : function
       A function which takes a pair of parameters as its first two
-      arguments (new first and old second), and has an optional
-      argument 'log' for whether to return the log of the density
+      arguments (new first and old second), and returns the log of the density
       associated with this perturbation kernel.
     factor : int
       At each step of the algorithm, 'N*factor' proposals are
@@ -372,15 +371,19 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
     priorSample = np.apply_along_axis(lambda x: rprior(), 1, priorSample)
     for i in range(steps):
         if (verb):
-            print(steps-i, end=' ')
+            print(steps-i, end=' ', flush=True)
         priorSample, priorLW = abcSmcStep(dprior, priorSample, priorLW,
                                           rdist, rperturb, dperturb, factor)
+        if (debug):
+            print(priorSample.shape)
+            print(priorLW.shape)
     if (verb):
         print("Done.")
-    #print(priorSample.shape)
-    #print(priorLW.shape)
+    if (debug):
+        print(priorSample.shape)
+        print(priorLW.shape)
     #print(priorLW)
-    ind = np.random.choice(N, N, p = np.exp(priorLW))
+    ind = np.random.choice(range(priorLW.shape[0]), N, p = np.exp(priorLW))
     #print(ind)
     return priorSample[ind,:]
 

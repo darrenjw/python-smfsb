@@ -91,7 +91,7 @@ def test_abcsmc():
     N = 100
     post = smfsb.abcSmc(N, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
                               rdis, lambda x: np.random.normal(x, 0.1),
-                              lambda x,y: np.sum(sp.stats.norm(x,0.1).logpdf(y)))
+                              lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     assert(post.shape == (N, 2))
     
 
