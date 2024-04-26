@@ -65,7 +65,7 @@ class Spn:
 
 
     
-    def stepGillespie(self):
+    def stepGillespie(self, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of a SPN by using the
         Gillespie algorithm
 
@@ -73,6 +73,14 @@ class Spn:
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
         ‘simTs’) for simulating realisations of SPN models.
+
+        Parameters
+        ----------
+        minHaz : float
+          Minimum hazard to consider before assuming 0. Defaults to 1e-10.
+        maxHaz : float
+          Maximum hazard to consider before assuming an explosion and
+          bailing out. Defaults to 1e07.
 
         Returns
         -------
@@ -100,10 +108,10 @@ class Spn:
             while(True):
                 h = self.h(x, t)
                 h0 = h.sum()
-                if (h0 > 1e07):
+                if (h0 > maxHaz):
                     print("WARNING: hazard too large - terminating!")
                     return(x)
-                if (h0 < 1e-10):
+                if (h0 < minHaz):
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0/h0)
@@ -306,7 +314,7 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def stepGillespie1D(self, d):
+    def stepGillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
@@ -325,6 +333,11 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore twice this value (as it can leave to
           the left or the right).
+        minHaz : float
+          Minimum hazard to consider before assuming 0. Defaults to 1e-10.
+        maxHaz : float
+          Maximum hazard to consider before assuming an explosion and
+          bailing out. Defaults to 1e07.
 
         Returns
         -------
@@ -364,10 +377,10 @@ class Spn:
                 hds = np.apply_along_axis(np.sum, 0, hd)
                 hdss = hds.sum()
                 h0 = hrss + hdss
-                if (h0 > 1e07):
+                if (h0 > maxHaz):
                     print("WARNING: hazard too large - terminating!")
                     return(x)
-                if (h0 < 1e-10):
+                if (h0 < minHaz):
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0/h0)
@@ -398,7 +411,7 @@ class Spn:
         return step
 
     
-    def stepGillespie2D(self, d):
+    def stepGillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
@@ -417,6 +430,11 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore four times this value (as it can leave in
           one of 4 directions).
+        minHaz : float
+          Minimum hazard to consider before assuming 0. Defaults to 1e-10.
+        maxHaz : float
+          Maximum hazard to consider before assuming an explosion and
+          bailing out. Defaults to 1e07.
 
         Returns
         -------
@@ -456,10 +474,10 @@ class Spn:
                 hds = np.sum(hd, axis=(0))
                 hdss = hds.sum()
                 h0 = hrss + hdss
-                if (h0 > 1e07):
+                if (h0 > maxHaz):
                     print("WARNING: hazard too large - terminating!")
                     return(x)
-                if (h0 < 1e-10):
+                if (h0 < minHaz):
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0/h0)
