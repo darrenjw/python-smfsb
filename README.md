@@ -117,6 +117,11 @@ A [collection of appropriate models](https://github.com/darrenjw/smfsb/tree/mast
 You can see this package on [PyPI](https://pypi.org/project/smfsb/) or [GitHub](https://github.com/darrenjw/python-smfsb).
 
 
+## Fast simulation and inference
+
+If you like this library but find it a little slow, you should know that there is a [JAX](https://jax.readthedocs.io/) port of this package: [JAX-smfsb](https://github.com/darrenjw/jax-smfsb). It requires a JAX installalation, and the API is (very) slightly modified, but it has state-of-the-art performance for simulation and inference.
+
+
 **Copyright (2023-2024) Darren J Wilkinson**
 
 
