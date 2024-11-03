@@ -27,14 +27,13 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
+
 def test_sbmlsh():
     seir = smfsb.shorthand_to_spn(seirSH)
     stepSeir = seir.step_gillespie()
     out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
-    assert(out.shape == (800, 4))
-    assert(out[400,3] >= 0)
-
+    assert out.shape == (800, 4)
+    assert out[400, 3] >= 0
 
 
 # eof
-
