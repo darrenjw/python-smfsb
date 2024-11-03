@@ -7,7 +7,7 @@ import math
 
 print("ABC-SMC")
 
-data = smfsb.data.LVperfect[:,range(1,3)]
+data = smfsb.data.lv_perfect[:,range(1,3)]
 
 def rpr():
   return np.array([np.random.uniform(-3, 3),

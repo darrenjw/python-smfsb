@@ -46,7 +46,7 @@ def test_pfmllik():
     def step(x, t, dt, th):
         sf = smfsb.models.lv(th).step_cle()
         return sf(x, t, dt)
-    mll = smfsb.pfMLLik(50, simX, 0, step, obsll, smfsb.data.LVnoise10)
+    mll = smfsb.pfMLLik(50, simX, 0, step, obsll, smfsb.data.lv_noise_10)
     assert (mll(np.array([1, 0.005, 0.6])) > mll(np.array([2, 0.005, 0.6])))
 
 def test_abcsmcstep():

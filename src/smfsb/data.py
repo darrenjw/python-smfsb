@@ -5,7 +5,7 @@ import numpy as np
 
 
 # time, prey, predator
-LVperfect = np.array([
+lv_perfect = np.array([
     [   0,  50, 100],
     [   2, 145,  93],
     [   4, 265, 248],
@@ -26,7 +26,7 @@ LVperfect = np.array([
 
 
 # time, prey, predator
-LVnoise10 = np.array([
+lv_noise_10 = np.array([
     [   0,  34.19903,  98.11945],
     [   2, 156.54757,  86.52563],
     [   4, 267.77267, 260.94433],
@@ -47,7 +47,7 @@ LVnoise10 = np.array([
 
 
 # time, prey
-LVpreyNoise10 = LVnoise10[:,range(2)]
+lv_prey_noise_10 = lv_noise_10[:,range(2)]
 
 
 # eof

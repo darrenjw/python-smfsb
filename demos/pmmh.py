@@ -17,7 +17,7 @@ def step(x, t, dt, th):
     #sf = smfsb.models.lv(th).step_gillespie()
     sf = smfsb.models.lv(th).step_cle(0.1)
     return sf(x, t, dt)
-mll = smfsb.pfMLLik(100, simX, 0, step, obsll, smfsb.data.LVnoise10)
+mll = smfsb.pfMLLik(100, simX, 0, step, obsll, smfsb.data.lv_noise_10)
 
 print("Test evals")
 
