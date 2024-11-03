@@ -314,7 +314,7 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def step_gillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_1d(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
@@ -356,7 +356,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.step_gillespie1D(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_gillespie_1d(np.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
@@ -411,7 +411,7 @@ class Spn:
         return step
 
     
-    def step_gillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_2d(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
@@ -453,7 +453,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv2d = lv.step_gillespie2D(np.array([0.6, 0.6]))
+        >>> stepLv2d = lv.step_gillespie_2d(np.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2, N, N))
         >>> x0[:, int(N/2), int(N/2)] = lv.m
@@ -525,7 +525,7 @@ class Spn:
         return step
 
     
-    def step_cle1D(self, d, dt = 0.01):
+    def step_cle_1d(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 1D regular grid
         
@@ -564,7 +564,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.step_cle1D(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_cle_1d(np.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
@@ -606,7 +606,7 @@ class Spn:
                     return x
         return step
     
-    def step_cle2D(self, d, dt = 0.01):
+    def step_cle_2d(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 2D regular grid
         
@@ -645,7 +645,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv2d = lv.step_cle2D(np.array([0.6,0.6]))
+        >>> stepLv2d = lv.step_cle_2d(np.array([0.6,0.6]))
         >>> M = 15
         >>> N = 20
         >>> x0 = np.zeros((2,M,N))

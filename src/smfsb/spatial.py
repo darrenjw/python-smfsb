@@ -10,7 +10,7 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     This function simulates single realisation of a model on a 1D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `step_gillespie1D`.
+    `step_gillespie_1d`.
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `step_gillespie1D`.
+      such as produced by `step_gillespie_1d`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -42,7 +42,7 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     >>> import smfsb.models
     >>> import numpy as np
     >>> lv = smfsb.models.lv()
-    >>> stepLv1d = lv.step_gillespie1D(np.array([0.6,0.6]))
+    >>> stepLv1d = lv.step_gillespie_1d(np.array([0.6,0.6]))
     >>> N = 10
     >>> T = 5
     >>> x0 = np.zeros((2,N))
@@ -71,7 +71,7 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     This function simulates single realisation of a model on a 2D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `step_gillespie2D`.
+    `step_gillespie_2d`.
 
     Parameters
     ----------
@@ -89,7 +89,7 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `step_gillespie2D`.
+      such as produced by `step_gillespie_2d`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -103,7 +103,7 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     >>> import smfsb.models
     >>> import numpy as np
     >>> lv = smfsb.models.lv()
-    >>> stepLv2d = lv.step_gillespie2D(np.array([0.6,0.6]))
+    >>> stepLv2d = lv.step_gillespie_2d(np.array([0.6,0.6]))
     >>> M = 10
     >>> N = 15
     >>> T = 5

@@ -10,7 +10,7 @@ T=30
 x0 = np.zeros((2,N))
 lv = smfsb.models.lv()
 x0[:,int(N/2)] = lv.m
-stepLv1d = lv.step_cle1D(np.array([0.6, 0.6]))
+stepLv1d = lv.step_gillespie_1d(np.array([0.6, 0.6]))
 x1 = stepLv1d(x0, 0, 1)
 print(x1)
 out = smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
@@ -20,7 +20,7 @@ fig, axis = plt.subplots()
 for i in range(2):
     axis.imshow(out[i,:,:])
     axis.set_title(lv.n[i])
-    fig.savefig(f"step_cle1D{i}.pdf")
+    fig.savefig(f"step_gillespie_1d{i}.pdf")
 
 
 # eof
