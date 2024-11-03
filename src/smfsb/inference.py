@@ -5,10 +5,17 @@ import numpy as np
 import math
 
 
-
-def metropolis_hastings(init, logLik, rprop,
-                       ldprop=lambda n, o: 1, ldprior=lambda x: 1,
-                       iters=10000, thin=10, verb=True, debug=False):
+def metropolis_hastings(
+    init,
+    logLik,
+    rprop,
+    ldprop=lambda n, o: 1,
+    ldprior=lambda x: 1,
+    iters=10000,
+    thin=10,
+    verb=True,
+    debug=False,
+):
     """Run a Metropolis-Hastings MCMC algorithm for the parameters of a
     Bayesian posterior distribution
 
@@ -18,7 +25,7 @@ def metropolis_hastings(init, logLik, rprop,
     suitable for problems with expensive likelihoods, and also for
     "exact approximate" pseudo-marginal or particle marginal MH
     algorithms.
-    
+
     Parameters
     ----------
     init : vector
@@ -44,8 +51,8 @@ def metropolis_hastings(init, logLik, rprop,
     ldprior : function
       A function which take a parameter as its only required
       argument and returns the log density of the parameter value
-      under the prior. Defaults to a flat function which causes this 
-      term to drop out of the acceptance probability. People often use 
+      under the prior. Defaults to a flat function which causes this
+      term to drop out of the acceptance probability. People often use
       a flat prior when they are trying to be "uninformative" or
       "objective", but this is slightly naive. In particular, what
       is "flat" is clearly dependent on the parametrisation of the
@@ -82,27 +89,33 @@ def metropolis_hastings(init, logLik, rprop,
     ll = -math.inf
     mat = np.zeros((iters, p))
     x = init
-    if (verb):
+    if verb:
         print(f"{iters} iterations")
     for i in range(iters):
-        if (verb):
-            print(f"{i} ", end='', flush=True)
+        if verb:
+            print(f"{i} ", end="", flush=True)
         for j in range(thin):
             prop = rprop(x)
-            if (ldprior(prop) > -math.inf):
+            if ldprior(prop) > -math.inf:
                 llprop = logLik(prop)
-                a = (llprop - ll + ldprior(prop) -
-                     ldprior(x) + ldprop(x, prop) - ldprop(prop, x))
-                if (debug):
+                a = (
+                    llprop
+                    - ll
+                    + ldprior(prop)
+                    - ldprior(x)
+                    + ldprop(x, prop)
+                    - ldprop(prop, x)
+                )
+                if debug:
                     print(f"x={x}, prop={prop}, ll={ll}, llprop={llprop}, a={a}")
-                if (np.log(np.random.uniform()) < a):
+                if np.log(np.random.uniform()) < a:
                     x = prop
                     ll = llprop
-        mat[i,:] = x
-    if (verb):
+        mat[i, :] = x
+    if verb:
         print("Done.")
     return mat
-    
+
 
 def abc_run(n, rprior, rdist, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
@@ -113,7 +126,7 @@ def abc_run(n, rprior, rdist, verb=False):
     a given prior distribution, and compute statistics required for an
     ABC analaysis. Typically used to calculate "distances" of
     simulated synthetic data from observed data.
-    
+
     Parameters
     ----------
     n : int
@@ -129,12 +142,12 @@ def abc_run(n, rprior, rdist, verb=False):
       then computing a distance. See the example for details.
     verb : boolean
       Print progress information to console?
-    
+
     Returns
     -------
     A tuple with first component a list of parameters and second component
     a list of corresponding distances.
- 
+
     Examples
     --------
     >>> import smfsb
@@ -163,13 +176,13 @@ def abc_run(n, rprior, rdist, verb=False):
     p = list()
     d = list()
     for i in range(n):
-        if (verb):
-            print(n-i, end=' ', flush=True)
+        if verb:
+            print(n - i, end=" ", flush=True)
         pi = rprior()
         di = rdist(pi)
         p.append(pi)
         d.append(di)
-    if (verb):
+    if verb:
         print(" - Done.")
     return (p, d)
 
@@ -188,9 +201,9 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
       An integer representing the number of particles to use in the
       particle filter.
     simX0 : function
-      A function with arguments `t0` and `th`, where ‘t0’ is a time 
+      A function with arguments `t0` and `th`, where ‘t0’ is a time
       at which to simulate from an initial distribution for the state of the
-      particle filter and `th` is a vector of parameters. The return value 
+      particle filter and `th` is a vector of parameters. The return value
       should be a state vector randomly sampled from the prior distribution.
       The function therefore represents a prior distribution on the initial
       state of the Markov process.
@@ -204,7 +217,7 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     dataLLik : function
       A function with arguments `x`, `t`, `y`, `th`,
       where `x` and `t` represent the true state and time of the
-      process, `y` is the observed data, and `th` is a parameter vector. 
+      process, `y` is the observed data, and `th` is a parameter vector.
       The return value should be the log of the likelihood of the observation. The
       function therefore represents the observation model.
     data : matrix
@@ -224,54 +237,57 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>> import smfsb
     >>> def obsll(x, t, y, th):
     >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10)
-    >>> 
+    >>>
     >>> def simX(t0, th):
     >>>     return np.array([np.random.poisson(50), np.random.poisson(100)])
-    >>> 
+    >>>
     >>> def step(x, t, dt, th):
     >>>     sf = smfsb.models.lv(th).step_gillespie()
     >>>     return sf(x, t, dt)
-    >>> 
+    >>>
     >>> mll = smfsb.pf_marginal_ll(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
     >>> mll(np.array([1, 0.005, 0.6]))
     >>> mll(np.array([2, 0.005, 0.6]))
     """
     no = data.shape[1]
-    times = np.concatenate(([t0], data[:,0]))
+    times = np.concatenate(([t0], data[:, 0]))
     deltas = np.diff(times)
-    obs = data[:,range(1,no)]
-    if (debug):
+    obs = data[:, range(1, no)]
+    if debug:
         print(data.shape)
         print(times[range(5)])
         print(deltas[range(5)])
         print(len(deltas))
-        print(obs[range(5),:])
+        print(obs[range(5), :])
+
     def go(th):
         ll = 0
-        xmat = np.zeros((n,1))
+        xmat = np.zeros((n, 1))
         xmat = np.apply_along_axis(lambda x: simX0(t0, th), 1, xmat)
         sh = xmat.shape
-        if (debug):
+        if debug:
             print(xmat.shape)
-            print(xmat[range(5),:])
+            print(xmat[range(5), :])
         for i in range(len(deltas)):
-            xmat = np.apply_along_axis(lambda x: stepFun(
-                x, times[i], deltas[i], th), 1, xmat)
-            lw = np.apply_along_axis(lambda x: dataLLik(
-                x, times[i+1], obs[i,], th), 1, xmat)
+            xmat = np.apply_along_axis(
+                lambda x: stepFun(x, times[i], deltas[i], th), 1, xmat
+            )
+            lw = np.apply_along_axis(
+                lambda x: dataLLik(x, times[i + 1], obs[i,], th), 1, xmat
+            )
             m = np.max(lw)
             sw = np.exp(lw - m)
             ssw = np.sum(sw)
-            ll = ll + m + np.log(ssw/n)
-            rows = np.random.choice(n, n, p=sw/ssw)
-            xmat = xmat[rows,:]
-            assert(xmat.shape == sh)
+            ll = ll + m + np.log(ssw / n)
+            rows = np.random.choice(n, n, p=sw / ssw)
+            xmat = xmat[rows, :]
+            assert xmat.shape == sh
         return ll
+
     return go
 
 
-def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb,
-               dperturb, factor):
+def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor):
     """Carry out one step of an ABC-SMC algorithm
 
     Not meant to be directly called by users. See abc_smc.
@@ -279,35 +295,46 @@ def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb,
     n = priorSample.shape[0]
     mx = np.max(priorLW)
     rw = np.exp(priorLW - mx)
-    #print(priorSample.shape)
-    #print(len(rw))
-    priorInd = np.random.choice(range(n), n*factor, p=rw/np.sum(rw))
-    prior = priorSample[priorInd,:]
-    #print(prior.shape)
+    # print(priorSample.shape)
+    # print(len(rw))
+    priorInd = np.random.choice(range(n), n * factor, p=rw / np.sum(rw))
+    prior = priorSample[priorInd, :]
+    # print(prior.shape)
     prop = np.apply_along_axis(rperturb, 1, prior)
-    #print(prop.shape)
+    # print(prop.shape)
     dist = np.apply_along_axis(rdist, 1, prop)
-    #print(dist.shape)
-    qCut = np.nanquantile(dist, 1/factor)
-    new = prop[dist < qCut,:]
+    # print(dist.shape)
+    qCut = np.nanquantile(dist, 1 / factor)
+    new = prop[dist < qCut, :]
+
     def logWeight(th):
-        terms = priorLW + np.apply_along_axis(lambda x: dperturb(th, x),
-                                              1, priorSample)
+        terms = priorLW + np.apply_along_axis(lambda x: dperturb(th, x), 1, priorSample)
         mt = np.max(terms)
-        denom = mt + np.log(np.sum(np.exp(terms-mt)))
+        denom = mt + np.log(np.sum(np.exp(terms - mt)))
         return dprior(th) - denom
+
     lw = np.apply_along_axis(logWeight, 1, new)
     mx = np.max(lw)
     rw = np.exp(lw - mx)
-    nlw = np.log(rw/np.sum(rw))
-    #print(f"new: {new.shape}")
-    #print(f"nlw: {nlw.shape}")
-    #print(nlw)
+    nlw = np.log(rw / np.sum(rw))
+    # print(f"new: {new.shape}")
+    # print(f"nlw: {nlw.shape}")
+    # print(nlw)
     return new, nlw
 
 
-def abc_smc(N, rprior, dprior, rdist, rperturb, dperturb,
-           factor=10, steps=15, verb=False, debug=False):
+def abc_smc(
+    N,
+    rprior,
+    dprior,
+    rdist,
+    rperturb,
+    dperturb,
+    factor=10,
+    steps=15,
+    verb=False,
+    debug=False,
+):
     """Run an ABC-SMC algorithm for infering the parameters of a forward model
 
     Run an ABC-SMC algorithm for infering the parameters of a forward
@@ -355,7 +382,7 @@ def abc_smc(N, rprior, dprior, rdist, rperturb, dperturb,
     verb : boolean
       Boolean indicating whether some progress should be printed to
       the console (the number of steps remaining).
-    
+
     Returns
     -------
     A matrix with rows representing samples from the approximate posterior
@@ -369,49 +396,46 @@ def abc_smc(N, rprior, dprior, rdist, rperturb, dperturb,
     >>> data = np.random.normal(5, 2, 250)
     >>> def rpr():
     >>>   return np.exp(np.random.uniform(-3, 3, 2))
-    >>> 
+    >>>
     >>> def rmod(th):
     >>>   return np.random.normal(np.exp(th[0]), np.exp(th[1]), 250)
-    >>> 
+    >>>
     >>> def sumStats(dat):
     >>>   return np.array([np.mean(dat), np.std(dat)])
-    >>> 
+    >>>
     >>> ssd = sumStats(data)
     >>> def dist(ss):
     >>>   diff = ss - ssd
     >>>   return np.sqrt(np.sum(diff*diff))
-    >>> 
+    >>>
     >>> def rdis(th):
     >>>   return dist(sumStats(rmod(th)))
-    >>> 
+    >>>
     >>> smfsb.abc_smc(100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
     >>>                           rdis, lambda x: np.random.normal(x, 0.1),
     >>>                           lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     """
-    priorLW = np.log(np.zeros((N)) + 1/N)
-    priorSample = np.zeros((N,1))
+    priorLW = np.log(np.zeros((N)) + 1 / N)
+    priorSample = np.zeros((N, 1))
     priorSample = np.apply_along_axis(lambda x: rprior(), 1, priorSample)
     for i in range(steps):
-        if (verb):
-            print(steps-i, end=' ', flush=True)
-        priorSample, priorLW = abc_smc_step(dprior, priorSample, priorLW,
-                                          rdist, rperturb, dperturb, factor)
-        if (debug):
+        if verb:
+            print(steps - i, end=" ", flush=True)
+        priorSample, priorLW = abc_smc_step(
+            dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor
+        )
+        if debug:
             print(priorSample.shape)
             print(priorLW.shape)
-    if (verb):
+    if verb:
         print("Done.")
-    if (debug):
+    if debug:
         print(priorSample.shape)
         print(priorLW.shape)
-    #print(priorLW)
-    ind = np.random.choice(range(priorLW.shape[0]), N, p = np.exp(priorLW))
-    #print(ind)
-    return priorSample[ind,:]
-
-
-
-
+    # print(priorLW)
+    ind = np.random.choice(range(priorLW.shape[0]), N, p=np.exp(priorLW))
+    # print(ind)
+    return priorSample[ind, :]
 
 
 # Some illustrative functions not intended for serious use...
@@ -457,18 +481,20 @@ def normal_gibbs(N, n, a, b, c, d, xbar, ssquared):
     """
     mat = np.zeros((N, 2))
     mu = c
-    tau = a/b
-    mat[1,:] = [mu, tau]
+    tau = a / b
+    mat[1, :] = [mu, tau]
     for i in range(1, N):
-        muprec = n*tau + d
-        mumean = (d*c + n*tau*xbar)/muprec
-        mu = np.random.normal(mumean, np.sqrt(1/muprec))
-        taub = b + 0.5*((n-1)*ssquared + n*(xbar-mu)*(xbar-mu))
-        tau = np.random.gamma(a + n/2, 1/taub)
-        mat[i,:] = [mu, tau]
+        muprec = n * tau + d
+        mumean = (d * c + n * tau * xbar) / muprec
+        mu = np.random.normal(mumean, np.sqrt(1 / muprec))
+        taub = b + 0.5 * ((n - 1) * ssquared + n * (xbar - mu) * (xbar - mu))
+        tau = np.random.gamma(a + n / 2, 1 / taub)
+        mat[i, :] = [mu, tau]
     return mat
 
+
 from scipy.stats import norm
+
 
 def metrop(n, alpha):
     """Run a simple Metropolis sampler with standard normal target and uniform
@@ -499,14 +525,12 @@ def metrop(n, alpha):
     vec[0] = x
     for i in range(1, n):
         can = x + np.random.uniform(-alpha, alpha)
-        aprob = norm.pdf(can)/norm.pdf(x)
+        aprob = norm.pdf(can) / norm.pdf(x)
         u = np.random.uniform()
-        if (u < aprob):
+        if u < aprob:
             x = can
         vec[i] = x
     return vec
 
 
-
 # eof
-

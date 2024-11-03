@@ -26,9 +26,14 @@ def bd(th=[1, 1.1]):
     >>> step = bd.step_gillespie()
     >>> smfsb.sim_time_series(bd.m, 0, 50, 0.1, step)
     """
-    return Spn(["X"], ["Birth","Death"], [[1],[1]], [[2],[0]],
-               lambda x, t: np.array([th[0]*x[0], th[1]*x[0]]),
-               [100])
+    return Spn(
+        ["X"],
+        ["Birth", "Death"],
+        [[1], [1]],
+        [[2], [0]],
+        lambda x, t: np.array([th[0] * x[0], th[1] * x[0]]),
+        [100],
+    )
 
 
 def dimer(th=[0.00166, 0.2]):
@@ -36,7 +41,7 @@ def dimer(th=[0.00166, 0.2]):
 
     Create and return a Spn object representing a discrete stochastic
     dimerisation kinetics model.
-    
+
     Parameters
     ----------
     th: array
@@ -53,9 +58,15 @@ def dimer(th=[0.00166, 0.2]):
     >>> step = dimer.step_gillespie()
     >>> smfsb.sim_time_series(dimer.m, 0, 50, 0.1, step)
     """
-    return Spn(["P", "P2"], ["Dim", "Diss"], [[2,0],[0,1]], [[0,1],[2,0]],
-               lambda x, t: np.array([th[0]*x[0]*(x[0]-1)/2, th[1]*x[1]]),
-               [301, 0])
+    return Spn(
+        ["P", "P2"],
+        ["Dim", "Diss"],
+        [[2, 0], [0, 1]],
+        [[0, 1], [2, 0]],
+        lambda x, t: np.array([th[0] * x[0] * (x[0] - 1) / 2, th[1] * x[1]]),
+        [301, 0],
+    )
+
 
 def id(th=[1, 0.1]):
     """Create an immigration-death model
@@ -79,9 +90,14 @@ def id(th=[1, 0.1]):
     >>> step = id.step_gillespie()
     >>> smfsb.sim_time_series(id.m, 0, 50, 0.1, step)
     """
-    return Spn(["X"], ["Immigration", "Death"], [[0],[1]], [[1],[0]],
-               lambda x, t: np.array([th[0], th[1]*x[0]]),
-               [0])
+    return Spn(
+        ["X"],
+        ["Immigration", "Death"],
+        [[0], [1]],
+        [[1], [0]],
+        lambda x, t: np.array([th[0], th[1] * x[0]]),
+        [0],
+    )
 
 
 def lv(th=[1, 0.005, 0.6]):
@@ -89,7 +105,7 @@ def lv(th=[1, 0.005, 0.6]):
 
     Create and return a Spn object representing a discrete stochastic
     Lotka-Volterra model.
-    
+
     Parameters
     ----------
     th: array
@@ -107,16 +123,20 @@ def lv(th=[1, 0.005, 0.6]):
     >>> step = lv.step_gillespie()
     >>> smfsb.sim_time_series(lv.m, 0, 50, 0.1, step)
     """
-    return Spn(["Prey", "Predator"], ["Prey rep", "Inter", "Pred death"],
-               [[1,0],[1,1],[0,1]], [[2,0],[0,2],[0,0]],
-               lambda x, t: np.array([th[0]*x[0], th[1]*x[0]*x[1], th[2]*x[1]]),
-               [50,100])
+    return Spn(
+        ["Prey", "Predator"],
+        ["Prey rep", "Inter", "Pred death"],
+        [[1, 0], [1, 1], [0, 1]],
+        [[2, 0], [0, 2], [0, 0]],
+        lambda x, t: np.array([th[0] * x[0], th[1] * x[0] * x[1], th[2] * x[1]]),
+        [50, 100],
+    )
 
 
 def mm(th=[0.00166, 1e-4, 0.1]):
     """Create a Michaelis-Menten enzyme kinetic model
-   
-    Create and return a Spn object representing a discrete stochastic 
+
+    Create and return a Spn object representing a discrete stochastic
     Michaelis-Menten enzyme kinetic model.
 
     Parameters
@@ -127,7 +147,7 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     Returns
     -------
     Spn model object with rates `th`
-    
+
     Examples
     --------
     >>> import smfsb
@@ -135,12 +155,14 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     >>> step = mm.step_gillespie()
     >>> smfsb.sim_time_series(mm.m, 0, 50, 0.1, step)
     """
-    return Spn(["S", "E", "SE", "P"], ["Bind", "Unbind", "Produce"],
-               [[1,1,0,0],[0,0,1,0],[0,0,1,0]],
-               [[0,0,1,0],[1,1,0,0],[0,1,0,1]],
-               lambda x, t: np.array([th[0]*x[0]*x[1], th[1]*x[2], th[2]*x[2]]),
-               [301, 120, 0, 0])
-
+    return Spn(
+        ["S", "E", "SE", "P"],
+        ["Bind", "Unbind", "Produce"],
+        [[1, 1, 0, 0], [0, 0, 1, 0], [0, 0, 1, 0]],
+        [[0, 0, 1, 0], [1, 1, 0, 0], [0, 1, 0, 1]],
+        lambda x, t: np.array([th[0] * x[0] * x[1], th[1] * x[2], th[2] * x[2]]),
+        [301, 120, 0, 0],
+    )
 
 
 def sir(th=[0.0015, 0.1]):
@@ -148,7 +170,7 @@ def sir(th=[0.0015, 0.1]):
 
     Create and return a Spn object representing a discrete stochastic
     SIR model.
-    
+
     Parameters
     ----------
     th: array
@@ -165,14 +187,14 @@ def sir(th=[0.0015, 0.1]):
     >>> step = sir.step_gillespie()
     >>> smfsb.sim_time_series(sir.m, 0, 50, 0.1, step)
     """
-    return Spn(["S", "I", "R"], ["S->I", "I->R"], [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
-               lambda x, t: np.array([th[0]*x[0]*x[1], th[1]*x[1]]),
-               [197, 3, 0])
-
-
-
-
+    return Spn(
+        ["S", "I", "R"],
+        ["S->I", "I->R"],
+        [[1, 1, 0], [0, 1, 0]],
+        [[0, 2, 0], [0, 0, 1]],
+        lambda x, t: np.array([th[0] * x[0] * x[1], th[1] * x[1]]),
+        [197, 3, 0],
+    )
 
 
 # eof
-

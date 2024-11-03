@@ -4,9 +4,8 @@
 import numpy as np
 
 
-
-    
 # Some simulation functions
+
 
 def sim_time_series(x0, t0, tt, dt, stepFun):
     """Simulate a model on a regular grid of times, using a function (closure)
@@ -44,16 +43,16 @@ def sim_time_series(x0, t0, tt, dt, stepFun):
     >>> stepLv = lv.step_gillespie()
     >>> smfsb.sim_time_series([50, 100], 0, 100, 0.1, stepLv)
     """
-    n = int((tt-t0) // dt) + 1
+    n = int((tt - t0) // dt) + 1
     u = len(x0)
     mat = np.zeros((n, u))
     x = x0
     t = t0
-    mat[0,:] = x
+    mat[0, :] = x
     for i in range(1, n):
         t = t + dt
         x = stepFun(x, t, dt)
-        mat[i,:] = x
+        mat[i, :] = x
     return mat
 
 
@@ -96,7 +95,7 @@ def sim_sample(n, x0, t0, deltat, stepFun):
     u = len(x0)
     mat = np.zeros((n, u))
     for i in range(n):
-        mat[i,:] = stepFun(x0, t0, deltat)
+        mat[i, :] = stepFun(x0, t0, deltat)
     return mat
 
 
@@ -136,8 +135,8 @@ def step_sde(drift, diffusion, dt=0.01):
     -------
     A function which can be used to advance the state of the SDE
     model with given drift vector and diffusion matrix, by using an
-    Euler-Maruyama method with step size ‘dt’. The function closure 
-    returns a vector representing the simulated state of the system 
+    Euler-Maruyama method with step size ‘dt’. The function closure
+    returns a vector representing the simulated state of the system
     at the new time.
 
     Examples
@@ -148,7 +147,7 @@ def step_sde(drift, diffusion, dt=0.01):
     >>> def myDrift(x, t):
     >>>     return np.array([lamb - x[0]*x[1],
     >>>                      alpha*(mu - x[1])])
-    >>> 
+    >>>
     >>> def myDiff(x, t):
     >>>     return np.array([[np.sqrt(lamb + x[0]*x[1]), 0],
     >>>                      [0 ,sig*np.sqrt(x[1])]])
@@ -157,21 +156,24 @@ def step_sde(drift, diffusion, dt=0.01):
     >>> smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
     """
     sdt = np.sqrt(dt)
+
     def step(x0, t0, deltat):
         x = x0
         t = t0
         termt = t0 + deltat
         v = len(x)
-        while (True):
+        while True:
             dw = np.random.normal(scale=sdt, size=v)
-            x = np.add(x, drift(x, t)*dt + diffusion(x, t).dot(dw))
+            x = np.add(x, drift(x, t) * dt + diffusion(x, t).dot(dw))
             t = t + dt
-            if (t > termt):
+            if t > termt:
                 return x
+
     return step
 
 
 # Illustrative functions from early in the book
+
 
 def rfmc(n, P, pi0):
     """Simulate a finite state space Markov chain
@@ -212,8 +214,8 @@ def rfmc(n, P, pi0):
     v = np.zeros(n)
     r = len(pi0)
     v[0] = np.random.choice(r, p=pi0)
-    for i in range(1,n):
-        v[i] = np.random.choice(r, p=P[int(v[i-1]),:])
+    for i in range(1, n):
+        v[i] = np.random.choice(r, p=P[int(v[i - 1]), :])
     return v
 
 
@@ -223,7 +225,7 @@ def rcfmc(n, Q, pi0):
     This function simulates a single realisation from a continuous
     time Markov chain having a finite state space based on a given
     transition rate matrix.
-    
+
     Parameters
     ----------
     n: int
@@ -253,19 +255,19 @@ def rcfmc(n, Q, pi0):
     >>> import numpy as np
     >>> smfsb.rcfmc(200, np.array([[-0.5,0.5],[1,-1]]), np.array([1,0]))
     """
-    xvec = np.zeros(n+1)
+    xvec = np.zeros(n + 1)
     tvec = np.zeros(n)
     r = len(pi0)
     x = np.random.choice(r, p=pi0)
     t = 0
     xvec[0] = x
     for i in range(n):
-        t = t + np.random.exponential(-Q[int(x),int(x)])
-        weights = Q[int(x),:].copy()
+        t = t + np.random.exponential(-Q[int(x), int(x)])
+        weights = Q[int(x), :].copy()
         weights[x] = 0
         weights = weights / np.sum(weights)
         x = np.random.choice(r, p=weights)
-        xvec[i+1] = x
+        xvec[i + 1] = x
         tvec[i] = t
     return tvec, xvec
 
@@ -289,7 +291,7 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     mu: float
         The rate at which individuals within the population die,
         independently of all other individuals. Defaults to 0.1.
-    
+
     Returns
     -------
     A tuple, `(tvec, xvec)`, where `tvec` is a vector of event times of
@@ -300,18 +302,18 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     >>> import smfsb
     >>> smfsb.imdeath(100)
     """
-    xvec = np.zeros(n+1)
+    xvec = np.zeros(n + 1)
     tvec = np.zeros(n)
     t = 0
     x = x0
     xvec[0] = x
     for i in range(n):
-        t = t + np.random.exponential(lamb + x*mu)
-        if (np.random.random() < lamb/(lamb + x*mu)):
+        t = t + np.random.exponential(lamb + x * mu)
+        if np.random.random() < lamb / (lamb + x * mu):
             x = x + 1
         else:
             x = x - 1
-        xvec[i+1] = x
+        xvec[i + 1] = x
         tvec[i] = t
     return tvec, xvec
 
@@ -353,16 +355,16 @@ def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
     >>> import numpy as np
     >>> smfsb.rdiff(lambda x: 1 - 0.1*x, lambda x: np.sqrt(1 + 0.1*x))
     """
-    n = int(t/dt)
+    n = int(t / dt)
     xvec = np.zeros(n)
     x = x0
     sdt = np.sqrt(dt)
     for i in range(n):
-        t = i*dt
-        x = x + aFun(x)*dt + bFun(x)*np.random.normal(0, sdt)
+        t = i * dt
+        x = x + aFun(x) * dt + bFun(x) * np.random.normal(0, sdt)
         xvec[i] = x
     return xvec
-    
+
 
 def simple_euler(rhs, ic, t=50, dt=0.001):
     """Simulate a sample path from an ODE model
@@ -380,7 +382,7 @@ def simple_euler(rhs, ic, t=50, dt=0.001):
         the current state of the model, ‘x’.  The second argument of
         ‘rhs’ is the current simulation time, ‘t’. In the case of a
         homogeneous ODE model, this argument will be unused within
-        the function. The output of ‘rhs’ should be a vector of the 
+        the function. The output of ‘rhs’ should be a vector of the
         same dimension as ‘x’.
     ic: array
         The initial conditions for the ODE model. This should be a
@@ -394,7 +396,7 @@ def simple_euler(rhs, ic, t=50, dt=0.001):
         integration method and the recording interval for the output.
         It would probably be better to have separate parameters for
         these two things. Defaults to 0.001 time units.
-    
+
     Returns
     -------
     A matrix with rows representing the states at each time step.
@@ -406,15 +408,15 @@ def simple_euler(rhs, ic, t=50, dt=0.001):
     >>> smfsb.simple_euler(lambda x,t: 1-0.1*x[0], np.array([0]))
     """
     p = len(ic)
-    n = int(t/dt)
-    xMat = np.zeros((n,p))
+    n = int(t / dt)
+    xMat = np.zeros((n, p))
     x = ic
     t = 0
-    xMat[0,:] = x
-    for i in range(1,n):
+    xMat[0, :] = x
+    for i in range(1, n):
         t = t + dt
-        x = x + rhs(x,t)*dt
-        xMat[i,:] = x
+        x = x + rhs(x, t) * dt
+        xMat[i, :] = x
     return xMat
 
 
@@ -451,26 +453,23 @@ def discretise(times, states, dt=1, start=0):
     >>> smfsb.discretise(times, states, 0.1)
     """
     events = len(times)
-    end = times[events-1]
+    end = times[events - 1]
     length = int((end - start) // dt) + 1
     x = np.zeros((length, states.shape[1]))
     target = 0
     j = 0
     for i in range(events):
-        while (times[i] >= target):
-            x[j,:] = states[i,:]
+        while times[i] >= target:
+            x[j, :] = states[i, :]
             j = j + 1
             target = target + dt
     return x
 
 
-
-
-
-
 # Misc utility functions
 
 import inspect
+
 
 def show_source(fun):
     """Print to console the source code of a function or method.
@@ -486,7 +485,7 @@ def show_source(fun):
     Returns
     -------
     None
-    
+
     Examples
     --------
     >>> import smfsb
@@ -495,8 +494,4 @@ def show_source(fun):
     print(inspect.getsource(fun))
 
 
-    
-
-
 # eof
-

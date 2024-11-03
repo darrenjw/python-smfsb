@@ -3,6 +3,7 @@
 
 import numpy as np
 
+
 def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
@@ -49,20 +50,20 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     >>> x0[:,int(N/2)] = lv.m
     >>> smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
     """
-    N = int((tt - t0)//dt + 1)
+    N = int((tt - t0) // dt + 1)
     u, n = x0.shape
     arr = np.zeros((u, n, N))
     x = x0
     t = t0
-    arr[:,:,0] = x
+    arr[:, :, 0] = x
     for i in range(1, N):
-        if (verb):
-            print(N-i)
+        if verb:
+            print(N - i)
         t = t + dt
         x = stepFun(x, t, dt)
-        arr[:,:,i] = x
-    return(arr)
-    
+        arr[:, :, i] = x
+    return arr
+
 
 def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
@@ -111,22 +112,19 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     >>> x0[:,int(M/2),int(N/2)] = lv.m
     >>> smfsb.sim_time_series_2d(x0, 0, T, 1, stepLv2d, True)
     """
-    N = int((tt - t0)//dt + 1)
+    N = int((tt - t0) // dt + 1)
     u, m, n = x0.shape
     arr = np.zeros((u, m, n, N))
     x = x0
     t = t0
-    arr[:,:,:,0] = x
+    arr[:, :, :, 0] = x
     for i in range(1, N):
-        if (verb):
-            print(N-i)
+        if verb:
+            print(N - i)
         t = t + dt
         x = stepFun(x, t, dt)
-        arr[:,:,:,i] = x
-    return(arr)
-    
+        arr[:, :, :, i] = x
+    return arr
 
 
 # eof
-
-

@@ -6,4 +6,3 @@ from smfsb.inference import *
 
 import smfsb.models
 import smfsb.data
-
