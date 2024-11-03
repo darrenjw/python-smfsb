@@ -25,7 +25,7 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
-seir = smfsb.sh2Spn(seirSH)
+seir = smfsb.shorthand_to_spn(seirSH)
 stepSeir = seir.step_gillespie()
 out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
 

@@ -61,15 +61,15 @@ plt.savefig("sIr.pdf")
 
 Note that you can read in SBML or SBML-shorthand models that have been designed for discrete stochastic simulation into a stochastic Petri net directly. To read and parse an SBML model, use
 ```python
-m = smfsb.file2Spn("myModel.xml")
+m = smfsb.file_to_spn("myModel.xml")
 ```
-Note that if you are working with SBML models in Python using [libsbml](https://pypi.org/project/python-libsbml/), then there is also a function `model2Spn` which takes a libsbml model object.
+Note that if you are working with SBML models in Python using [libsbml](https://pypi.org/project/python-libsbml/), then there is also a function `model_to_spn` which takes a libsbml model object.
 
 To read and parse an SBML-shorthand model, use
 ```python
-m = smfsb.mod2Spn("myModel.mod")
+m = smfsb.mod_to_spn("myModel.mod")
 ```
-There is also a function `sh2Spn` which expects a python string containing a shorthand model. This is convenient for embedding shorthand models inside python scripts, and is particularly convenient when working with things like Jupyter notebooks. Below follows a complete session to illustrate the idea by creating and simulating a realisation from a discrete stochastic SEIR model.
+There is also a function `shorthand_to_spn` which expects a python string containing a shorthand model. This is convenient for embedding shorthand models inside python scripts, and is particularly convenient when working with things like Jupyter notebooks. Below follows a complete session to illustrate the idea by creating and simulating a realisation from a discrete stochastic SEIR model.
 ```python
 import smfsb
 import numpy as np
@@ -96,7 +96,7 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
-seir = smfsb.sh2Spn(seirSH)
+seir = smfsb.shorthand_to_spn(seirSH)
 stepSeir = seir.step_gillespie()
 out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
 
