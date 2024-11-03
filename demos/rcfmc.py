@@ -5,8 +5,8 @@ import smfsb
 import numpy as np
 import matplotlib.pyplot as plt
 
-Q = np.array([[-0.5,0.5],[1,-1]])
-pi0 = np.array([0.5,0.5])
+Q = np.array([[-0.5, 0.5], [1, -1]])
+pi0 = np.array([0.5, 0.5])
 times, states = smfsb.rcfmc(30, Q, pi0)
 
 fig, axis = plt.subplots()

@@ -30,12 +30,12 @@ stepSeir = seir.step_gillespie()
 out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots()
 for i in range(len(seir.m)):
-	axis.plot(np.arange(0, 40, 0.05), out[:,i])
+    axis.plot(np.arange(0, 40, 0.05), out[:, i])
 
 axis.legend(seir.n)
 fig.savefig("sbmlsh.pdf")
 
 # eof
-

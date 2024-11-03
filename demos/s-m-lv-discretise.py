@@ -12,9 +12,10 @@ times, states = lv.gillespie(2000)
 out = smfsb.discretise(times, states, dt)
 
 import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots()
 for i in range(2):
-	axis.step(np.arange(0,times[-1],dt), out[:,i], where="post")
+    axis.step(np.arange(0, times[-1], dt), out[:, i], where="post")
 
 axis.legend(lv.n)
 fig.savefig("s-m-lv-discretise.pdf")

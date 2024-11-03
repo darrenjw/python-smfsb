@@ -11,9 +11,10 @@ print(states.shape)
 
 
 import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots()
 for i in range(2):
-	axis.step(np.arange(0,30,0.1), states[:,i], where="post")
+    axis.step(np.arange(0, 30, 0.1), states[:, i], where="post")
 
 axis.legend(lv.n)
 fig.savefig("s-m-lv-gillespied.pdf")
