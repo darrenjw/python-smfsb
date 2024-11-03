@@ -1,4 +1,4 @@
-# pfMLLik.py
+# pf_marginal_ll.py
 
 import smfsb
 import scipy as sp
@@ -13,7 +13,7 @@ def step(x, t, dt, th):
     sf = smfsb.models.lv(th).step_cle(0.1)
     #sf = smfsb.models.lv(th).step_gillespie()
     return sf(x, t, dt)
-mll = smfsb.pfMLLik(100, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+mll = smfsb.pf_marginal_ll(100, simX, 0, step, obsll, smfsb.data.lv_noise_10)
 
 print(mll(np.array([1, 0.005, 0.6])))
 print(mll(np.array([1, 0.005, 0.6])))

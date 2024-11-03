@@ -321,7 +321,7 @@ class Spn:
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `sim_time_series1D`) for simulating realisations of SPN models in space and
+        `sim_time_series_1d`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -418,7 +418,7 @@ class Spn:
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `sim_time_series2D`) for simulating realisations of SPN models in space and
+        `sim_time_series_2d`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -532,7 +532,7 @@ class Spn:
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         1D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `sim_time_series1D`) for
+        conjunction with other functions (such as `sim_time_series_1d`) for
         simulating realisations of SPN models in space and time.
 
         Parameters
@@ -613,7 +613,7 @@ class Spn:
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         2D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `sim_time_series2D`) for
+        conjunction with other functions (such as `sim_time_series_2d`) for
         simulating realisations of SPN models in space and time.
 
         Parameters

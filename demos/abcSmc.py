@@ -1,4 +1,4 @@
-# abcSmc.py
+# abc_smc.py
 
 import smfsb
 import numpy as np
@@ -56,7 +56,7 @@ def ssi(ts):
   return np.concatenate((ss1d(ts[:,0]), ss1d(ts[:,1]),
                          [np.corrcoef(ts[:,0], ts[:,1])[0,1]]))
 
-p, d = smfsb.abcRun(20000, rpr, lambda th: ssi(rmod(th)), verb=False)
+p, d = smfsb.abc_run(20000, rpr, lambda th: ssi(rmod(th)), verb=False)
 prmat = np.vstack(p)
 dmat = np.vstack(d)
 print(prmat.shape)
@@ -85,7 +85,7 @@ def rper(th):
 def dper(ne, ol):
   return np.sum(sp.stats.norm.logpdf(ne, ol, 0.5))
 
-postmat = smfsb.abcSmc(10000, rpr, dpr, rdis, rper, dper, factor=5, steps=8,
+postmat = smfsb.abc_smc(10000, rpr, dpr, rdis, rper, dper, factor=5, steps=8,
                        verb=True, debug=True)
 
 its, var = postmat.shape
@@ -99,7 +99,7 @@ axes[0, 2].scatter(postmat[:,1], postmat[:,2], s=0.5)
 axes[1, 0].hist(postmat[:,0], bins=30)
 axes[1, 1].hist(postmat[:,1], bins=30)
 axes[1, 2].hist(postmat[:,2], bins=30)
-fig.savefig("abcSmc.pdf")
+fig.savefig("abc_smc.pdf")
 
 print("All done.")
 

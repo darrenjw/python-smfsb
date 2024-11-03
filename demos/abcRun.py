@@ -1,4 +1,4 @@
-# abcRun.py
+# abc_run.py
 
 import smfsb
 import numpy as np
@@ -24,7 +24,7 @@ def dist(ss):
 def rdis(th):
   return dist(sumStats(rmod(th)))
 
-p, d = smfsb.abcRun(1000000, rpr, rdis)
+p, d = smfsb.abc_run(1000000, rpr, rdis)
 
 q = np.quantile(d, 0.01)
 prmat = np.vstack(p)
@@ -39,7 +39,7 @@ axes[1, 0].plot(range(its), postmat[:,0], linewidth=0.1)
 axes[1, 1].plot(range(its), postmat[:,1], linewidth=0.1)
 axes[2, 0].hist(postmat[:,0], bins=30)
 axes[2, 1].hist(postmat[:,1], bins=30)
-fig.savefig("abcRun.pdf")
+fig.savefig("abc_run.pdf")
 
 
 # eof

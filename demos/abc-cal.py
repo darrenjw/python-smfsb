@@ -38,7 +38,7 @@ def ssi(ts):
 
 print("Pilot run")
 
-p, d = smfsb.abcRun(100000, rpr, lambda th: ssi(rmod(th)), verb=True)
+p, d = smfsb.abc_run(100000, rpr, lambda th: ssi(rmod(th)), verb=True)
 prmat = np.vstack(p)
 dmat = np.vstack(d)
 print(prmat.shape)
@@ -62,7 +62,7 @@ def dist(ss):
 def rdis(th):
   return dist(sumStats(rmod(th)))
 
-p, d = smfsb.abcRun(1000000, rpr, rdis, verb=True)
+p, d = smfsb.abc_run(1000000, rpr, rdis, verb=True)
 
 q = np.nanquantile(d, 0.01)
 prmat = np.vstack(p)

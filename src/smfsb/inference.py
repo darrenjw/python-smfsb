@@ -6,7 +6,7 @@ import math
 
 
 
-def metropolisHastings(init, logLik, rprop,
+def metropolis_hastings(init, logLik, rprop,
                        ldprop=lambda n, o: 1, ldprior=lambda x: 1,
                        iters=10000, thin=10, verb=True, debug=False):
     """Run a Metropolis-Hastings MCMC algorithm for the parameters of a
@@ -76,7 +76,7 @@ def metropolisHastings(init, logLik, rprop,
     >>> data = np.random.normal(5, 2, 250)
     >>> llik = lambda x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
     >>> prop = lambda x: np.random.normal(x, 0.1, 2)
-    >>> smfsb.metropolisHastings([1,1], llik, prop)
+    >>> smfsb.metropolis_hastings([1,1], llik, prop)
     """
     p = len(init)
     ll = -math.inf
@@ -104,7 +104,7 @@ def metropolisHastings(init, logLik, rprop,
     return mat
     
 
-def abcRun(n, rprior, rdist, verb=False):
+def abc_run(n, rprior, rdist, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
     given prior distribution, and compute statistics required for an ABC
     analaysis
@@ -158,7 +158,7 @@ def abcRun(n, rprior, rdist, verb=False):
     >>> def rdis(th):
     >>>   return dist(sumStats(rmod(th)))
     >>>
-    >>> smfsb.abcRun(100, rpr, rdis)
+    >>> smfsb.abc_run(100, rpr, rdis)
     """
     p = list()
     d = list()
@@ -174,7 +174,7 @@ def abcRun(n, rprior, rdist, verb=False):
     return (p, d)
 
 
-def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
+def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     """Create a function for computing the log of an unbiased estimate of
     marginal likelihood of a time course data set
 
@@ -232,7 +232,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>>     sf = smfsb.models.lv(th).step_gillespie()
     >>>     return sf(x, t, dt)
     >>> 
-    >>> mll = smfsb.pfMLLik(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+    >>> mll = smfsb.pf_marginal_ll(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
     >>> mll(np.array([1, 0.005, 0.6]))
     >>> mll(np.array([2, 0.005, 0.6]))
     """
@@ -270,11 +270,11 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     return go
 
 
-def abcSmcStep(dprior, priorSample, priorLW, rdist, rperturb,
+def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb,
                dperturb, factor):
     """Carry out one step of an ABC-SMC algorithm
 
-    Not meant to be directly called by users. See abcSmc.
+    Not meant to be directly called by users. See abc_smc.
     """
     n = priorSample.shape[0]
     mx = np.max(priorLW)
@@ -306,7 +306,7 @@ def abcSmcStep(dprior, priorSample, priorLW, rdist, rperturb,
     return new, nlw
 
 
-def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
+def abc_smc(N, rprior, dprior, rdist, rperturb, dperturb,
            factor=10, steps=15, verb=False, debug=False):
     """Run an ABC-SMC algorithm for infering the parameters of a forward model
 
@@ -384,7 +384,7 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
     >>> def rdis(th):
     >>>   return dist(sumStats(rmod(th)))
     >>> 
-    >>> smfsb.abcSmc(100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
+    >>> smfsb.abc_smc(100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
     >>>                           rdis, lambda x: np.random.normal(x, 0.1),
     >>>                           lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     """
@@ -394,7 +394,7 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
     for i in range(steps):
         if (verb):
             print(steps-i, end=' ', flush=True)
-        priorSample, priorLW = abcSmcStep(dprior, priorSample, priorLW,
+        priorSample, priorLW = abc_smc_step(dprior, priorSample, priorLW,
                                           rdist, rperturb, dperturb, factor)
         if (debug):
             print(priorSample.shape)
@@ -417,7 +417,7 @@ def abcSmc(N, rprior, dprior, rdist, rperturb, dperturb,
 # Some illustrative functions not intended for serious use...
 
 
-def normgibbs(N, n, a, b, c, d, xbar, ssquared):
+def normal_gibbs(N, n, a, b, c, d, xbar, ssquared):
     """A simple Gibbs sampler for Bayesian inference for the mean and
     precision of a normal random sample
 
@@ -451,7 +451,7 @@ def normgibbs(N, n, a, b, c, d, xbar, ssquared):
     Examples
     --------
     >>> import smfsb
-    >>> postmat = smfsb.normgibbs(N=1100, n=15, a=3, b=11, c=10, d=1/100,
+    >>> postmat = smfsb.normal_gibbs(N=1100, n=15, a=3, b=11, c=10, d=1/100,
     >>>   xbar=25, ssquared=20)
     >>> postmat = postmat[range(100,1100),:]
     """

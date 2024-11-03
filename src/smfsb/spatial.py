@@ -3,7 +3,7 @@
 
 import numpy as np
 
-def sim_time_series1D(x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -47,7 +47,7 @@ def sim_time_series1D(x0, t0, tt, dt, stepFun, verb=False):
     >>> T = 5
     >>> x0 = np.zeros((2,N))
     >>> x0[:,int(N/2)] = lv.m
-    >>> smfsb.sim_time_series1D(x0, 0, T, 1, stepLv1d, True)
+    >>> smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, n = x0.shape
@@ -64,7 +64,7 @@ def sim_time_series1D(x0, t0, tt, dt, stepFun, verb=False):
     return(arr)
     
 
-def sim_time_series2D(x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -109,7 +109,7 @@ def sim_time_series2D(x0, t0, tt, dt, stepFun, verb=False):
     >>> T = 5
     >>> x0 = np.zeros((2,M,N))
     >>> x0[:,int(M/2),int(N/2)] = lv.m
-    >>> smfsb.sim_time_series2D(x0, 0, T, 1, stepLv2d, True)
+    >>> smfsb.sim_time_series_2d(x0, 0, T, 1, stepLv2d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, m, n = x0.shape

@@ -13,7 +13,7 @@ x0[:,int(N/2)] = lv.m
 stepLv1d = lv.step_cle1D(np.array([0.6, 0.6]))
 x1 = stepLv1d(x0, 0, 1)
 print(x1)
-out = smfsb.sim_time_series1D(x0, 0, T, 1, stepLv1d, True)
+out = smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
 #print(out)
 
 fig, axis = plt.subplots()
