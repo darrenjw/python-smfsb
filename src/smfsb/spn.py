@@ -45,8 +45,8 @@ class Spn:
               [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
 	      lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	      [197, 3, 0])
-        >>> stepSir = sir.stepPTS()
-        >>> smfsb.simSample(10, sir.m, 0, 20, stepSir)
+        >>> stepSir = sir.step_poisson()
+        >>> smfsb.sim_sample(10, sir.m, 0, 20, stepSir)
         """
         self.n = n # species names
         self.t = t # reaction names
@@ -65,14 +65,14 @@ class Spn:
 
 
     
-    def stepGillespie(self, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie(self, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of a SPN by using the
         Gillespie algorithm
 
         This method returns a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        ‘simTs’) for simulating realisations of SPN models.
+        ‘sim_time_series’) for simulating realisations of SPN models.
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class Spn:
         --------
         >>> import smfsb.models
         >>> lv = smfsb.models.lv()
-        >>> stepLv = lv.stepGillespie()
+        >>> stepLv = lv.step_gillespie()
         >>> stepLv([50, 100], 0, 1)
         """
         S = (self.post - self.pre).T
@@ -123,14 +123,14 @@ class Spn:
 
 
 
-    def stepFRM(self):
+    def step_first(self):
         """Create a function for advancing the state of an SPN by using
         Gillespie's first reaction method
 
         This function creates a function for advancing the state of an SPN
         model using Gillespie's first reaction method. The resulting
         function (closure) can be used in conjunction with other functions
-        (such as ‘simTs’) for simulating realisations of SPN models.
+        (such as ‘sim_time_series’) for simulating realisations of SPN models.
 
         Returns
         -------
@@ -143,7 +143,7 @@ class Spn:
         --------
         >>> import smfsb.models
         >>> lv = smfsb.models.lv()
-        >>> stepLv = lv.stepFRM()
+        >>> stepLv = lv.step_first()
         >>> stepLv([50, 100], 0, 1)
         """
         S = (self.post - self.pre).T
@@ -165,14 +165,14 @@ class Spn:
         
 
     
-    def stepPTS(self, dt = 0.01):
+    def step_poisson(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a 
         simple approximate Poisson time stepping method
 
         This method returns a function for advancing the state of an SPN
         model using a simple approximate Poisson time stepping method. The
         resulting function (closure) can be used in conjunction with other
-        functions (such as ‘simTs’) for simulating realisations of SPN
+        functions (such as ‘sim_time_series’) for simulating realisations of SPN
         models.
 
         Parameters
@@ -195,7 +195,7 @@ class Spn:
         --------
         >>> import smfsb.models
         >>> lv = smfsb.models.lv()
-        >>> stepLv = lv.stepPTS(0.001)
+        >>> stepLv = lv.step_poisson(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
         S = (self.post - self.pre).T
@@ -215,14 +215,14 @@ class Spn:
 
 
     
-    def stepEuler(self, dt = 0.01):
+    def step_euler(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         continuous deterministic Euler integration method
 
         This method returns a function for advancing the state of an SPN
         model using a simple continuous deterministic Euler integration
         method. The resulting function (closure) can be used in
-        conjunction with other functions (such as ‘simTs’) for simulating
+        conjunction with other functions (such as ‘sim_time_series’) for simulating
         realisations of SPN models.
 
         Parameters
@@ -244,7 +244,7 @@ class Spn:
         --------
         >>> import smfsb.models
         >>> lv = smfsb.models.lv()
-        >>> stepLv = lv.stepEuler(0.001)
+        >>> stepLv = lv.step_euler(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
         S = (self.post - self.pre).T
@@ -261,7 +261,7 @@ class Spn:
         return step
 
 
-    def stepCLE(self, dt = 0.01):
+    def step_cle(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama integration method for the associated CLE
 
@@ -269,7 +269,7 @@ class Spn:
         model using a simple Euler-Maruyama integration method
         method for the chemical Langevin equation form of the model.The 
         resulting function (closure) can be used in
-        conjunction with other functions (such as ‘simTs’) for simulating
+        conjunction with other functions (such as ‘sim_time_series’) for simulating
         realisations of SPN models.
 
         Parameters
@@ -291,7 +291,7 @@ class Spn:
         --------
         >>> import smfsb.models
         >>> lv = smfsb.models.lv()
-        >>> stepLv = lv.stepCLE(0.001)
+        >>> stepLv = lv.step_cle(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
         S = (self.post - self.pre).T
@@ -314,14 +314,14 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def stepGillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `simTs1D`) for simulating realisations of SPN models in space and
+        `sim_time_series1D`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -356,7 +356,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.stepGillespie1D(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_gillespie1D(np.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
@@ -411,14 +411,14 @@ class Spn:
         return step
 
     
-    def stepGillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `simTs2D`) for simulating realisations of SPN models in space and
+        `sim_time_series2D`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -453,7 +453,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv2d = lv.stepGillespie2D(np.array([0.6, 0.6]))
+        >>> stepLv2d = lv.step_gillespie2D(np.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2, N, N))
         >>> x0[:, int(N/2), int(N/2)] = lv.m
@@ -525,14 +525,14 @@ class Spn:
         return step
 
     
-    def stepCLE1D(self, d, dt = 0.01):
+    def step_cle1D(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 1D regular grid
         
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         1D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `simTs1D`) for
+        conjunction with other functions (such as `sim_time_series1D`) for
         simulating realisations of SPN models in space and time.
 
         Parameters
@@ -564,7 +564,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.stepCLE1D(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_cle1D(np.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
@@ -606,14 +606,14 @@ class Spn:
                     return x
         return step
     
-    def stepCLE2D(self, d, dt = 0.01):
+    def step_cle2D(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 2D regular grid
         
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         2D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `simTs2D`) for
+        conjunction with other functions (such as `sim_time_series2D`) for
         simulating realisations of SPN models in space and time.
 
         Parameters
@@ -645,7 +645,7 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv2d = lv.stepCLE2D(np.array([0.6,0.6]))
+        >>> stepLv2d = lv.step_cle2D(np.array([0.6,0.6]))
         >>> M = 15
         >>> N = 20
         >>> x0 = np.zeros((2,M,N))

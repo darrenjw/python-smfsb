@@ -44,7 +44,7 @@ def test_pfmllik():
     def simX(t0, th):
         return np.array([np.random.poisson(50), np.random.poisson(100)])
     def step(x, t, dt, th):
-        sf = smfsb.models.lv(th).stepCLE()
+        sf = smfsb.models.lv(th).step_cle()
         return sf(x, t, dt)
     mll = smfsb.pfMLLik(50, simX, 0, step, obsll, smfsb.data.LVnoise10)
     assert (mll(np.array([1, 0.005, 0.6])) > mll(np.array([2, 0.005, 0.6])))

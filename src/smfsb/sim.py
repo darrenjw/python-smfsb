@@ -8,14 +8,14 @@ import numpy as np
     
 # Some simulation functions
 
-def simTs(x0, t0, tt, dt, stepFun):
+def sim_time_series(x0, t0, tt, dt, stepFun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
     This function simulates single realisation of a model on a regular
     grid of times using a function (closure) for advancing the state
-    of the model, such as created by ‘stepGillespie’ or
-    ‘stepEuler’.
+    of the model, such as created by ‘step_gillespie’ or
+    ‘step_euler’.
 
     Parameters
     ----------
@@ -31,7 +31,7 @@ def simTs(x0, t0, tt, dt, stepFun):
         process.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by ‘stepGillespie’ or ‘stepEuler’.
+        such as produced by ‘step_gillespie’ or ‘step_euler’.
 
     Returns
     -------
@@ -41,8 +41,8 @@ def simTs(x0, t0, tt, dt, stepFun):
     --------
     >>> import smfsb.models
     >>> lv = smfsb.models.lv()
-    >>> stepLv = lv.stepGillespie()
-    >>> smfsb.simTs([50, 100], 0, 100, 0.1, stepLv)
+    >>> stepLv = lv.step_gillespie()
+    >>> smfsb.sim_time_series([50, 100], 0, 100, 0.1, stepLv)
     """
     n = int((tt-t0) // dt) + 1
     u = len(x0)
@@ -57,7 +57,7 @@ def simTs(x0, t0, tt, dt, stepFun):
     return mat
 
 
-def simSample(n, x0, t0, deltat, stepFun):
+def sim_sample(n, x0, t0, deltat, stepFun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
     advancing the state of the model
@@ -65,7 +65,7 @@ def simSample(n, x0, t0, deltat, stepFun):
     This function simulates many realisations of a model at a given
     fixed time in the future given an initial time and state, using a
     function (closure) for advancing the state of the model , such as
-    created by ‘stepGillespie’ or ‘stepEuler’.
+    created by ‘step_gillespie’ or ‘step_euler’.
 
     Parameters
     ----------
@@ -80,7 +80,7 @@ def simSample(n, x0, t0, deltat, stepFun):
         system state are required.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by `stepGillespie' or `stepEuler'.
+        such as produced by `step_gillespie' or `step_euler'.
 
     Returns
     -------
@@ -90,8 +90,8 @@ def simSample(n, x0, t0, deltat, stepFun):
     --------
     >>> import smfsb.models
     >>> lv = smfsb.models.lv()
-    >>> stepLv = lv.stepGillespie()
-    >>> smfsb.simSample(10, [50, 100], 0, 30, stepLv)
+    >>> stepLv = lv.step_gillespie()
+    >>> smfsb.sim_sample(10, [50, 100], 0, 30, stepLv)
     """
     u = len(x0)
     mat = np.zeros((n, u))
@@ -100,14 +100,14 @@ def simSample(n, x0, t0, deltat, stepFun):
     return mat
 
 
-def stepSDE(drift, diffusion, dt=0.01):
+def step_sde(drift, diffusion, dt=0.01):
     """Create a function for advancing the state of an SDE model by using a
     simple Euler-Maruyama integration method
 
     This function creates a function for advancing the state of an SDE
     model using a simple Euler-Maruyama integration method. The
     resulting function (closure) can be used in conjunction with other
-    functions (such as ‘simTs’) for simulating realisations of SDE
+    functions (such as ‘sim_time_series’) for simulating realisations of SDE
     models.
 
     Parameters
@@ -153,8 +153,8 @@ def stepSDE(drift, diffusion, dt=0.01):
     >>>     return np.array([[np.sqrt(lamb + x[0]*x[1]), 0],
     >>>                      [0 ,sig*np.sqrt(x[1])]])
     >>>
-    >>> stepProc = smfsb.stepSDE(myDrift, myDiff, dt=0.001)
-    >>> smfsb.simTs(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+    >>> stepProc = smfsb.step_sde(myDrift, myDiff, dt=0.001)
+    >>> smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
     """
     sdt = np.sqrt(dt)
     def step(x0, t0, deltat):
@@ -364,7 +364,7 @@ def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
     return xvec
     
 
-def simpleEuler(rhs, ic, t=50, dt=0.001):
+def simple_euler(rhs, ic, t=50, dt=0.001):
     """Simulate a sample path from an ODE model
 
     This function integrates an Ordinary Differential Equation (ODE)
@@ -403,7 +403,7 @@ def simpleEuler(rhs, ic, t=50, dt=0.001):
     --------
     >>> import smfsb
     >>> import numpy as np
-    >>> smfsb.simpleEuler(lambda x,t: 1-0.1*x[0], np.array([0]))
+    >>> smfsb.simple_euler(lambda x,t: 1-0.1*x[0], np.array([0]))
     """
     p = len(ic)
     n = int(t/dt)
@@ -472,7 +472,7 @@ def discretise(times, states, dt=1, start=0):
 
 import inspect
 
-def showSource(fun):
+def show_source(fun):
     """Print to console the source code of a function or method.
 
     Called for the side-effect of printing the function source to standard
@@ -490,7 +490,7 @@ def showSource(fun):
     Examples
     --------
     >>> import smfsb
-    >>> smfsb.showSource(smfsb.Spn.stepGillespie)
+    >>> smfsb.show_source(smfsb.Spn.step_gillespie)
     """
     print(inspect.getsource(fun))
 

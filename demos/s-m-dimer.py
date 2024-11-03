@@ -5,8 +5,8 @@ import smfsb.models
 
 dimer = smfsb.models.dimer()
 print(dimer)
-step = dimer.stepGillespie()
-out = smfsb.simTs(dimer.m, 0, 100, 0.1, step)
+step = dimer.step_gillespie()
+out = smfsb.sim_time_series(dimer.m, 0, 100, 0.1, step)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()

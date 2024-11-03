@@ -29,8 +29,8 @@ seirSH = """
 
 def test_sbmlsh():
     seir = smfsb.sh2Spn(seirSH)
-    stepSeir = seir.stepGillespie()
-    out = smfsb.simTs(seir.m, 0, 40, 0.05, stepSeir)
+    stepSeir = seir.step_gillespie()
+    out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
     assert(out.shape == (800, 4))
     assert(out[400,3] >= 0)
 

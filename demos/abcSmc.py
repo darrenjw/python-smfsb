@@ -34,8 +34,8 @@ def dpr(th):
   ])))
 
 def rmod(th):
-  return smfsb.simTs([50, 100], 0, 30, 2,
-                     smfsb.models.lv(np.exp(th)).stepCLE(0.1))
+  return smfsb.sim_time_series([50, 100], 0, 30, 2,
+                     smfsb.models.lv(np.exp(th)).step_cle(0.1))
 
 print("Pilot run...")
 

@@ -10,8 +10,8 @@ def obsll(x, t, y, th):
 def simX(t0, th):
     return np.array([np.random.poisson(50), np.random.poisson(100)])
 def step(x, t, dt, th):
-    sf = smfsb.models.lv(th).stepCLE(0.1)
-    #sf = smfsb.models.lv(th).stepGillespie()
+    sf = smfsb.models.lv(th).step_cle(0.1)
+    #sf = smfsb.models.lv(th).step_gillespie()
     return sf(x, t, dt)
 mll = smfsb.pfMLLik(100, simX, 0, step, obsll, smfsb.data.LVnoise10)
 

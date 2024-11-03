@@ -23,8 +23,8 @@ def bd(th=[1, 1.1]):
     --------
     >>> import smfsb
     >>> bd = smfsb.models.bd()
-    >>> step = bd.stepGillespie()
-    >>> smfsb.simTs(bd.m, 0, 50, 0.1, step)
+    >>> step = bd.step_gillespie()
+    >>> smfsb.sim_time_series(bd.m, 0, 50, 0.1, step)
     """
     return Spn(["X"], ["Birth","Death"], [[1],[1]], [[2],[0]],
                lambda x, t: np.array([th[0]*x[0], th[1]*x[0]]),
@@ -50,8 +50,8 @@ def dimer(th=[0.00166, 0.2]):
     --------
     >>> import smfsb
     >>> dimer = smfsb.models.dimer()
-    >>> step = dimer.stepGillespie()
-    >>> smfsb.simTs(dimer.m, 0, 50, 0.1, step)
+    >>> step = dimer.step_gillespie()
+    >>> smfsb.sim_time_series(dimer.m, 0, 50, 0.1, step)
     """
     return Spn(["P", "P2"], ["Dim", "Diss"], [[2,0],[0,1]], [[0,1],[2,0]],
                lambda x, t: np.array([th[0]*x[0]*(x[0]-1)/2, th[1]*x[1]]),
@@ -76,8 +76,8 @@ def id(th=[1, 0.1]):
     --------
     >>> import smfsb
     >>> id = smfsb.models.id()
-    >>> step = id.stepGillespie()
-    >>> smfsb.simTs(id.m, 0, 50, 0.1, step)
+    >>> step = id.step_gillespie()
+    >>> smfsb.sim_time_series(id.m, 0, 50, 0.1, step)
     """
     return Spn(["X"], ["Immigration", "Death"], [[0],[1]], [[1],[0]],
                lambda x, t: np.array([th[0], th[1]*x[0]]),
@@ -104,8 +104,8 @@ def lv(th=[1, 0.005, 0.6]):
     --------
     >>> import smfsb
     >>> lv = smfsb.models.lv()
-    >>> step = lv.stepGillespie()
-    >>> smfsb.simTs(lv.m, 0, 50, 0.1, step)
+    >>> step = lv.step_gillespie()
+    >>> smfsb.sim_time_series(lv.m, 0, 50, 0.1, step)
     """
     return Spn(["Prey", "Predator"], ["Prey rep", "Inter", "Pred death"],
                [[1,0],[1,1],[0,1]], [[2,0],[0,2],[0,0]],
@@ -132,8 +132,8 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     --------
     >>> import smfsb
     >>> mm = smfsb.models.mm()
-    >>> step = mm.stepGillespie()
-    >>> smfsb.simTs(mm.m, 0, 50, 0.1, step)
+    >>> step = mm.step_gillespie()
+    >>> smfsb.sim_time_series(mm.m, 0, 50, 0.1, step)
     """
     return Spn(["S", "E", "SE", "P"], ["Bind", "Unbind", "Produce"],
                [[1,1,0,0],[0,0,1,0],[0,0,1,0]],
@@ -162,8 +162,8 @@ def sir(th=[0.0015, 0.1]):
     --------
     >>> import smfsb
     >>> sir = smfsb.models.sir()
-    >>> step = sir.stepGillespie()
-    >>> smfsb.simTs(sir.m, 0, 50, 0.1, step)
+    >>> step = sir.step_gillespie()
+    >>> smfsb.sim_time_series(sir.m, 0, 50, 0.1, step)
     """
     return Spn(["S", "I", "R"], ["S->I", "I->R"], [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
                lambda x, t: np.array([th[0]*x[0]*x[1], th[1]*x[1]]),

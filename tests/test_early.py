@@ -39,8 +39,8 @@ def lv(th=[1, 0.1, 0.1]):
                          th[1]*x[0]*x[1] - th[2]*x[1]])
     return rhs
 
-def test_simpleEuler():
-    out = smfsb.simpleEuler(lv(), np.array([4, 10]), 100)
+def test_simple_euler():
+    out = smfsb.simple_euler(lv(), np.array([4, 10]), 100)
     assert(out[99, 1] > 0.0)
 
 def test_rdiff():
@@ -59,9 +59,9 @@ def myDiff(x, t):
     return np.array([[np.sqrt(lamb + x[0]*x[1]), 0],
                      [0 ,sig*np.sqrt(x[1])]])
 
-def test_stepSDE():
-    stepProc = smfsb.stepSDE(myDrift, myDiff, dt=0.001)
-    out = smfsb.simTs(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+def test_step_sde():
+    stepProc = smfsb.step_sde(myDrift, myDiff, dt=0.001)
+    out = smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
     assert(out.shape == (3000, 2))
     assert(out[1000,0] >= 0.0)
     assert(out[1000,1] >= 0.0)

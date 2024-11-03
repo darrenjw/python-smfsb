@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# simpleEuler.py
+# simple_euler.py
 
 import smfsb
 import numpy as np
@@ -15,13 +15,13 @@ def myDiff(x, t):
     return np.array([[np.sqrt(lamb + x[0]*x[1]), 0],
                      [0 ,sig*np.sqrt(x[1])]])
 
-stepProc = smfsb.stepSDE(myDrift, myDiff, dt=0.001)
-out = smfsb.simTs(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+stepProc = smfsb.step_sde(myDrift, myDiff, dt=0.001)
+out = smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
 
 fig, axis = plt.subplots()
 for i in range(2):
     axis.plot(np.arange(0, 30, 0.01), out[:,i])
-fig.savefig("stepSDE.pdf")
+fig.savefig("step_sde.pdf")
 
 
 

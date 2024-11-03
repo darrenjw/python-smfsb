@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 import time
 
 lvmod = smfsb.models.lv()
-step = lvmod.stepCLE(0.01)
+step = lvmod.step_cle(0.01)
 
 ## Start timer
 startTime = time.time()
-out = smfsb.simSample(10000, lvmod.m, 0, 20, step)
+out = smfsb.sim_sample(10000, lvmod.m, 0, 20, step)
 endTime = time.time()
 ## End timer
 elapsedTime = endTime - startTime

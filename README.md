@@ -25,8 +25,8 @@ import smfsb
 
 lv = smfsb.models.lv()
 print(lv)
-stepLv = lv.stepGillespie()
-out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+stepLv = lv.step_gillespie()
+out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
 ```
 Now, if `matplotlib` is installed, you can plot the output with
 ```python
@@ -38,7 +38,7 @@ for i in range(2):
 axis.legend(lv.n)
 fig.savefig("lv.pdf")
 ```
-Standard python docstring documentation is available. Usage information can be obtained from the python REPL with commands like `help(smfsb.Spn)`, `help(smfsb.Spn.stepGillespie)` or `help(smfsb.simTs)`. This documentation is also available on [ReadTheDocs](https://python-smfsb.readthedocs.io/). The API documentation contains very minimal usage examples. For more interesting examples, see the [demos directory](https://github.com/darrenjw/python-smfsb/tree/main/demos).
+Standard python docstring documentation is available. Usage information can be obtained from the python REPL with commands like `help(smfsb.Spn)`, `help(smfsb.Spn.step_gillespie)` or `help(smfsb.sim_time_series)`. This documentation is also available on [ReadTheDocs](https://python-smfsb.readthedocs.io/). The API documentation contains very minimal usage examples. For more interesting examples, see the [demos directory](https://github.com/darrenjw/python-smfsb/tree/main/demos).
 
 ### Creating and simulating a model
 
@@ -49,8 +49,8 @@ sir = smfsb.Spn(["S", "I", "R"], ["S->I", "I->R"],
 	[[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
 	lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	[197, 3, 0])
-stepSir = sir.stepPTS()
-sample = smfsb.simSample(500, sir.m, 0, 20, stepSir)
+stepSir = sir.step_poisson()
+sample = smfsb.sim_sample(500, sir.m, 0, 20, stepSir)
 fig, axis = plt.subplots()
 axis.hist(sample[:,1],30)
 axis.set_title("Infected at time 20")
@@ -97,8 +97,8 @@ seirSH = """
 """
 
 seir = smfsb.sh2Spn(seirSH)
-stepSeir = seir.stepGillespie()
-out = smfsb.simTs(seir.m, 0, 40, 0.05, stepSeir)
+stepSeir = seir.step_gillespie()
+out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()

@@ -26,8 +26,8 @@ seirSH = """
 """
 
 seir = smfsb.sh2Spn(seirSH)
-stepSeir = seir.stepGillespie()
-out = smfsb.simTs(seir.m, 0, 40, 0.05, stepSeir)
+stepSeir = seir.step_gillespie()
+out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()

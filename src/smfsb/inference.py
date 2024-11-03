@@ -229,7 +229,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>>     return np.array([np.random.poisson(50), np.random.poisson(100)])
     >>> 
     >>> def step(x, t, dt, th):
-    >>>     sf = smfsb.models.lv(th).stepGillespie()
+    >>>     sf = smfsb.models.lv(th).step_gillespie()
     >>>     return sf(x, t, dt)
     >>> 
     >>> mll = smfsb.pfMLLik(80, simX, 0, step, obsll, smfsb.data.LVnoise10)

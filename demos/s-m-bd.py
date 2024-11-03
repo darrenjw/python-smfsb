@@ -5,8 +5,8 @@ import smfsb.models
 
 bd = smfsb.models.bd()
 print(bd)
-step = bd.stepGillespie()
-out = smfsb.simTs(bd.m, 0, 100, 0.1, step)
+step = bd.step_gillespie()
+out = smfsb.sim_time_series(bd.m, 0, 100, 0.1, step)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()

@@ -10,42 +10,42 @@ def test_create():
         [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
         lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
         [197, 3, 0])
-    stepSir = sir.stepPTS()
-    sample = smfsb.simSample(20, sir.m, 0, 20, stepSir)
+    stepSir = sir.step_poisson()
+    sample = smfsb.sim_sample(20, sir.m, 0, 20, stepSir)
     assert(sample[19,1] >= 0)
 
 def test_bd():
     bd = smfsb.models.bd()
-    step = bd.stepGillespie()
-    out = smfsb.simTs(bd.m, 0, 100, 0.1, step)
+    step = bd.step_gillespie()
+    out = smfsb.sim_time_series(bd.m, 0, 100, 0.1, step)
     assert(out.shape == (1000, 1))
     assert(out[100,0] >= 0)
 
 def test_dimer():
     dimer = smfsb.models.dimer()
-    step = dimer.stepGillespie()
-    out = smfsb.simTs(dimer.m, 0, 100, 0.1, step)
+    step = dimer.step_gillespie()
+    out = smfsb.sim_time_series(dimer.m, 0, 100, 0.1, step)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
     
 def test_id():
     id = smfsb.models.id()
-    step = id.stepGillespie()
-    out = smfsb.simTs(id.m, 0, 100, 0.1, step)
+    step = id.step_gillespie()
+    out = smfsb.sim_time_series(id.m, 0, 100, 0.1, step)
     assert(out.shape == (1000, 1))
     assert(out[100,0] >= 0)
     
 def test_lv2():
     lv = smfsb.models.lv([0.2, 0.001, 0.1])
-    stepLv = lv.stepGillespie()
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    stepLv = lv.step_gillespie()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
 
 def test_cle():
     lv = smfsb.models.lv()
-    stepLv = lv.stepCLE()
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    stepLv = lv.step_cle()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0.0)
 
@@ -60,15 +60,15 @@ def test_discretise():
 
 def test_euler():
     lv = smfsb.models.lv()
-    stepLv = lv.stepEuler(0.001)
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    stepLv = lv.step_euler(0.001)
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] > 0.0)
 
 def test_frm():
     lv = smfsb.models.lv()
-    stepLv = lv.stepFRM()
-    out = smfsb.simTs(lv.m, 0, 10, 0.01, stepLv)
+    stepLv = lv.step_first()
+    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
 
@@ -86,29 +86,29 @@ def test_gillespie():
 
 def test_pts():
     lv = smfsb.models.lv()
-    stepLv = lv.stepPTS()
-    out = smfsb.simTs(lv.m, 0, 100, 0.1, stepLv)
+    stepLv = lv.step_poisson()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
     
 def test_lv():
     lv = smfsb.models.lv()
-    stepLv = lv.stepGillespie()
-    out = smfsb.simTs(lv.m, 0, 10, 0.01, stepLv)
+    stepLv = lv.step_gillespie()
+    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, stepLv)
     assert(out.shape == (1000, 2))
     assert(out[600,1] >= 0)
 
 def test_mm():
     mm = smfsb.models.mm()
-    step = mm.stepGillespie()
-    out = smfsb.simTs(mm.m, 0, 100, 0.1, step)
+    step = mm.step_gillespie()
+    out = smfsb.sim_time_series(mm.m, 0, 100, 0.1, step)
     assert(out.shape == (1000, 4))
     assert(out[600,1] >= 0)
 
 def test_sir():
     sir = smfsb.models.sir()
-    step = sir.stepGillespie()
-    out = smfsb.simTs(sir.m, 0, 100, 0.1, step)
+    step = sir.step_gillespie()
+    out = smfsb.sim_time_series(sir.m, 0, 100, 0.1, step)
     assert(out.shape == (1000, 3))
     assert(out[600,1] >= 0)
 

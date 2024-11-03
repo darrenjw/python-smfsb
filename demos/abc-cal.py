@@ -16,8 +16,8 @@ def rpr():
                           np.random.uniform(-4, 2)]))
 
 def rmod(th):
-  return smfsb.simTs([50, 100], 0, 30, 2,
-                     smfsb.models.lv(th).stepCLE(0.1))
+  return smfsb.sim_time_series([50, 100], 0, 30, 2,
+                     smfsb.models.lv(th).step_cle(0.1))
 
 def ss1d(vec):
   n = len(vec)
