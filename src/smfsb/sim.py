@@ -2,6 +2,7 @@
 # sim.py
 
 import numpy as np
+import inspect
 
 
 # Some simulation functions
@@ -467,9 +468,6 @@ def discretise(times, states, dt=1, start=0):
 
 
 # Misc utility functions
-
-import inspect
-
 
 def show_source(fun):
     """Print to console the source code of a function or method.

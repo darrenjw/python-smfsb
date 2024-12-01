@@ -1,8 +1,8 @@
 # models.py
 # some example Spn models
 
-from smfsb import *
-
+from smfsb import Spn
+import numpy as np
 
 def bd(th=[1, 1.1]):
     """Create a birth-death model

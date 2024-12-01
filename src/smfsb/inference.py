@@ -3,7 +3,7 @@
 
 import numpy as np
 import math
-
+from scipy.stats import norm
 
 def metropolis_hastings(
     init,
@@ -491,9 +491,6 @@ def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
         tau = np.random.gamma(a + n / 2, 1 / taub)
         mat[i, :] = [mu, tau]
     return mat
-
-
-from scipy.stats import norm
 
 
 def metrop(n, alpha):

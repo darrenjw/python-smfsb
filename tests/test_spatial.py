@@ -3,7 +3,6 @@
 
 import smfsb
 import numpy as np
-import matplotlib.pyplot as plt
 import smfsb.models
 
 

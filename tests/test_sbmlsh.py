@@ -2,7 +2,6 @@
 # tests relating to SBML and SBML-shorthand
 
 import smfsb
-import numpy as np
 
 
 seir_sh = """

@@ -25,6 +25,9 @@ format:
 	black demos
 	black tests
 
+check:
+	ruff check --select N
+	ruff check
 
 edit:
 	emacs Makefile *.toml *.md src/smfsb/*.py tests/*.py &
