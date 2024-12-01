@@ -18,10 +18,13 @@ def test_metrop():
 
 def test_metropolis_hastings():
     data = np.random.normal(5, 2, 250)
+
     def llik(x):
         return np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
+
     def prop(x):
         return np.random.normal(x, 0.1, 2)
+
     out = smfsb.metropolis_hastings([1, 1], llik, prop, iters=1000, thin=2, verb=False)
     assert out.shape == (1000, 2)
 

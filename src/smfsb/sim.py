@@ -469,6 +469,7 @@ def discretise(times, states, dt=1, start=0):
 
 # Misc utility functions
 
+
 def show_source(fun):
     """Print to console the source code of a function or method.
 

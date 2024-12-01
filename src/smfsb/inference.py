@@ -5,6 +5,7 @@ import numpy as np
 import math
 from scipy.stats import norm
 
+
 def metropolis_hastings(
     init,
     log_lik,
@@ -308,7 +309,9 @@ def abc_smc_step(dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, fact
     new = prop[dist < q_cut, :]
 
     def log_weight(th):
-        terms = prior_lw + np.apply_along_axis(lambda x: dperturb(th, x), 1, prior_sample)
+        terms = prior_lw + np.apply_along_axis(
+            lambda x: dperturb(th, x), 1, prior_sample
+        )
         mt = np.max(terms)
         denom = mt + np.log(np.sum(np.exp(terms - mt)))
         return dprior(th) - denom

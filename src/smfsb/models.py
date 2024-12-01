@@ -4,6 +4,7 @@
 from smfsb import Spn
 import numpy as np
 
+
 def bd(th=[1, 1.1]):
     """Create a birth-death model
 

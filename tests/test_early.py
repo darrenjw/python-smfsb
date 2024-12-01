@@ -18,6 +18,7 @@ def test_rcfmc():
     assert len(times) == 30
     assert len(states) == 31
 
+
 def test_rfmc():
     p_mat = np.array([[0.9, 0.1], [0.2, 0.8]])
     pi0 = np.array([0.5, 0.5])
