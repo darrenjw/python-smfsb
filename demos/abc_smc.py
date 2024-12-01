@@ -4,30 +4,12 @@ import smfsb
 import numpy as np
 import scipy as sp
 import math
+import matplotlib.pyplot as plt
+
 
 print("ABC-SMC")
 
 data = smfsb.data.lv_perfect[:, range(1, 3)]
-
-
-def rpr():
-    return np.array(
-        [np.random.uniform(-3, 3), np.random.uniform(-8, -2), np.random.uniform(-4, 2)]
-    )
-
-
-def dpr(th):
-    return np.sum(
-        np.log(
-            np.array(
-                [
-                    ((th[0] > -3) & (th[0] < 3)) / 6,
-                    ((th[1] > -8) & (th[1] < -2)) / 6,
-                    ((th[2] > -4) & (th[2] < 2)) / 6,
-                ]
-            )
-        )
-    )
 
 
 def rpr():
@@ -123,8 +105,6 @@ postmat = smfsb.abc_smc(
 
 its, var = postmat.shape
 print(its, var)
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(2, 3)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

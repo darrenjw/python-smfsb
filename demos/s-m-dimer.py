@@ -2,13 +2,13 @@
 
 import smfsb
 import smfsb.models
+import matplotlib.pyplot as plt
+
 
 dimer = smfsb.models.dimer()
 print(dimer)
 step = dimer.step_gillespie()
 out = smfsb.sim_time_series(dimer.m, 0, 100, 0.1, step)
-
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(2):

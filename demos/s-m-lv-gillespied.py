@@ -3,14 +3,14 @@
 import smfsb
 import smfsb.models
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 lv = smfsb.models.lv()
 print(lv)
 states = lv.gillespied(30, 0.1)
 print(states.shape)
 
-
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(2):

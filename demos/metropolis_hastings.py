@@ -3,14 +3,20 @@
 import smfsb
 import numpy as np
 import scipy as sp
+import matplotlib.pyplot as plt
 
 data = np.random.normal(5, 2, 250)
-llik = lambda x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
-prop = lambda x: np.random.normal(x, 0.1, 2)
+
+
+def llik(x):
+    return np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
+
+
+def prop(x):
+    return np.random.normal(x, 0.1, 2)
+
+
 postmat = smfsb.metropolis_hastings([1, 1], llik, prop, verb=False)
-
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(3, 2)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

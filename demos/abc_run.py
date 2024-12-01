@@ -2,7 +2,7 @@
 
 import smfsb
 import numpy as np
-import scipy as sp
+import matplotlib.pyplot as plt
 
 data = np.random.normal(5, 2, 250)
 
@@ -37,8 +37,6 @@ q = np.quantile(d, 0.01)
 prmat = np.vstack(p)
 postmat = prmat[d < q, :]
 its, var = postmat.shape
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(3, 2)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

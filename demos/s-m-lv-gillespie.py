@@ -2,12 +2,12 @@
 
 import smfsb
 import smfsb.models
+import matplotlib.pyplot as plt
 
 lv = smfsb.models.lv()
 print(lv)
 times, states = lv.gillespie(2000)
 
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(2):

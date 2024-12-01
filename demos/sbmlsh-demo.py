@@ -2,6 +2,7 @@
 
 import smfsb
 import numpy as np
+import matplotlib.pyplot as plt
 
 seir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
@@ -29,7 +30,6 @@ seir = smfsb.shorthand_to_spn(seir_sh)
 step_seir = seir.step_gillespie()
 out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, step_seir)
 
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(len(seir.m)):

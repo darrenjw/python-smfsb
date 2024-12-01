@@ -2,13 +2,13 @@
 
 import smfsb
 import smfsb.models
+import matplotlib.pyplot as plt
 
 lv = smfsb.models.lv()
 print(lv)
 step_lv = lv.step_poisson()
 out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
 
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(2):

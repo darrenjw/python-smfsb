@@ -2,11 +2,11 @@
 
 import smfsb
 import numpy as np
+import matplotlib.pyplot as plt
 
 postmat = smfsb.normal_gibbs(11000, 15, 3, 11, 10, 1 / 100, 25, 20)
 postmat = postmat[range(1000, 11000), :]
 
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(3, 3)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

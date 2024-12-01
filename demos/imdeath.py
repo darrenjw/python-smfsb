@@ -2,7 +2,6 @@
 # imdeath.py
 
 import smfsb
-import numpy as np
 import matplotlib.pyplot as plt
 
 times, states = smfsb.imdeath(150)
