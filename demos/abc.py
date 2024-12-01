@@ -25,11 +25,11 @@ def rmod(th):
     return smfsb.sim_time_series([50, 100], 0, 30, 2, smfsb.models.lv(th).step_cle(0.1))
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return dat
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -38,7 +38,7 @@ def dist(ss):
 
 
 def rdis(th):
-    return dist(sumStats(rmod(th)))
+    return dist(sum_stats(rmod(th)))
 
 
 p, d = smfsb.abc_run(1000000, rpr, rdis, verb=True)

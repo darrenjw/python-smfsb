@@ -9,7 +9,7 @@ def obsll(x, t, y, th):
     return np.sum(sp.stats.norm.logpdf(y - x, scale=10))
 
 
-def simX(t0, th):
+def sim_x(t0, th):
     return np.array([np.random.poisson(50), np.random.poisson(100)])
 
 
@@ -19,7 +19,7 @@ def step(x, t, dt, th):
     return sf(x, t, dt)
 
 
-mll = smfsb.pf_marginal_ll(100, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+mll = smfsb.pf_marginal_ll(100, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
 
 print(mll(np.array([1, 0.005, 0.6])))
 print(mll(np.array([1, 0.005, 0.6])))

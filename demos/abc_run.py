@@ -15,11 +15,11 @@ def rmod(th):
     return np.random.normal(th[0], th[1], 250)
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return np.array([np.mean(dat), np.std(dat)])
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -28,7 +28,7 @@ def dist(ss):
 
 
 def rdis(th):
-    return dist(sumStats(rmod(th)))
+    return dist(sum_stats(rmod(th)))
 
 
 p, d = smfsb.abc_run(1000000, rpr, rdis)

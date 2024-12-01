@@ -11,8 +11,8 @@ T = 8
 x0 = np.zeros((2, M, N))
 lv = smfsb.models.lv()
 x0[:, int(M / 2), int(N / 2)] = lv.m
-stepLv2d = lv.step_cle_2d(np.array([0.6, 0.6]))
-x1 = stepLv2d(x0, 0, T)
+step_lv2d = lv.step_cle_2d(np.array([0.6, 0.6]))
+x1 = step_lv2d(x0, 0, T)
 
 fig, axis = plt.subplots()
 for i in range(2):

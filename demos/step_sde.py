@@ -11,16 +11,16 @@ mu = 0.1
 sig = 0.2
 
 
-def myDrift(x, t):
+def my_drift(x, t):
     return np.array([lamb - x[0] * x[1], alpha * (mu - x[1])])
 
 
-def myDiff(x, t):
+def my_diff(x, t):
     return np.array([[np.sqrt(lamb + x[0] * x[1]), 0], [0, sig * np.sqrt(x[1])]])
 
 
-stepProc = smfsb.step_sde(myDrift, myDiff, dt=0.001)
-out = smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+step_proc = smfsb.step_sde(my_drift, my_diff, dt=0.001)
+out = smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, step_proc)
 
 fig, axis = plt.subplots()
 for i in range(2):

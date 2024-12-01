@@ -12,8 +12,8 @@ sir = smfsb.Spn(
     lambda x, t: np.array([0.3 * x[0] * x[1] / 200, 0.1 * x[1]]),
     [197, 3, 0],
 )
-stepSir = sir.step_poisson()
-sample = smfsb.sim_sample(100, sir.m, 0, 20, stepSir)
+step_sir = sir.step_poisson()
+sample = smfsb.sim_sample(100, sir.m, 0, 20, step_sir)
 fig, axis = plt.subplots()
 axis.hist(sample[:, 1], 30)
 axis.set_title("Infected at time 20")

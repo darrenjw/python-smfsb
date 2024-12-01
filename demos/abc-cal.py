@@ -64,11 +64,11 @@ print(sds)
 print("Main run with calibrated summary stats")
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return ssi(dat) / sds
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -77,7 +77,7 @@ def dist(ss):
 
 
 def rdis(th):
-    return dist(sumStats(rmod(th)))
+    return dist(sum_stats(rmod(th)))
 
 
 p, d = smfsb.abc_run(1000000, rpr, rdis, verb=True)
