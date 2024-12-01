@@ -65,7 +65,7 @@ class Spn:
             str(self.m),
         )
 
-    def step_gillespie(self, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie(self, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of a SPN by using the
         Gillespie algorithm
 
@@ -76,9 +76,9 @@ class Spn:
 
         Parameters
         ----------
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -99,8 +99,8 @@ class Spn:
         >>> stepLv = lv.step_gillespie()
         >>> stepLv([50, 100], 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         def step(x0, t0, deltat):
             t = t0
@@ -109,17 +109,17 @@ class Spn:
             while True:
                 h = self.h(x, t)
                 h0 = h.sum()
-                if h0 > maxHaz:
+                if h0 > max_haz:
                     print("WARNING: hazard too large - terminating!")
                     return x
-                if h0 < minHaz:
+                if h0 < min_haz:
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0 / h0)
                 if t > termt:
                     return x
                 j = np.random.choice(v, p=h / h0)
-                x = np.add(x, S[:, j])
+                x = np.add(x, sto[:, j])
 
         return step
 
@@ -146,8 +146,8 @@ class Spn:
         >>> stepLv = lv.step_first()
         >>> stepLv([50, 100], 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         def step(x0, t0, deltat):
             t = t0
@@ -161,7 +161,7 @@ class Spn:
                 t = t + pu[j]
                 if t > termt:
                     return x
-                x = np.add(x, S[:, j])
+                x = np.add(x, sto[:, j])
 
         return step
 
@@ -198,8 +198,8 @@ class Spn:
         >>> stepLv = lv.step_poisson(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         def step(x0, t0, deltat):
             x = x0
@@ -208,7 +208,7 @@ class Spn:
             while True:
                 h = self.h(x, t)
                 r = np.random.poisson(h * dt)
-                x = np.add(x, S.dot(r))
+                x = np.add(x, sto.dot(r))
                 t = t + dt
                 if t > termt:
                     return x
@@ -247,7 +247,7 @@ class Spn:
         >>> stepLv = lv.step_euler(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
-        S = (self.post - self.pre).T
+        sto = (self.post - self.pre).T
 
         def step(x0, t0, deltat):
             x = x0
@@ -255,7 +255,7 @@ class Spn:
             termt = t0 + deltat
             while True:
                 h = self.h(x, t)
-                x = np.add(x, S.dot(h * dt))
+                x = np.add(x, sto.dot(h * dt))
                 t = t + dt
                 if t > termt:
                     return x
@@ -295,8 +295,8 @@ class Spn:
         >>> stepLv = lv.step_cle(0.001)
         >>> stepLv([50, 100], 0, 1)
         """
-        S = (self.post - self.pre).T
-        v = S.shape[1]
+        sto = (self.post - self.pre).T
+        v = sto.shape[1]
         sdt = np.sqrt(dt)
 
         def step(x0, t0, deltat):
@@ -306,7 +306,7 @@ class Spn:
             while True:
                 h = self.h(x, t)
                 dw = np.random.normal(scale=sdt, size=v)
-                x = np.add(x, S.dot(h * dt + np.sqrt(h) * dw))
+                x = np.add(x, sto.dot(h * dt + np.sqrt(h) * dw))
                 x[x < 0] = -x[x < 0]
                 t = t + dt
                 if t > termt:
@@ -316,7 +316,7 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def step_gillespie_1d(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_1d(self, d, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
@@ -335,9 +335,9 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore twice this value (as it can leave to
           the left or the right).
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -364,8 +364,8 @@ class Spn:
         >>> x0[:,int(N/2)] = lv.m
         >>> stepLv1d(x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         def step(x0, t0, deltat):
             t = t0
@@ -380,10 +380,10 @@ class Spn:
                 hds = np.apply_along_axis(np.sum, 0, hd)
                 hdss = hds.sum()
                 h0 = hrss + hdss
-                if h0 > maxHaz:
+                if h0 > max_haz:
                     print("WARNING: hazard too large - terminating!")
                     return x
-                if h0 < minHaz:
+                if h0 < min_haz:
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0 / h0)
@@ -410,11 +410,11 @@ class Spn:
                     # react
                     j = np.random.choice(n, p=hrs / hrss)  # pick a box
                     i = np.random.choice(v, p=hr[:, j] / hrs[j])  # pick a reaction
-                    x[:, j] = np.add(x[:, j], S[:, i])
+                    x[:, j] = np.add(x[:, j], sto[:, i])
 
         return step
 
-    def step_gillespie_2d(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_2d(self, d, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
@@ -433,9 +433,9 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore four times this value (as it can leave in
           one of 4 directions).
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -462,8 +462,8 @@ class Spn:
         >>> x0[:, int(N/2), int(N/2)] = lv.m
         >>> stepLv2d(x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         def step(x0, t0, deltat):
             t = t0
@@ -478,10 +478,10 @@ class Spn:
                 hds = np.sum(hd, axis=(0))
                 hdss = hds.sum()
                 h0 = hrss + hdss
-                if h0 > maxHaz:
+                if h0 > max_haz:
                     print("WARNING: hazard too large - terminating!")
                     return x
-                if h0 < minHaz:
+                if h0 < min_haz:
                     t = 1e99
                 else:
                     t = t + np.random.exponential(1.0 / h0)
@@ -527,7 +527,7 @@ class Spn:
                     k = np.random.choice(
                         v, p=hr[:, i, j] / hrs[i, j]
                     )  # pick a reaction
-                    x[:, i, j] = np.add(x[:, i, j], S[:, k])
+                    x[:, i, j] = np.add(x[:, i, j], sto[:, k])
 
         return step
 
@@ -576,8 +576,8 @@ class Spn:
         >>> x0[:,int(N/2)] = lv.m
         >>> stepLv1d(x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         sdt = np.sqrt(dt)
 
         def forward(m):
@@ -614,7 +614,7 @@ class Spn:
                 x = diffuse(x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
                 dwt = np.random.normal(0, sdt, (v, n))
-                x = x + S @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
+                x = x + sto @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
                 x = rectify(x)
                 t = t + dt
                 if t > termt:
@@ -668,8 +668,8 @@ class Spn:
         >>> x0[:,int(M/2),int(N/2)] = lv.m
         >>> stepLv2d(x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         sdt = np.sqrt(dt)
 
         def left(a):
@@ -723,7 +723,7 @@ class Spn:
                 dwt = np.random.normal(0, sdt, (v, m, n))
                 for i in range(m):
                     for j in range(n):
-                        x[:, i, j] = x[:, i, j] + S @ (
+                        x[:, i, j] = x[:, i, j] + sto @ (
                             hr[:, i, j] * dt + np.sqrt(hr[:, i, j]) * dwt[:, i, j]
                         )
                 x = rectify(x)
@@ -762,24 +762,24 @@ class Spn:
         >>> lv = smfsb.models.lv()
         >>> lv.gillespie(1000)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         t = 0
         x = self.m
-        tVec = np.zeros(n)
-        xMat = np.zeros((n + 1, u))
-        xMat[0, :] = x
+        t_vec = np.zeros(n)
+        x_mat = np.zeros((n + 1, u))
+        x_mat[0, :] = x
         for i in range(n):
             h = self.h(x, t)
             h0 = h.sum()
             t = t + np.random.exponential(1.0 / h0)
             j = np.random.choice(v, p=h / h0)
-            x = np.add(x, S[:, j])
-            xMat[i + 1, :] = x
-            tVec[i] = t
-        return tVec, xMat
+            x = np.add(x, sto[:, j])
+            x_mat[i + 1, :] = x
+            t_vec[i] = t
+        return t_vec, x_mat
 
-    def gillespied(self, T, dt=1):
+    def gillespied(self, tt, dt=1):
         """Simulate a sample path from a stochastic kinetic model described by
         a stochastic Petri net
 
@@ -789,7 +789,7 @@ class Spn:
 
         Parameters
         ----------
-        T: float
+        tt: float
         The required length of simulation time.
         dt: float
         The grid size for the output. Note that this parameter simply
@@ -803,12 +803,12 @@ class Spn:
         >>> lv = smfsb.models.lv()
         >>> lv.gillespied(30, 0.1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         t = 0
-        n = int(T / dt)
+        n = int(tt / dt)
         x = self.m
-        xMat = np.zeros((n, u))
+        x_mat = np.zeros((n, u))
         i = 0
         target = 0
         while True:
@@ -819,13 +819,13 @@ class Spn:
             else:
                 t = t + np.random.exponential(1.0 / h0)
             while t >= target:
-                xMat[i, :] = x
+                x_mat[i, :] = x
                 i = i + 1
                 target = target + dt
                 if i >= n:
-                    return xMat
+                    return x_mat
             j = np.random.choice(v, p=h / h0)
-            x = np.add(x, S[:, j])
+            x = np.add(x, sto[:, j])
 
 
 # eof

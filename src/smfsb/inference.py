@@ -7,7 +7,7 @@ import math
 
 def metropolis_hastings(
     init,
-    logLik,
+    log_lik,
     rprop,
     ldprop=lambda n, o: 1,
     ldprior=lambda x: 1,
@@ -30,7 +30,7 @@ def metropolis_hastings(
     ----------
     init : vector
       A parameter vector with which to initialise the MCMC algorithm.
-    logLik : function
+    log_lik : function
       A function which takes a parameter (such as `init`) as its
       only required argument and returns the log-likelihood of the
       data. Note that it is fine for this to return the log of an
@@ -97,7 +97,7 @@ def metropolis_hastings(
         for j in range(thin):
             prop = rprop(x)
             if ldprior(prop) > -math.inf:
-                llprop = logLik(prop)
+                llprop = log_lik(prop)
                 a = (
                     llprop
                     - ll
@@ -187,7 +187,7 @@ def abc_run(n, rprior, rdist, verb=False):
     return (p, d)
 
 
-def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
+def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     """Create a function for computing the log of an unbiased estimate of
     marginal likelihood of a time course data set
 
@@ -200,7 +200,7 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     n :  int
       An integer representing the number of particles to use in the
       particle filter.
-    simX0 : function
+    sim_x0 : function
       A function with arguments `t0` and `th`, where ‘t0’ is a time
       at which to simulate from an initial distribution for the state of the
       particle filter and `th` is a vector of parameters. The return value
@@ -210,11 +210,11 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     t0 : float
       The time corresponding to the starting point of the Markov
       process. Can be no bigger than the smallest observation time.
-    stepFun : function
+    step_fun : function
       A function for advancing the state of the Markov process, with
       arguments `x`, `t0`, `deltat` and `th`, with `th` representing a
       vector of parameters.
-    dataLLik : function
+    data_ll : function
       A function with arguments `x`, `t`, `y`, `th`,
       where `x` and `t` represent the true state and time of the
       process, `y` is the observed data, and `th` is a parameter vector.
@@ -263,17 +263,17 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     def go(th):
         ll = 0
         xmat = np.zeros((n, 1))
-        xmat = np.apply_along_axis(lambda x: simX0(t0, th), 1, xmat)
+        xmat = np.apply_along_axis(lambda x: sim_x0(t0, th), 1, xmat)
         sh = xmat.shape
         if debug:
             print(xmat.shape)
             print(xmat[range(5), :])
         for i in range(len(deltas)):
             xmat = np.apply_along_axis(
-                lambda x: stepFun(x, times[i], deltas[i], th), 1, xmat
+                lambda x: step_fun(x, times[i], deltas[i], th), 1, xmat
             )
             lw = np.apply_along_axis(
-                lambda x: dataLLik(x, times[i + 1], obs[i,], th), 1, xmat
+                lambda x: data_ll(x, times[i + 1], obs[i,], th), 1, xmat
             )
             m = np.max(lw)
             sw = np.exp(lw - m)
@@ -287,33 +287,33 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     return go
 
 
-def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor):
+def abc_smc_step(dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor):
     """Carry out one step of an ABC-SMC algorithm
 
     Not meant to be directly called by users. See abc_smc.
     """
-    n = priorSample.shape[0]
-    mx = np.max(priorLW)
-    rw = np.exp(priorLW - mx)
-    # print(priorSample.shape)
+    n = prior_sample.shape[0]
+    mx = np.max(prior_lw)
+    rw = np.exp(prior_lw - mx)
+    # print(prior_sample.shape)
     # print(len(rw))
-    priorInd = np.random.choice(range(n), n * factor, p=rw / np.sum(rw))
-    prior = priorSample[priorInd, :]
+    prior_ind = np.random.choice(range(n), n * factor, p=rw / np.sum(rw))
+    prior = prior_sample[prior_ind, :]
     # print(prior.shape)
     prop = np.apply_along_axis(rperturb, 1, prior)
     # print(prop.shape)
     dist = np.apply_along_axis(rdist, 1, prop)
     # print(dist.shape)
-    qCut = np.nanquantile(dist, 1 / factor)
-    new = prop[dist < qCut, :]
+    q_cut = np.nanquantile(dist, 1 / factor)
+    new = prop[dist < q_cut, :]
 
-    def logWeight(th):
-        terms = priorLW + np.apply_along_axis(lambda x: dperturb(th, x), 1, priorSample)
+    def log_weight(th):
+        terms = prior_lw + np.apply_along_axis(lambda x: dperturb(th, x), 1, prior_sample)
         mt = np.max(terms)
         denom = mt + np.log(np.sum(np.exp(terms - mt)))
         return dprior(th) - denom
 
-    lw = np.apply_along_axis(logWeight, 1, new)
+    lw = np.apply_along_axis(log_weight, 1, new)
     mx = np.max(lw)
     rw = np.exp(lw - mx)
     nlw = np.log(rw / np.sum(rw))
@@ -324,7 +324,7 @@ def abc_smc_step(dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor
 
 
 def abc_smc(
-    N,
+    n,
     rprior,
     dprior,
     rdist,
@@ -343,11 +343,11 @@ def abc_smc(
 
     Parameters
     ----------
-    N : int
+    n : int
       An integer representing the number of simulations to pass on
       at each stage of the SMC algorithm. Note that the TOTAL
       number of forward simulations required by the algorithm will
-      be (roughly) 'N*steps*factor'.
+      be (roughly) 'n*steps*factor'.
     rprior : function
       A function without arguments generating single parameter
       (vector) from the prior.
@@ -369,11 +369,11 @@ def abc_smc(
       arguments (new first and old second), and returns the log of the density
       associated with this perturbation kernel.
     factor : int
-      At each step of the algorithm, 'N*factor' proposals are
-      generated and the best 'N' of these are weighted and passed
+      At each step of the algorithm, 'n*factor' proposals are
+      generated and the best 'n' of these are weighted and passed
       on to the next stage. Note that the effective sample size of
       the parameters passed on to the next step may be (much)
-      smaller than 'N', since some of the particles may be assigned
+      smaller than 'n', since some of the particles may be assigned
       small (or zero) weight.
     steps : int
       The number of steps of the ABC-SMC algorithm. Typically,
@@ -415,33 +415,33 @@ def abc_smc(
     >>>                           rdis, lambda x: np.random.normal(x, 0.1),
     >>>                           lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     """
-    priorLW = np.log(np.zeros((N)) + 1 / N)
-    priorSample = np.zeros((N, 1))
-    priorSample = np.apply_along_axis(lambda x: rprior(), 1, priorSample)
+    prior_lw = np.log(np.zeros((n)) + 1 / n)
+    prior_sample = np.zeros((n, 1))
+    prior_sample = np.apply_along_axis(lambda x: rprior(), 1, prior_sample)
     for i in range(steps):
         if verb:
             print(steps - i, end=" ", flush=True)
-        priorSample, priorLW = abc_smc_step(
-            dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor
+        prior_sample, prior_lw = abc_smc_step(
+            dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
         )
         if debug:
-            print(priorSample.shape)
-            print(priorLW.shape)
+            print(prior_sample.shape)
+            print(prior_lw.shape)
     if verb:
         print("Done.")
     if debug:
-        print(priorSample.shape)
-        print(priorLW.shape)
-    # print(priorLW)
-    ind = np.random.choice(range(priorLW.shape[0]), N, p=np.exp(priorLW))
+        print(prior_sample.shape)
+        print(prior_lw.shape)
+    # print(prior_lw)
+    ind = np.random.choice(range(prior_lw.shape[0]), n, p=np.exp(prior_lw))
     # print(ind)
-    return priorSample[ind, :]
+    return prior_sample[ind, :]
 
 
 # Some illustrative functions not intended for serious use...
 
 
-def normal_gibbs(N, n, a, b, c, d, xbar, ssquared):
+def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
     """A simple Gibbs sampler for Bayesian inference for the mean and
     precision of a normal random sample
 
@@ -451,7 +451,7 @@ def normal_gibbs(N, n, a, b, c, d, xbar, ssquared):
 
     Parameters
     ----------
-    N : int
+    iters : int
       The number of iterations of the Gibbs sampler
     n : int
       The sample size of the normal random sample
@@ -475,15 +475,15 @@ def normal_gibbs(N, n, a, b, c, d, xbar, ssquared):
     Examples
     --------
     >>> import smfsb
-    >>> postmat = smfsb.normal_gibbs(N=1100, n=15, a=3, b=11, c=10, d=1/100,
+    >>> postmat = smfsb.normal_gibbs(iters=1100, n=15, a=3, b=11, c=10, d=1/100,
     >>>   xbar=25, ssquared=20)
     >>> postmat = postmat[range(100,1100),:]
     """
-    mat = np.zeros((N, 2))
+    mat = np.zeros((iters, 2))
     mu = c
     tau = a / b
     mat[1, :] = [mu, tau]
-    for i in range(1, N):
+    for i in range(1, iters):
         muprec = n * tau + d
         mumean = (d * c + n * tau * xbar) / muprec
         mu = np.random.normal(mumean, np.sqrt(1 / muprec))

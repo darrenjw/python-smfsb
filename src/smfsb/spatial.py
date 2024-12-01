@@ -4,7 +4,7 @@
 import numpy as np
 
 
-def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_1d(x0, t0, tt, dt, step_fun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -27,7 +27,7 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
       The time step of the output. Note that this time step relates
       only to the recorded output, and has no bearing on the
       accuracy of the simulation process.
-    stepFun : function
+    step_fun : function
       A function (closure) for advancing the state of the process,
       such as produced by `step_gillespie_1d`.
     verb : boolean
@@ -50,22 +50,22 @@ def sim_time_series_1d(x0, t0, tt, dt, stepFun, verb=False):
     >>> x0[:,int(N/2)] = lv.m
     >>> smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
     """
-    N = int((tt - t0) // dt + 1)
+    nt = int((tt - t0) // dt + 1)
     u, n = x0.shape
-    arr = np.zeros((u, n, N))
+    arr = np.zeros((u, n, nt))
     x = x0
     t = t0
     arr[:, :, 0] = x
-    for i in range(1, N):
+    for i in range(1, nt):
         if verb:
-            print(N - i)
+            print(nt - i)
         t = t + dt
-        x = stepFun(x, t, dt)
+        x = step_fun(x, t, dt)
         arr[:, :, i] = x
     return arr
 
 
-def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_2d(x0, t0, tt, dt, step_fun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -88,7 +88,7 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
       The time step of the output. Note that this time step relates
       only to the recorded output, and has no bearing on the
       accuracy of the simulation process.
-    stepFun : function
+    step_fun : function
       A function (closure) for advancing the state of the process,
       such as produced by `step_gillespie_2d`.
     verb : boolean
@@ -112,17 +112,17 @@ def sim_time_series_2d(x0, t0, tt, dt, stepFun, verb=False):
     >>> x0[:,int(M/2),int(N/2)] = lv.m
     >>> smfsb.sim_time_series_2d(x0, 0, T, 1, stepLv2d, True)
     """
-    N = int((tt - t0) // dt + 1)
+    nt = int((tt - t0) // dt + 1)
     u, m, n = x0.shape
-    arr = np.zeros((u, m, n, N))
+    arr = np.zeros((u, m, n, nt))
     x = x0
     t = t0
     arr[:, :, :, 0] = x
-    for i in range(1, N):
+    for i in range(1, nt):
         if verb:
-            print(N - i)
+            print(nt - i)
         t = t + dt
-        x = stepFun(x, t, dt)
+        x = step_fun(x, t, dt)
         arr[:, :, :, i] = x
     return arr
 

@@ -7,7 +7,7 @@ import numpy as np
 # Some simulation functions
 
 
-def sim_time_series(x0, t0, tt, dt, stepFun):
+def sim_time_series(x0, t0, tt, dt, step_fun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -28,7 +28,7 @@ def sim_time_series(x0, t0, tt, dt, stepFun):
         The time step of the output. Note that this time step relates only to
         the recorded output, and has no bearing on the accuracy of the simulation
         process.
-    stepFun: function
+    step_fun: function
         A function (closure) for advancing the state of the process,
         such as produced by ‘step_gillespie’ or ‘step_euler’.
 
@@ -51,12 +51,12 @@ def sim_time_series(x0, t0, tt, dt, stepFun):
     mat[0, :] = x
     for i in range(1, n):
         t = t + dt
-        x = stepFun(x, t, dt)
+        x = step_fun(x, t, dt)
         mat[i, :] = x
     return mat
 
 
-def sim_sample(n, x0, t0, deltat, stepFun):
+def sim_sample(n, x0, t0, deltat, step_fun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
     advancing the state of the model
@@ -77,7 +77,7 @@ def sim_sample(n, x0, t0, deltat, stepFun):
     deltat: float
         The amount of time in the future of t0 at which samples of the
         system state are required.
-    stepFun: function
+    step_fun: function
         A function (closure) for advancing the state of the process,
         such as produced by `step_gillespie' or `step_euler'.
 
@@ -95,7 +95,7 @@ def sim_sample(n, x0, t0, deltat, stepFun):
     u = len(x0)
     mat = np.zeros((n, u))
     for i in range(n):
-        mat[i, :] = stepFun(x0, t0, deltat)
+        mat[i, :] = step_fun(x0, t0, deltat)
     return mat
 
 
@@ -175,7 +175,7 @@ def step_sde(drift, diffusion, dt=0.01):
 # Illustrative functions from early in the book
 
 
-def rfmc(n, P, pi0):
+def rfmc(n, p_mat, pi0):
     """Simulate a finite state space Markov chain
 
     This function simulates a single realisation from a discrete time
@@ -188,14 +188,14 @@ def rfmc(n, P, pi0):
         The number of states to be sampled from the Markov chain,
         including the initial state, which will be sampled using
         ‘pi0’.
-    P: matrix
+    p_mat: matrix
         The transition matrix of the Markov chain. This is assumed to
         be a stochastic matrix, having non-negative elements and rows
         summing to one.
     pi0: array
         A vector representing the probability distribution of the
         initial state of the Markov chain. If this vector is of
-        length ‘r’, then the transition matrix ‘P’ is assumed to be
+        length ‘r’, then the transition matrix ‘p_mat’ is assumed to be
         ‘r x r’. The elements of this vector are assumed to be
         non-negative and sum to one.
 
@@ -207,19 +207,19 @@ def rfmc(n, P, pi0):
     --------
     >>> import smfsb
     >>> import numpy as np
-    >>> P = np.array([[0.9,0.1],[0.2,0.8]])
+    >>> p_mat = np.array([[0.9,0.1],[0.2,0.8]])
     >>> pi0 = np.array([0.5,0.5])
-    >>> smfsb.rfmc(200, P, pi0)
+    >>> smfsb.rfmc(200, p_mat, pi0)
     """
     v = np.zeros(n)
     r = len(pi0)
     v[0] = np.random.choice(r, p=pi0)
     for i in range(1, n):
-        v[i] = np.random.choice(r, p=P[int(v[i - 1]), :])
+        v[i] = np.random.choice(r, p=p_mat[int(v[i - 1]), :])
     return v
 
 
-def rcfmc(n, Q, pi0):
+def rcfmc(n, q_mat, pi0):
     """Simulate a continuous time finite state space Markov chain
 
     This function simulates a single realisation from a continuous
@@ -232,9 +232,9 @@ def rcfmc(n, Q, pi0):
         The number of states to be sampled from the Markov chain,
         including the initial state, which will be sampled using
         ‘pi0’.
-    Q: matrix
+    q_mat: matrix
         The transition rate matrix of the Markov chain, where each
-        off-diagonal element ‘Q[i,j]’ represents the rate of
+        off-diagonal element ‘q_mat[i,j]’ represents the rate of
         transition from state ‘i’ to state ‘j’. This matrix is
         assumed to be square, having rows summing to zero.
     pi0: array
@@ -262,8 +262,8 @@ def rcfmc(n, Q, pi0):
     t = 0
     xvec[0] = x
     for i in range(n):
-        t = t + np.random.exponential(-Q[int(x), int(x)])
-        weights = Q[int(x), :].copy()
+        t = t + np.random.exponential(-q_mat[int(x), int(x)])
+        weights = q_mat[int(x), :].copy()
         weights[x] = 0
         weights = weights / np.sum(weights)
         x = np.random.choice(r, p=weights)
@@ -318,7 +318,7 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     return tvec, xvec
 
 
-def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
+def rdiff(a_fun, b_fun, x0=0, t=50, dt=0.01):
     """Simulate a sample path from a univariate diffusion process
 
     This function simulates a single realisation from a
@@ -326,11 +326,11 @@ def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
 
     Parameters
     ----------
-    aFun: function
+    a_fun: function
         A scalar-valued function representing the infinitesimal mean
         (drift) of the diffusion process. The argument is the current
         state of the process.
-    bFun: function
+    b_fun: function
         A scalar-valued function representing the infinitesimal
         standard deviation of the process. The argument is the current
         state of the process.
@@ -361,7 +361,7 @@ def rdiff(aFun, bFun, x0=0, t=50, dt=0.01):
     sdt = np.sqrt(dt)
     for i in range(n):
         t = i * dt
-        x = x + aFun(x) * dt + bFun(x) * np.random.normal(0, sdt)
+        x = x + a_fun(x) * dt + b_fun(x) * np.random.normal(0, sdt)
         xvec[i] = x
     return xvec
 
@@ -409,15 +409,15 @@ def simple_euler(rhs, ic, t=50, dt=0.001):
     """
     p = len(ic)
     n = int(t / dt)
-    xMat = np.zeros((n, p))
+    x_mat = np.zeros((n, p))
     x = ic
     t = 0
-    xMat[0, :] = x
+    x_mat[0, :] = x
     for i in range(1, n):
         t = t + dt
         x = x + rhs(x, t) * dt
-        xMat[i, :] = x
-    return xMat
+        x_mat[i, :] = x
+    return x_mat
 
 
 def discretise(times, states, dt=1, start=0):
