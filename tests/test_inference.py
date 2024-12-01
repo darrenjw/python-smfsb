@@ -33,17 +33,17 @@ def test_abc_run():
     def rmod(th):
         return np.random.normal(th[0], th[1], 250)
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return np.array([np.mean(dat), np.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return np.sqrt(np.sum(diff * diff))
 
     def rdis(th):
-        return dist(sumStats(rmod(th)))
+        return dist(sum_stats(rmod(th)))
 
     p, d = smfsb.abc_run(100, rpr, rdis)
     assert len(p) == 100
@@ -54,14 +54,14 @@ def test_pfmllik():
     def obsll(x, t, y, th):
         return np.sum(sp.stats.norm.logpdf((y - x) / 10))
 
-    def simX(t0, th):
+    def sim_x(t0, th):
         return np.array([np.random.poisson(50), np.random.poisson(100)])
 
     def step(x, t, dt, th):
         sf = smfsb.models.lv(th).step_cle()
         return sf(x, t, dt)
 
-    mll = smfsb.pf_marginal_ll(50, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+    mll = smfsb.pf_marginal_ll(50, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
     assert mll(np.array([1, 0.005, 0.6])) > mll(np.array([2, 0.005, 0.6]))
 
 
@@ -74,32 +74,32 @@ def test_abcsmcstep():
     def rmod(th):
         return np.random.normal(np.exp(th[0]), np.exp(th[1]), 250)
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return np.array([np.mean(dat), np.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return np.sqrt(np.sum(diff * diff))
 
     def rdis(th):
-        return dist(sumStats(rmod(th)))
+        return dist(sum_stats(rmod(th)))
 
-    N = 100
-    samples = np.zeros((N, 1))
+    num_samples = 100
+    samples = np.zeros((num_samples, 1))
     samples = np.apply_along_axis(lambda x: rpr(), 1, samples)
     th, lw = smfsb.abc_smc_step(
         lambda x: np.log(np.sum(((x < 3) & (x > -3)) / 6)),
         samples,
-        np.zeros(N) + np.log(1 / N),
+        np.zeros(num_samples) + np.log(1 / num_samples),
         rdis,
         lambda x: np.random.normal(x, 0.1),
         lambda x, y: np.sum(sp.stats.norm(x, 0.1).logpdf(y)),
         10,
     )
-    assert th.shape == (N, 2)
-    assert len(lw) == N
+    assert th.shape == (num_samples, 2)
+    assert len(lw) == num_samples
 
 
 def test_abcsmc():
@@ -111,28 +111,28 @@ def test_abcsmc():
     def rmod(th):
         return np.random.normal(np.exp(th[0]), np.exp(th[1]), 250)
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return np.array([np.mean(dat), np.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return np.sqrt(np.sum(diff * diff))
 
     def rdis(th):
-        return dist(sumStats(rmod(th)))
+        return dist(sum_stats(rmod(th)))
 
-    N = 100
+    num_samples = 100
     post = smfsb.abc_smc(
-        N,
+        num_samples,
         rpr,
         lambda x: np.log(np.sum(((x < 3) & (x > -3)) / 6)),
         rdis,
         lambda x: np.random.normal(x, 0.1),
         lambda x, y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)),
     )
-    assert post.shape == (N, 2)
+    assert post.shape == (num_samples, 2)
 
 
 # eof

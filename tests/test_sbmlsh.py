@@ -5,7 +5,7 @@ import smfsb
 import numpy as np
 
 
-seirSH = """
+seir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
  s=item, t=second, v=litre, e=item
 @compartments
@@ -29,9 +29,9 @@ seirSH = """
 
 
 def test_sbmlsh():
-    seir = smfsb.shorthand_to_spn(seirSH)
-    stepSeir = seir.step_gillespie()
-    out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, stepSeir)
+    seir = smfsb.shorthand_to_spn(seir_sh)
+    step_seir = seir.step_gillespie()
+    out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, step_seir)
     assert out.shape == (800, 4)
     assert out[400, 3] >= 0
 

@@ -15,8 +15,8 @@ def test_create():
         lambda x, t: np.array([0.3 * x[0] * x[1] / 200, 0.1 * x[1]]),
         [197, 3, 0],
     )
-    stepSir = sir.step_poisson()
-    sample = smfsb.sim_sample(20, sir.m, 0, 20, stepSir)
+    step_sir = sir.step_poisson()
+    sample = smfsb.sim_sample(20, sir.m, 0, 20, step_sir)
     assert sample[19, 1] >= 0
 
 
@@ -46,16 +46,16 @@ def test_id():
 
 def test_lv2():
     lv = smfsb.models.lv([0.2, 0.001, 0.1])
-    stepLv = lv.step_gillespie()
-    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
+    step_lv = lv.step_gillespie()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] >= 0
 
 
 def test_cle():
     lv = smfsb.models.lv()
-    stepLv = lv.step_cle()
-    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
+    step_lv = lv.step_cle()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] >= 0.0
 
@@ -72,16 +72,16 @@ def test_discretise():
 
 def test_euler():
     lv = smfsb.models.lv()
-    stepLv = lv.step_euler(0.001)
-    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
+    step_lv = lv.step_euler(0.001)
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] > 0.0
 
 
 def test_frm():
     lv = smfsb.models.lv()
-    stepLv = lv.step_first()
-    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, stepLv)
+    step_lv = lv.step_first()
+    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] >= 0
 
@@ -102,16 +102,16 @@ def test_gillespie():
 
 def test_pts():
     lv = smfsb.models.lv()
-    stepLv = lv.step_poisson()
-    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, stepLv)
+    step_lv = lv.step_poisson()
+    out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] >= 0
 
 
 def test_lv():
     lv = smfsb.models.lv()
-    stepLv = lv.step_gillespie()
-    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, stepLv)
+    step_lv = lv.step_gillespie()
+    out = smfsb.sim_time_series(lv.m, 0, 10, 0.01, step_lv)
     assert out.shape == (1000, 2)
     assert out[600, 1] >= 0
 
