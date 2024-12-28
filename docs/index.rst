@@ -10,10 +10,14 @@ Welcome to smfsb's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+Tutorial
+========
 
+* :doc:`The python-smfsb tutorial <source/tutorial>`
+	     
 
-Indices and tables
-==================
+API Documentation
+=================
 
 * :ref:`genindex`
 * :ref:`modindex`

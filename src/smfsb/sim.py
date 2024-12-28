@@ -65,7 +65,7 @@ def sim_sample(n, x0, t0, deltat, step_fun):
     This function simulates many realisations of a model at a given
     fixed time in the future given an initial time and state, using a
     function (closure) for advancing the state of the model , such as
-    created by ‘step_gillespie’ or ‘step_euler’.
+    created by `step_gillespie` or `step_euler`.
 
     Parameters
     ----------
@@ -80,7 +80,7 @@ def sim_sample(n, x0, t0, deltat, step_fun):
         system state are required.
     step_fun: function
         A function (closure) for advancing the state of the process,
-        such as produced by `step_gillespie' or `step_euler'.
+        such as produced by `step_gillespie` or `step_euler`.
 
     Returns
     -------

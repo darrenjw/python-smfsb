@@ -52,10 +52,10 @@ smfsb.inference module
    :undoc-members:
    :show-inheritance:
 
-smfsb.smfsbSbml module
+smfsb.smfsbsbml module
 ----------------------
 
-.. automodule:: smfsb.smfsbSbml
+.. automodule:: smfsb.smfsbsbml
    :members:
    :undoc-members:
    :show-inheritance:
