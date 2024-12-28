@@ -36,6 +36,6 @@ for i in range(len(seir.m)):
     axis.plot(np.arange(0, 40, 0.05), out[:, i])
 
 axis.legend(seir.n)
-fig.savefig("sbmlsh.pdf")
+fig.savefig("sbmlsh-demo.pdf")
 
 # eof
