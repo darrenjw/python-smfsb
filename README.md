@@ -29,7 +29,7 @@ For an introduction to this library, see the [python-smfsb tutorial](https://pyt
 
 ## Further information
 
-For further information, see the [demo directory](https://github.com/darrenjw/python-smfsb/tree/main/demos) and the [API documentation](https://python-smfsb.readthedocs.io/en/latest/index.html). Within the demos directory, see [shbuild.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/shbuild.py) for an example of how to specify a (SEIR epidemic) model using SBML-shorthand and [step_cle_2df.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/step_cle_2df.py) for a 2-d reaction-diffusion simulation. For parameter inference (from time course data), see [abc-cal.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/abc-cal.py) for ABC inference, [abc_smc.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/abc_smc.py) for ABC-SMC inference and [pmmh.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/pmmh.py) for particle marginal Metropolis-Hastings MCMC-based inference. There are many other demos besides these.
+For further information, see the [demo directory](https://github.com/darrenjw/python-smfsb/tree/main/demos) and the [API documentation](https://python-smfsb.readthedocs.io/en/latest/index.html). Within the demos directory, see [sbmlsh-demo.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/sbmlsh-demo.py) for an example of how to specify a (SEIR epidemic) model using SBML-shorthand and [step_cle_2df.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/step_cle_2df.py) for a 2-d reaction-diffusion simulation. For parameter inference (from time course data), see [abc-cal.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/abc-cal.py) for ABC inference, [abc_smc.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/abc_smc.py) for ABC-SMC inference and [pmmh.py](https://github.com/darrenjw/python-smfsb/tree/main/demos/pmmh.py) for particle marginal Metropolis-Hastings MCMC-based inference. There are many other demos besides these.
 
 
 You can see this package on [PyPI](https://pypi.org/project/smfsb/) or [GitHub](https://github.com/darrenjw/python-smfsb).
@@ -37,7 +37,7 @@ You can see this package on [PyPI](https://pypi.org/project/smfsb/) or [GitHub](
 
 ## Fast simulation and inference
 
-If you like this library but find it a little slow, you should know that there is a [JAX](https://jax.readthedocs.io/) port of this package: [JAX-smfsb](https://github.com/darrenjw/jax-smfsb). It requires a JAX installalation, and the API is (very) slightly modified, but it has state-of-the-art performance for simulation and inference.
+If you like this library but find it a little slow, you should know that there is a [JAX](https://jax.readthedocs.io/) port of this package: [jax-smfsb](https://github.com/darrenjw/jax-smfsb). It requires a JAX installalation, and the API is (very) slightly modified, but it has state-of-the-art performance for simulation and inference.
 
 
 **Copyright (2023-2024) Darren J Wilkinson**
