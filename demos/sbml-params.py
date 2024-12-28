@@ -3,11 +3,12 @@
 
 # This demo is to illustrate how to modify the parameters of a SPN
 # model that has been parsed from SBML (or SBML-shorthand).
-# This is useful for simulation studies, paramter scans, and
+# This is useful for simulation studies, parameter scans, and
 # inference algorithms.
 
-# Global parameters are stored in a dictionary called `gp`
-# Local parameters are stored in a list of dictionaries called `lp`
+# Global parameters are stored in a dictionary called `gp`.
+# Local parameters are stored in a list of dictionaries called `lp`, with
+#  one entry per reaction.
 # Parameters can be updated by modifing the values in the dictionaries
 
 import smfsb
