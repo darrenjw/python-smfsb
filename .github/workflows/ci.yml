@@ -26,6 +26,5 @@ jobs:
 
       - name: Run tests
         run: |
-          uv pip install smfsb
           uvx -p 3.11 --with smfsb pytest
 
