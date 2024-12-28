@@ -1,7 +1,7 @@
 # smfsb for python
 
 [![](https://readthedocs.org/projects/python-smfsb/badge/)](https://python-smfsb.readthedocs.io/en/latest/index.html)
-![](https://github.com/darrenjw/python-smfsb/actions/workflows/ci.yml/badge.svg)
+[![](https://github.com/darrenjw/python-smfsb/actions/workflows/ci.yml/badge.svg)](https://github.com/darrenjw/python-smfsb/actions)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 Python library for the book, [Stochastic modelling for systems biology, third edition](https://github.com/darrenjw/smfsb/). This library is a Python port of the R package associated with the book.
