@@ -29,5 +29,6 @@ jobs:
           uv venv
           source .venv/bin/activate
           uv pip install .
-          uvx pytest
+          uv pip install pytest
+          pytest
 
