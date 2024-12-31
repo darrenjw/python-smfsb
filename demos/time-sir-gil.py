@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import smfsb
-import numpy as np
 import scipy as sp
 import time
 
