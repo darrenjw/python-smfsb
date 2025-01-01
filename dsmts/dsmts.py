@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 
-def test_model(N, file_stem):
+def test_model(n, file_stem):
     model_file = file_stem + ".mod"
     mean_file = file_stem + "-mean.csv"
     sd_file = file_stem + "-sd.csv"
@@ -17,15 +17,15 @@ def test_model(N, file_stem):
     sx = np.zeros((51, u))
     sxx = np.zeros((51, u))
     step = spn.step_gillespie()  # testing the exact simulator
-    for i in range(N):
+    for i in range(n):
         out = smfsb.sim_time_series(spn.m, 0, 50, 1, step)
         sx = sx + out
         si = out - mean
         sxx = sxx + (si * si)
-    sample_mean = sx / N
-    z_scores = np.sqrt(N) * (sample_mean - mean) / sd
-    sts = sxx / N
-    y_scores = (sts / (sd * sd) - 1) * np.sqrt(N / 2)
+    sample_mean = sx / n
+    z_scores = np.sqrt(n) * (sample_mean - mean) / sd
+    sts = sxx / n
+    y_scores = (sts / (sd * sd) - 1) * np.sqrt(n / 2)
     fails = np.array([np.sum(abs(z_scores) > 3), np.sum(abs(y_scores) > 5)])
     if np.sum(fails) > 0:
         print(str(fails) + " for " + file_stem)
