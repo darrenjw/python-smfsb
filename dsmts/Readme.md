@@ -13,3 +13,7 @@ Just run against a subset of the models, corresponding to the limited range of S
 To run, unpack the zip and just run:
 
 pytest
+
+from this directory. Note that "pandas" is required for CSV parsing,
+which isn't part of the requirements for this library.
+
