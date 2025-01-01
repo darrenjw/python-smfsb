@@ -3,7 +3,6 @@
 
 import smfsb
 import numpy as np
-import scipy as sp
 import pandas as pd
 
 
@@ -11,8 +10,8 @@ def test_model(N, file_stem):
     model_file = file_stem + ".mod"
     mean_file = file_stem + "-mean.csv"
     sd_file = file_stem + "-sd.csv"
-    mean_df = pd.read_csv(mean_file)
-    sd_df = pd.read_csv(sd_file)
+    mean = pd.read_csv(mean_file).to_numpy()[:,1:]
+    sd = pd.read_csv(sd_file).to_numpy()[:,1:]
     spn = smfsb.mod_to_spn(model_file)
     u = len(spn.n)
     sx = np.zeros((51, u))
@@ -21,19 +20,23 @@ def test_model(N, file_stem):
     for i in range(N):
         out = smfsb.sim_time_series(spn.m, 0, 50, 1, step)
         sx = sx + out
-        sxx = sxx + (out * out)
+        si = out - mean
+        sxx = sxx + (si * si)
     sample_mean = sx/N
-    #z_scores =
-    return sample_mean
-
-
+    z_scores = np.sqrt(N)*(sample_mean - mean)/sd
+    sts = sxx/N
+    y_scores = (sts/(sd*sd) - 1)*np.sqrt(N/2)
+    fails = np.array([np.sum(abs(z_scores) > 3), np.sum(abs(y_scores) > 5)])
+    if (np.sum(fails) > 0):
+        print(str(fails) + " for " + file_stem)
+    return fails
 
 
 # Run a demo test if run as a script
 
 if __name__ == '__main__':
     print("A demo test run. Use pytest to run the full suite properly.")
-    N = 10
+    N = 10000
     print(test_model(N, "stochastic/00001/dsmts-001-01"))
     print(test_model(N, "stochastic/00020/dsmts-002-01"))
     print(test_model(N, "stochastic/00030/dsmts-003-01"))
