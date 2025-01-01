@@ -10,4 +10,6 @@ Test the exact Gillespie algorithm implementation by using the discrete stochast
 
 Just run against a subset of the models, corresponding to the limited range of SBML features supported by this package.
 
+To run, unpack the zip and just run:
 
+pytest
