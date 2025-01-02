@@ -24,7 +24,17 @@ def test_bd():
     step = bd.step_gillespie()
     out = smfsb.sim_time_series(bd.m, 0, 100, 0.1, step)
     assert out.shape == (1000, 1)
+    assert out[0, :] == bd.m
     assert out[100, 0] >= 0
+
+
+def test_sim_time_series():
+    bd = smfsb.models.bd()
+    step = bd.step_gillespie()
+    out = smfsb.sim_time_series(bd.m, 0, 5, 1, step)
+    assert out.shape == (6, 1)
+    assert out[0, :] == bd.m
+    assert out[4, 0] >= 0
 
 
 def test_dimer():
