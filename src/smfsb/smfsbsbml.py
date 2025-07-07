@@ -29,7 +29,7 @@ def mod_to_spn(filename, verb=False):
     Examples
     --------
     >>> import smfsb
-    >>> myMod = smfsb.mod2spn("myModel.mod")
+    >>> myMod = smfsb.mod_to_spn("myModel.mod")
     >>> step = myMod.step_gillespie()
     """
     try:
@@ -101,7 +101,7 @@ def file_to_spn(filename, verb=False):
     Examples
     --------
     >>> import smfsb
-    >>> myMod = smfsb.mod2spn("myModel.xml")
+    >>> myMod = smfsb.file_to_spn("myModel.xml")
     >>> step = myMod.step_gillespie()
     """
     d = libsbml.readSBML(filename)
