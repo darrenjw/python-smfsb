@@ -69,7 +69,7 @@ def shorthand_to_spn(sh_string, verb=False):
     >>> file = open('myModel.mod', 'r')
     >>> myModStr = file.read()
     >>> file.close()
-    >>> myMod = smfsb.sh2spn(myModStr)
+    >>> myMod = smfsb.shorthand_to_spn(myModStr)
     >>> step = myMod.step_gillespie()
     """
     p = mod2sbml.Parser()
