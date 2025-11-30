@@ -12,12 +12,6 @@ Latest stable version:
 ```bash
 pip install smfsb
 ```
-To upgrade already installed package:
-```bash
-pip install --upgrade smfsb
-```
-
-**Note** that a number of breaking syntax changes (more pythonic names) were introduced in version 1.1.0. If you upgrade to a version >= 1.1.0 from a version prior to 1.1.0 you will have to update syntax to the new style.
 
 You can test your installation by typing
 ```python
