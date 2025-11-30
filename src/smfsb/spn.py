@@ -712,6 +712,9 @@ class Spn:
             a = rectify(a)
             return a
 
+        def react(hri):
+            return sto @ (hri * dt + np.sqrt(hri) * np.random.normal(0, sdt, len(hri)))
+
         def step(x0, t0, deltat):
             x = x0
             t = t0
@@ -720,13 +723,7 @@ class Spn:
             while True:
                 x = diffuse(x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
-                dwt = np.random.normal(0, sdt, (v, m, n))
-                # TODO: use np.apply_along_axis to eliminate for loops
-                for i in range(m):
-                    for j in range(n):
-                        x[:, i, j] = x[:, i, j] + sto @ (
-                            hr[:, i, j] * dt + np.sqrt(hr[:, i, j]) * dwt[:, i, j]
-                        )
+                x = x + np.apply_along_axis(react, 0, hr)
                 x = rectify(x)
                 t = t + dt
                 if t > termt:
@@ -889,6 +886,9 @@ class Spn:
             a = rectify(a)
             return a
 
+        def react(hri):
+            return sto @ (hri * dt)
+
         def step(x0, t0, deltat):
             x = x0
             t = t0
@@ -897,10 +897,7 @@ class Spn:
             while True:
                 x = diffuse(x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
-                # TODO: use np.apply_along_axis to eliminate for loops
-                for i in range(m):
-                    for j in range(n):
-                        x[:, i, j] = x[:, i, j] + sto @ (hr[:, i, j] * dt)
+                x = x + np.apply_along_axis(react, 0, hr)
                 x = rectify(x)
                 t = t + dt
                 if t > termt:
