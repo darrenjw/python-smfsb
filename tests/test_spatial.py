@@ -37,6 +37,16 @@ def test_step_cle_1d():
     assert x1.shape == (2, n)
 
 
+def test_step_euler_1d():
+    n = 20
+    x0 = np.zeros((2, n))
+    lv = smfsb.models.lv()
+    x0[:, int(n / 2)] = lv.m
+    step_lv_1d = lv.step_euler_1d(np.array([0.6, 0.6]))
+    x1 = step_lv_1d(x0, 0, 1)
+    assert x1.shape == (2, n)
+
+
 def test_step_gillespie_2d():
     m = 16
     n = 20
@@ -55,6 +65,17 @@ def test_step_cle_2d():
     lv = smfsb.models.lv()
     x0[:, int(m / 2), int(n / 2)] = lv.m
     step_lv_2d = lv.step_cle_2d(np.array([0.6, 0.6]))
+    x1 = step_lv_2d(x0, 0, 1)
+    assert x1.shape == (2, m, n)
+
+
+def test_step_euler_2d():
+    m = 16
+    n = 20
+    x0 = np.zeros((2, m, n))
+    lv = smfsb.models.lv()
+    x0[:, int(m / 2), int(n / 2)] = lv.m
+    step_lv_2d = lv.step_euler_2d(np.array([0.6, 0.6]))
     x1 = step_lv_2d(x0, 0, 1)
     assert x1.shape == (2, m, n)
 
