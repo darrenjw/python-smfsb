@@ -4,9 +4,11 @@
 import smfsb
 import numpy as np
 
+rng = np.random.default_rng()
+
 
 def test_imdeath():
-    times, states = smfsb.imdeath(150)
+    times, states = smfsb.imdeath(rng, 150)
     assert len(times) == 150
     assert len(states) == 151
 
@@ -14,7 +16,7 @@ def test_imdeath():
 def test_rcfmc():
     q_mat = np.array([[-0.5, 0.5], [1, -1]])
     pi0 = np.array([0.5, 0.5])
-    times, states = smfsb.rcfmc(30, q_mat, pi0)
+    times, states = smfsb.rcfmc(rng, 30, q_mat, pi0)
     assert len(times) == 30
     assert len(states) == 31
 
@@ -22,7 +24,7 @@ def test_rcfmc():
 def test_rfmc():
     p_mat = np.array([[0.9, 0.1], [0.2, 0.8]])
     pi0 = np.array([0.5, 0.5])
-    out = smfsb.rfmc(200, p_mat, pi0)
+    out = smfsb.rfmc(rng, 200, p_mat, pi0)
     assert len(out) == 200
     assert out[100] >= 0
 
@@ -42,7 +44,7 @@ def test_simple_euler():
 
 
 def test_rdiff():
-    out = smfsb.rdiff(lambda x: 1 - 0.1 * x, lambda x: np.sqrt(1 + 0.1 * x))
+    out = smfsb.rdiff(rng, lambda x: 1 - 0.1 * x, lambda x: np.sqrt(1 + 0.1 * x))
     assert len(out) > 500
     assert out[500] >= 0.0
 
@@ -63,7 +65,7 @@ def my_diff(x, t):
 
 def test_step_sde():
     step_proc = smfsb.step_sde(my_drift, my_diff, dt=0.001)
-    out = smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, step_proc)
+    out = smfsb.sim_time_series(rng, np.array([1, 0.1]), 0, 30, 0.01, step_proc)
     assert out.shape == (3000, 2)
     assert out[1000, 0] >= 0.0
     assert out[1000, 1] >= 0.0

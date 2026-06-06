@@ -2,7 +2,9 @@
 # tests relating to SBML and SBML-shorthand
 
 import smfsb
+import numpy as np
 
+rng = np.random.default_rng()
 
 seir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
@@ -30,7 +32,7 @@ seir_sh = """
 def test_sbmlsh():
     seir = smfsb.shorthand_to_spn(seir_sh)
     step_seir = seir.step_gillespie()
-    out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, step_seir)
+    out = smfsb.sim_time_series(rng, seir.m, 0, 40, 0.05, step_seir)
     assert out.shape == (800, 4)
     assert out[400, 3] >= 0
 

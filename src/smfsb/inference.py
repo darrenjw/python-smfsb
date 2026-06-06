@@ -7,6 +7,7 @@ from scipy.stats import norm
 
 
 def metropolis_hastings(
+    rng,
     init,
     log_lik,
     rprop,
@@ -29,6 +30,8 @@ def metropolis_hastings(
 
     Parameters
     ----------
+    rng: Generator
+      A numpy random number generator.
     init : vector
       A parameter vector with which to initialise the MCMC algorithm.
     log_lik : function
@@ -39,8 +42,8 @@ def metropolis_hastings(
       algorithm will be an "exact approximate" pseudo-marginal MH
       algorithm.
     rprop : stochastic function
-      A function which takes a parameter as its only required
-      argument and returns a single sample from a proposal
+      A function which takes a rng and a current parameter as its two
+      required arguments and returns a single sample from a proposal
       distribution.
     ldprop : function
       A function which takes a new and old parameter as its first
@@ -81,10 +84,11 @@ def metropolis_hastings(
     >>> import smfsb
     >>> import numpy as np
     >>> import scipy as sp
-    >>> data = np.random.normal(5, 2, 250)
+    >>> rng = np.random.default_rng()
+    >>> data = rng.normal(5, 2, 250)
     >>> llik = lambda x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
-    >>> prop = lambda x: np.random.normal(x, 0.1, 2)
-    >>> smfsb.metropolis_hastings([1,1], llik, prop)
+    >>> prop = lambda rng, x: rng.normal(x, 0.1, 2)
+    >>> smfsb.metropolis_hastings(rng, [1,1], llik, prop)
     """
     p = len(init)
     ll = -math.inf
@@ -109,7 +113,7 @@ def metropolis_hastings(
                 )
                 if debug:
                     print(f"x={x}, prop={prop}, ll={ll}, llprop={llprop}, a={a}")
-                if np.log(np.random.uniform()) < a:
+                if np.log(rng.uniform()) < a:
                     x = prop
                     ll = llprop
         mat[i, :] = x
@@ -118,7 +122,7 @@ def metropolis_hastings(
     return mat
 
 
-def abc_run(n, rprior, rdist, verb=False):
+def abc_run(rng, n, rprior, rdist, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
     given prior distribution, and compute statistics required for an ABC
     analaysis
@@ -130,13 +134,15 @@ def abc_run(n, rprior, rdist, verb=False):
 
     Parameters
     ----------
+    rng : Generator
+      A numpy random number generator.
     n : int
       An integer representing the number of simulations to run.
     rprior : function
-      A function without arguments generating a single parameter
+      A function with single 'rng' argument generating a single parameter
       (vector) from prior distribution.
     rdist : function
-      A function taking a parameter (vector) as argument and
+      A function taking an rng and a parameter (vector) as arguments and
       returning the required statistic of interest. This will
       typically be computed by first using the parameter to run a
       forward model, then computing required summary statistics,
@@ -154,12 +160,13 @@ def abc_run(n, rprior, rdist, verb=False):
     >>> import smfsb
     >>> import numpy as np
     >>> import scipy as sp
-    >>> data = np.random.normal(5, 2, 250)
-    >>> def rpr():
-    >>>   return np.exp(np.random.uniform(-3, 3, 2))
+    >>> rng = np.random.default_rng()
+    >>> data = rng.normal(5, 2, 250)
+    >>> def rpr(rng):
+    >>>   return np.exp(rng.uniform(-3, 3, 2))
     >>>
-    >>> def rmod(th):
-    >>>   return np.random.normal(th[0], th[1], 250)
+    >>> def rmod(rng, th):
+    >>>   return rng.normal(th[0], th[1], 250)
     >>>
     >>> def sumStats(dat):
     >>>   return np.array([np.mean(dat), np.std(dat)])
@@ -169,18 +176,18 @@ def abc_run(n, rprior, rdist, verb=False):
     >>>   diff = ss - ssd
     >>>   return np.sqrt(np.sum(diff*diff))
     >>>
-    >>> def rdis(th):
-    >>>   return dist(sumStats(rmod(th)))
+    >>> def rdis(rng, th):
+    >>>   return dist(sumStats(rmod(rng, th)))
     >>>
-    >>> smfsb.abc_run(100, rpr, rdis)
+    >>> smfsb.abc_run(rng, 100, rpr, rdis)
     """
     p = list()
     d = list()
     for i in range(n):
         if verb:
             print(n - i, end=" ", flush=True)
-        pi = rprior()
-        di = rdist(pi)
+        pi = rprior(rng)
+        di = rdist(rng, pi)
         p.append(pi)
         d.append(di)
     if verb:
@@ -202,7 +209,7 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
       An integer representing the number of particles to use in the
       particle filter.
     sim_x0 : function
-      A function with arguments `t0` and `th`, where ‘t0’ is a time
+      A function with arguments `rng`, `t0` and `th`, where ‘t0’ is a time
       at which to simulate from an initial distribution for the state of the
       particle filter and `th` is a vector of parameters. The return value
       should be a state vector randomly sampled from the prior distribution.
@@ -213,7 +220,7 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
       process. Can be no bigger than the smallest observation time.
     step_fun : function
       A function for advancing the state of the Markov process, with
-      arguments `x`, `t0`, `deltat` and `th`, with `th` representing a
+      arguments `rng`, `x`, `t0`, `deltat` and `th`, with `th` representing a
       vector of parameters.
     data_ll : function
       A function with arguments `x`, `t`, `y`, `th`,
@@ -227,7 +234,8 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
 
     Returns
     -------
-    A function with single argument `th`, representing a parameter vector, which
+    A function with single arguments `rng`, a generator, and `th`,
+    representing a parameter vector, which
     evaluates to the log of the particle filters unbiased estimate of the
     marginal likelihood of the data (for parameter `th`).
 
@@ -239,16 +247,17 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     >>> def obsll(x, t, y, th):
     >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10)
     >>>
-    >>> def simX(t0, th):
-    >>>     return np.array([np.random.poisson(50), np.random.poisson(100)])
+    >>> def simX(rng, t0, th):
+    >>>     return np.array([rng.poisson(50), rng.poisson(100)])
     >>>
-    >>> def step(x, t, dt, th):
+    >>> def step(rng, x, t, dt, th):
     >>>     sf = smfsb.models.lv(th).step_gillespie()
-    >>>     return sf(x, t, dt)
+    >>>     return sf(rng, x, t, dt)
     >>>
     >>> mll = smfsb.pf_marginal_ll(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
-    >>> mll(np.array([1, 0.005, 0.6]))
-    >>> mll(np.array([2, 0.005, 0.6]))
+    >>> rng = np.random.default_rng()
+    >>> mll(rng, np.array([1, 0.005, 0.6]))
+    >>> mll(rng, np.array([2, 0.005, 0.6]))
     """
     no = data.shape[1]
     times = np.concatenate(([t0], data[:, 0]))
@@ -261,17 +270,17 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
         print(len(deltas))
         print(obs[range(5), :])
 
-    def go(th):
+    def go(rng, th):
         ll = 0
         xmat = np.zeros((n, 1))
-        xmat = np.apply_along_axis(lambda x: sim_x0(t0, th), 1, xmat)
+        xmat = np.apply_along_axis(lambda x: sim_x0(rng, t0, th), 1, xmat)
         sh = xmat.shape
         if debug:
             print(xmat.shape)
             print(xmat[range(5), :])
         for i in range(len(deltas)):
             xmat = np.apply_along_axis(
-                lambda x: step_fun(x, times[i], deltas[i], th), 1, xmat
+                lambda x: step_fun(rng, x, times[i], deltas[i], th), 1, xmat
             )
             lw = np.apply_along_axis(
                 lambda x: data_ll(x, times[i + 1], obs[i,], th), 1, xmat
@@ -280,7 +289,7 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
             sw = np.exp(lw - m)
             ssw = np.sum(sw)
             ll = ll + m + np.log(ssw / n)
-            rows = np.random.choice(n, n, p=sw / ssw)
+            rows = rng.choice(n, n, p=sw / ssw)
             xmat = xmat[rows, :]
             assert xmat.shape == sh
         return ll
@@ -288,7 +297,7 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     return go
 
 
-def abc_smc_step(dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor):
+def abc_smc_step(rng, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor):
     """Carry out one step of an ABC-SMC algorithm
 
     Not meant to be directly called by users. See abc_smc.
@@ -298,12 +307,12 @@ def abc_smc_step(dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, fact
     rw = np.exp(prior_lw - mx)
     # print(prior_sample.shape)
     # print(len(rw))
-    prior_ind = np.random.choice(range(n), n * factor, p=rw / np.sum(rw))
+    prior_ind = rng.choice(range(n), n * factor, p=rw / np.sum(rw))
     prior = prior_sample[prior_ind, :]
     # print(prior.shape)
-    prop = np.apply_along_axis(rperturb, 1, prior)
+    prop = np.apply_along_axis(lambda p: rperturb(rng, p), 1, prior)
     # print(prop.shape)
-    dist = np.apply_along_axis(rdist, 1, prop)
+    dist = np.apply_along_axis(lambda p: rdist(rng, p), 1, prop)
     # print(dist.shape)
     q_cut = np.nanquantile(dist, 1 / factor)
     new = prop[dist < q_cut, :]
@@ -327,6 +336,7 @@ def abc_smc_step(dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, fact
 
 
 def abc_smc(
+    rng,
     n,
     rprior,
     dprior,
@@ -346,26 +356,28 @@ def abc_smc(
 
     Parameters
     ----------
+    rng : Generator
+      A numpy random number generator.
     n : int
       An integer representing the number of simulations to pass on
       at each stage of the SMC algorithm. Note that the TOTAL
       number of forward simulations required by the algorithm will
       be (roughly) 'n*steps*factor'.
     rprior : function
-      A function without arguments generating single parameter
+      A function with single argument, `rng`, generating a single parameter
       (vector) from the prior.
     dprior : function
       A function taking a parameter vector as argumnent and returning
       the log of the prior density.
     rdist : function
-      A function taking a parameter (vector) as argument and
+      A function taking an rng and a parameter (vector) as arguments and
       returning a scalar "distance" representing a measure of how
       good the chosen parameter is. This will typically be computed
       by first using the parameter to run a forward model, then
       computing required summary statistics, then computing a
       distance. See the example for details.
     rperturb : function
-      A function which takes a parameter as its argument and
+      A function which takes an rng and a parameter as its arguments and
       returns a perturbed parameter from an appropriate kernel.
     dperturb : function
       A function which takes a pair of parameters as its first two
@@ -396,12 +408,13 @@ def abc_smc(
     >>> import smfsb
     >>> import numpy as np
     >>> import scipy as sp
-    >>> data = np.random.normal(5, 2, 250)
-    >>> def rpr():
-    >>>   return np.exp(np.random.uniform(-3, 3, 2))
+    >>> rng = np.random.default_rng()
+    >>> data = rng.normal(5, 2, 250)
+    >>> def rpr(rng):
+    >>>   return np.exp(rng.uniform(-3, 3, 2))
     >>>
-    >>> def rmod(th):
-    >>>   return np.random.normal(np.exp(th[0]), np.exp(th[1]), 250)
+    >>> def rmod(rng, th):
+    >>>   return rng.normal(np.exp(th[0]), np.exp(th[1]), 250)
     >>>
     >>> def sumStats(dat):
     >>>   return np.array([np.mean(dat), np.std(dat)])
@@ -411,21 +424,21 @@ def abc_smc(
     >>>   diff = ss - ssd
     >>>   return np.sqrt(np.sum(diff*diff))
     >>>
-    >>> def rdis(th):
-    >>>   return dist(sumStats(rmod(th)))
+    >>> def rdis(rng, th):
+    >>>   return dist(sumStats(rmod(rng, th)))
     >>>
-    >>> smfsb.abc_smc(100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
-    >>>                           rdis, lambda x: np.random.normal(x, 0.1),
+    >>> smfsb.abc_smc(rng, 100, rpr, lambda x: np.log(np.sum(((x<3)&(x>-3))/6)),
+    >>>                           rdis, lambda rng, x: rng.normal(x, 0.1),
     >>>                           lambda x,y: np.sum(sp.stats.norm.logpdf(y, x, 0.1)))
     """
     prior_lw = np.log(np.zeros((n)) + 1 / n)
     prior_sample = np.zeros((n, 1))
-    prior_sample = np.apply_along_axis(lambda x: rprior(), 1, prior_sample)
+    prior_sample = np.apply_along_axis(lambda x: rprior(rng), 1, prior_sample)
     for i in range(steps):
         if verb:
             print(steps - i, end=" ", flush=True)
         prior_sample, prior_lw = abc_smc_step(
-            dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
+            rng, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
         )
         if debug:
             print(prior_sample.shape)
@@ -436,7 +449,7 @@ def abc_smc(
         print(prior_sample.shape)
         print(prior_lw.shape)
     # print(prior_lw)
-    ind = np.random.choice(range(prior_lw.shape[0]), n, p=np.exp(prior_lw))
+    ind = rng.choice(range(prior_lw.shape[0]), n, p=np.exp(prior_lw))
     # print(ind)
     return prior_sample[ind, :]
 
@@ -444,7 +457,7 @@ def abc_smc(
 # Some illustrative functions not intended for serious use...
 
 
-def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
+def normal_gibbs(rng, iters, n, a, b, c, d, xbar, ssquared):
     """A simple Gibbs sampler for Bayesian inference for the mean and
     precision of a normal random sample
 
@@ -454,6 +467,8 @@ def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
 
     Parameters
     ----------
+    rng : Generator
+      A numpy random number generator.
     iters : int
       The number of iterations of the Gibbs sampler
     n : int
@@ -478,7 +493,9 @@ def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
     Examples
     --------
     >>> import smfsb
-    >>> postmat = smfsb.normal_gibbs(iters=1100, n=15, a=3, b=11, c=10, d=1/100,
+    >>> import numpy as np
+    >>> rng = np.random.default_rng()
+    >>> postmat = smfsb.normal_gibbs(rng, iters=1100, n=15, a=3, b=11, c=10, d=1/100,
     >>>   xbar=25, ssquared=20)
     >>> postmat = postmat[range(100,1100),:]
     """
@@ -489,14 +506,14 @@ def normal_gibbs(iters, n, a, b, c, d, xbar, ssquared):
     for i in range(1, iters):
         muprec = n * tau + d
         mumean = (d * c + n * tau * xbar) / muprec
-        mu = np.random.normal(mumean, np.sqrt(1 / muprec))
+        mu = rng.normal(mumean, np.sqrt(1 / muprec))
         taub = b + 0.5 * ((n - 1) * ssquared + n * (xbar - mu) * (xbar - mu))
-        tau = np.random.gamma(a + n / 2, 1 / taub)
+        tau = rng.gamma(a + n / 2, 1 / taub)
         mat[i, :] = [mu, tau]
     return mat
 
 
-def metrop(n, alpha):
+def metrop(rng, n, alpha):
     """Run a simple Metropolis sampler with standard normal target and uniform
     innovations
 
@@ -505,6 +522,8 @@ def metrop(n, alpha):
 
     Parameters
     ----------
+    rng : Generator
+      A numpy random number generator.
     n : int
       The number of iterations of the Metropolis sampler.
     alpha: float
@@ -518,15 +537,16 @@ def metrop(n, alpha):
     Examples
     --------
     >>> import smfsb
-    >>> smfsb.metrop(100, 1)
+    >>> import numpy as np
+    >>> smfsb.metrop(np.random.default_rng(), 100, 1)
     """
     vec = np.zeros((n))
     x = 0
     vec[0] = x
     for i in range(1, n):
-        can = x + np.random.uniform(-alpha, alpha)
+        can = x + rng.uniform(-alpha, alpha)
         aprob = norm.pdf(can) / norm.pdf(x)
-        u = np.random.uniform()
+        u = rng.uniform()
         if u < aprob:
             x = can
         vec[i] = x

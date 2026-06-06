@@ -45,7 +45,7 @@ class Spn:
               lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
               [197, 3, 0])
         >>> stepSir = sir.step_poisson()
-        >>> smfsb.sim_sample(10, sir.m, 0, 20, stepSir)
+        >>> smfsb.sim_sample(np.random.default_rng(), 10, sir.m, 0, 20, stepSir)
         """
         self.n = n  # species names
         self.t = t  # reaction names
@@ -86,23 +86,25 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using the Gillespie algorithm. The function closure
-        has interface ‘function(x0, t0, deltat)’, where ‘x0’ and ‘t0’
-        represent the initial state and time, and ‘deltat’ represents the
-        amount of time by which the process should be advanced. The
-        function closure returns a vector representing the simulated state
-        of the system at the new time.
+        has interface ‘function(rng, x0, t0, deltat)’, where 'rng' is a numpy
+        random number generator, ‘x0’ and ‘t0’ represent the initial state and
+        time, and ‘deltat’ represents the amount of time by which the
+        process should be advanced. The function closure returns a vector
+        representing the simulated state of the system at the new time.
 
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
         >>> stepLv = lv.step_gillespie()
-        >>> stepLv([50, 100], 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv(rng, [50, 100], 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             t = t0
             x = x0
             termt = t0 + deltat
@@ -115,10 +117,10 @@ class Spn:
                 if h0 < min_haz:
                     t = 1e99
                 else:
-                    t = t + np.random.exponential(1.0 / h0)
+                    t = t + rng.exponential(1.0 / h0)
                 if t > termt:
                     return x
-                j = np.random.choice(v, p=h / h0)
+                j = rng.choice(v, p=h / h0)
                 x = np.add(x, sto[:, j])
 
         return step
@@ -142,21 +144,23 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
         >>> stepLv = lv.step_first()
-        >>> stepLv([50, 100], 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv(rng, [50, 100], 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             t = t0
             x = x0
             termt = t0 + deltat
             while True:
                 h = self.h(x, t)
                 h[h == 0.0] = 1e-10
-                pu = np.random.exponential(1.0 / h)
+                pu = rng.exponential(1.0 / h)
                 j = np.argmin(pu)
                 t = t + pu[j]
                 if t > termt:
@@ -184,8 +188,8 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using a Poisson time stepping method with step size
-        ‘dt’. The function closure has interface
-        ‘function(x0, t0, deltat)’, where ‘x0’ and ‘t0’ represent the
+        ‘dt’. The function closure has interface ‘function(rng, x0, t0, deltat)’,
+        where 'rng' is a random number generator, ‘x0’ and ‘t0’ represent the
         initial state and time, and ‘deltat’ represents the amount of time
         by which the process should be advanced. The function closure
         returns a vector representing the simulated state of the system at
@@ -194,20 +198,22 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
         >>> stepLv = lv.step_poisson(0.001)
-        >>> stepLv([50, 100], 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv(rng, [50, 100], 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             termt = t0 + deltat
             while True:
                 h = self.h(x, t)
-                r = np.random.poisson(h * dt)
+                r = rng.poisson(h * dt)
                 x = np.add(x, sto.dot(r))
                 t = t + dt
                 if t > termt:
@@ -234,7 +240,8 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using an Euler method with step size ‘dt’. The
-        function closure has interface ‘function(x0, t0, deltat)’, where
+        function closure has interface ‘function(rng, x0, t0, deltat)’, where
+        'rng' is a numpy random number generator,
         ‘x0’ and ‘t0’ represent the initial state and time, and ‘deltat’
         represents the amount of time by which the process should be
         advanced. The function closure returns a vector representing the
@@ -243,13 +250,15 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
         >>> stepLv = lv.step_euler(0.001)
-        >>> stepLv([50, 100], 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv(rng, [50, 100], 0, 1)
         """
         sto = (self.post - self.pre).T
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             termt = t0 + deltat
@@ -282,7 +291,8 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using an Euler-Maruyama method with step size ‘dt’. The
-        function closure has interface ‘function(x0, t0, deltat)’, where
+        function closure has interface ‘function(rng, x0, t0, deltat)’,
+        where 'rng' is a numpy random number generator,
         ‘x0’ and ‘t0’ represent the initial state and time, and ‘deltat’
         represents the amount of time by which the process should be
         advanced. The function closure returns a vector representing the
@@ -291,21 +301,23 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
         >>> stepLv = lv.step_cle(0.001)
-        >>> stepLv([50, 100], 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv(rng, [50, 100], 0, 1)
         """
         sto = (self.post - self.pre).T
         v = sto.shape[1]
         sdt = np.sqrt(dt)
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             termt = t0 + deltat
             while True:
                 h = self.h(x, t)
-                dw = np.random.normal(scale=sdt, size=v)
+                dw = rng.normal(scale=sdt, size=v)
                 x = np.add(x, sto.dot(h * dt + np.sqrt(h) * dw))
                 x[x < 0] = -x[x < 0]
                 t = t + dt
@@ -345,7 +357,7 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using the Gillespie algorithm. The function closure
-        has arguments `x0`, `t0`, `deltat`, where `x0` is a matrix
+        has arguments `rng`, `x0`, `t0`, `deltat`, where `x0` is a matrix
         with rows corresponding to species and columns corresponding to
         voxels, representing the initial condition, `t0` represent the
         initial state and time, and `deltat` represents the amount of time
@@ -362,12 +374,13 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
-        >>> stepLv1d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv1d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             t = t0
             x = x0
             n = x.shape[1]
@@ -386,15 +399,15 @@ class Spn:
                 if h0 < min_haz:
                     t = 1e99
                 else:
-                    t = t + np.random.exponential(1.0 / h0)
+                    t = t + rng.exponential(1.0 / h0)
                 if t > termt:
                     return x
-                if np.random.uniform(0, h0) < hdss:
+                if rng.uniform(0, h0) < hdss:
                     # diffuse
-                    j = np.random.choice(n, p=hds / hdss)  # pick a box
-                    i = np.random.choice(u, p=hd[:, j] / hds[j])  # pick species
+                    j = rng.choice(n, p=hds / hdss)  # pick a box
+                    i = rng.choice(u, p=hd[:, j] / hds[j])  # pick species
                     x[i, j] = x[i, j] - 1  # decrement chosen box
-                    if np.random.uniform(0, 1) < 0.5:
+                    if rng.uniform(0, 1) < 0.5:
                         # left
                         if j > 0:
                             x[i, j - 1] = x[i, j - 1] + 1
@@ -408,8 +421,8 @@ class Spn:
                             x[i, 0] = x[i, 0] + 1
                 else:
                     # react
-                    j = np.random.choice(n, p=hrs / hrss)  # pick a box
-                    i = np.random.choice(v, p=hr[:, j] / hrs[j])  # pick a reaction
+                    j = rng.choice(n, p=hrs / hrss)  # pick a box
+                    i = rng.choice(v, p=hr[:, j] / hrs[j])  # pick a reaction
                     x[:, j] = np.add(x[:, j], sto[:, i])
 
         return step
@@ -443,7 +456,7 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using the Gillespie algorithm. The function closure
-        has arguments `x0`, `t0`, `deltat`, where `x0` is a 3d array
+        has arguments `rng`, `x0`, `t0`, `deltat`, where `x0` is a 3d array
         with dimensions corresponding to species then two spatial dimensions,
         representing the initial condition, `t0` represent the
         initial state and time, and `deltat` represents the amount of time
@@ -460,12 +473,13 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2, N, N))
         >>> x0[:, int(N/2), int(N/2)] = lv.m
-        >>> stepLv2d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv2d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             t = t0
             x = x0
             uu, m, n = x.shape
@@ -484,17 +498,17 @@ class Spn:
                 if h0 < min_haz:
                     t = 1e99
                 else:
-                    t = t + np.random.exponential(1.0 / h0)
+                    t = t + rng.exponential(1.0 / h0)
                 if t > termt:
                     return x
-                if np.random.uniform(0, h0) < hdss:
+                if rng.uniform(0, h0) < hdss:
                     # diffuse
-                    r = np.random.choice(m * n, p=hds.flatten() / hdss)  # pick a box
+                    r = rng.choice(m * n, p=hds.flatten() / hdss)  # pick a box
                     i = r // n
                     j = r % n
-                    k = np.random.choice(u, p=hd[:, i, j] / hds[i, j])  # pick species
+                    k = rng.choice(u, p=hd[:, i, j] / hds[i, j])  # pick species
                     x[k, i, j] = x[k, i, j] - 1  # decrement chosen box
-                    un = np.random.uniform(0, 1)
+                    un = rng.uniform(0, 1)
                     if un < 0.25:
                         # left
                         if j > 0:
@@ -521,10 +535,10 @@ class Spn:
                             x[k, 0, j] = x[k, 0, j] + 1
                 else:
                     # react
-                    r = np.random.choice(m * n, p=hrs.flatten() / hrss)  # pick a box
+                    r = rng.choice(m * n, p=hrs.flatten() / hrss)  # pick a box
                     i = r // n
                     j = r % n
-                    k = np.random.choice(
+                    k = rng.choice(
                         v, p=hr[:, i, j] / hrs[i, j]
                     )  # pick a reaction
                     x[:, i, j] = np.add(x[:, i, j], sto[:, k])
@@ -557,7 +571,7 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using a simple Euler-Maruyama algorithm. The function
-        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        closure has parameters `rng`, `x0`, `t0`, `deltat`, where `x0` is
         a matrix with rows corresponding to species and columns
         corresponding to voxels, representing the initial condition, `t0`
         represents the initial state and time, and `deltat` represents the
@@ -574,7 +588,8 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
-        >>> stepLv1d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv1d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -593,9 +608,9 @@ class Spn:
             m[m < 0] = 0
             return m
 
-        def diffuse(m):
+        def diffuse(rng, m):
             n = m.shape[1]
-            noise = np.random.normal(0, sdt, (u, n))
+            noise = rng.normal(0, sdt, (u, n))
             m = (
                 m
                 + (np.diag(d) @ laplacian(m)) * dt
@@ -605,15 +620,15 @@ class Spn:
             m = rectify(m)
             return m
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             n = x0.shape[1]
             termt = t0 + deltat
             while True:
-                x = diffuse(x)
+                x = diffuse(rng, x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
-                dwt = np.random.normal(0, sdt, (v, n))
+                dwt = rng.normal(0, sdt, (v, n))
                 x = x + sto @ (hr * dt + np.diag(np.sqrt(hr)) @ dwt)
                 x = rectify(x)
                 t = t + dt
@@ -648,7 +663,7 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using a simple Euler-Maruyama algorithm. The function
-        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        closure has parameters `rng`, `x0`, `t0`, `deltat`, where `x0` is
         a 3d array with indices species, then rows and columns
         corresponding to voxels, representing the initial condition, `t0`
         represents the initial state and time, and `deltat` represents the
@@ -666,7 +681,8 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2,M,N))
         >>> x0[:,int(M/2),int(N/2)] = lv.m
-        >>> stepLv2d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv2d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -691,10 +707,10 @@ class Spn:
             a[a < 0] = 0
             return a
 
-        def diffuse(a):
+        def diffuse(rng, a):
             uu, m, n = a.shape
-            dwt = np.random.normal(0, sdt, (u, m, n))
-            dwts = np.random.normal(0, sdt, (u, m, n))
+            dwt = rng.normal(0, sdt, (u, m, n))
+            dwts = rng.normal(0, sdt, (u, m, n))
             a = (
                 a
                 + (np.apply_along_axis(lambda xi: xi * d, 0, laplacian(a))) * dt
@@ -712,18 +728,18 @@ class Spn:
             a = rectify(a)
             return a
 
-        def react(hri):
-            return sto @ (hri * dt + np.sqrt(hri) * np.random.normal(0, sdt, len(hri)))
+        def react(rng, hri):
+            return sto @ (hri * dt + np.sqrt(hri) * rng.normal(0, sdt, len(hri)))
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             uu, m, n = x0.shape
             termt = t0 + deltat
             while True:
-                x = diffuse(x)
+                x = diffuse(rng, x)
                 hr = np.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
-                x = x + np.apply_along_axis(react, 0, hr)
+                x = x + np.apply_along_axis(lambda hri: react(rng, hri), 0, hr)
                 x = rectify(x)
                 t = t + dt
                 if t > termt:
@@ -751,13 +767,13 @@ class Spn:
           compartment is therefore twice this value (as it can leave to
           the left or the right).
         dt : float
-          Time step for the Euler-Maruyama discretisation.
+          Time step for the Euler discretisation.
 
         Returns
         -------
         A function which can be used to advance the state of the SPN
         model by using a simple forward Euler algorithm. The function
-        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        closure has parameters `rng` (ignored), `x0`, `t0`, `deltat`, where `x0` is
         a matrix with rows corresponding to species and columns
         corresponding to voxels, representing the initial condition, `t0`
         represents the initial state and time, and `deltat` represents the
@@ -774,7 +790,8 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2,N))
         >>> x0[:,int(N/2)] = lv.m
-        >>> stepLv1d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv1d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -797,7 +814,7 @@ class Spn:
             m = rectify(m)
             return m
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             termt = t0 + deltat
@@ -838,7 +855,7 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using a simple forward Euler algorithm. The function
-        closure has parameters `x0`, `t0`, `deltat`, where `x0` is
+        closure has parameters `rng` (ignored), `x0`, `t0`, `deltat`, where `x0` is
         a 3d array with indices species, then rows and columns
         corresponding to voxels, representing the initial condition, `t0`
         represents the initial state and time, and `deltat` represents the
@@ -856,7 +873,8 @@ class Spn:
         >>> N = 20
         >>> x0 = np.zeros((2,M,N))
         >>> x0[:,int(M/2),int(N/2)] = lv.m
-        >>> stepLv2d(x0, 0, 1)
+        >>> rng = np.random.default_rng()
+        >>> stepLv2d(rng, x0, 0, 1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -889,7 +907,7 @@ class Spn:
         def react(hri):
             return sto @ (hri * dt)
 
-        def step(x0, t0, deltat):
+        def step(rng, x0, t0, deltat):
             x = x0
             t = t0
             uu, m, n = x0.shape
@@ -907,7 +925,7 @@ class Spn:
 
     # some illustrative functions, not intended for serious use
 
-    def gillespie(self, n):
+    def gillespie(self, rng, n):
         """Simulate a sample path from a stochastic kinetic model
         described by a stochastic Petri net
 
@@ -917,6 +935,8 @@ class Spn:
 
         Parameters
         ----------
+        rng: Generator
+        A numpy random number generator
         n: int
         An integer representing the number of events to simulate,
         excluding the initial state
@@ -931,8 +951,9 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> lv.gillespie(1000)
+        >>> lv.gillespie(np.random.default_rng(), 1000)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -944,14 +965,14 @@ class Spn:
         for i in range(n):
             h = self.h(x, t)
             h0 = h.sum()
-            t = t + np.random.exponential(1.0 / h0)
-            j = np.random.choice(v, p=h / h0)
+            t = t + rng.exponential(1.0 / h0)
+            j = rng.choice(v, p=h / h0)
             x = np.add(x, sto[:, j])
             x_mat[i + 1, :] = x
             t_vec[i] = t
         return t_vec, x_mat
 
-    def gillespied(self, tt, dt=1):
+    def gillespied(self, rng, tt, dt=1):
         """Simulate a sample path from a stochastic kinetic model described by
         a stochastic Petri net
 
@@ -961,6 +982,8 @@ class Spn:
 
         Parameters
         ----------
+        rng: Generator
+        A numpy random number generator
         tt: float
         The required length of simulation time.
         dt: float
@@ -972,8 +995,9 @@ class Spn:
         Examples
         --------
         >>> import smfsb.models
+        >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> lv.gillespied(30, 0.1)
+        >>> lv.gillespied(np.random.default_rng(), 30, 0.1)
         """
         sto = (self.post - self.pre).T
         u, v = sto.shape
@@ -989,14 +1013,14 @@ class Spn:
             if h0 < 1e-10:
                 t = 1e99
             else:
-                t = t + np.random.exponential(1.0 / h0)
+                t = t + rng.exponential(1.0 / h0)
             while t >= target:
                 x_mat[i, :] = x
                 i = i + 1
                 target = target + dt
                 if i >= n:
                     return x_mat
-            j = np.random.choice(v, p=h / h0)
+            j = rng.choice(v, p=h / h0)
             x = np.add(x, sto[:, j])
 
 

@@ -8,7 +8,7 @@ import inspect
 # Some simulation functions
 
 
-def sim_time_series(x0, t0, tt, dt, step_fun):
+def sim_time_series(rng, x0, t0, tt, dt, step_fun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -19,6 +19,8 @@ def sim_time_series(x0, t0, tt, dt, step_fun):
 
     Parameters
     ----------
+    rng: Generator
+        A number random number generator.
     x0: array of numbers
         The intial state of the system at time t0
     t0: float
@@ -40,9 +42,11 @@ def sim_time_series(x0, t0, tt, dt, step_fun):
     Examples
     --------
     >>> import smfsb.models
+    >>> import numpy as np
     >>> lv = smfsb.models.lv()
     >>> stepLv = lv.step_gillespie()
-    >>> smfsb.sim_time_series([50, 100], 0, 100, 0.1, stepLv)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, [50, 100], 0, 100, 0.1, stepLv)
     """
     n = int((tt - t0) // dt) + 1
     u = len(x0)
@@ -52,12 +56,12 @@ def sim_time_series(x0, t0, tt, dt, step_fun):
     mat[0, :] = x
     for i in range(1, n):
         t = t + dt
-        x = step_fun(x, t, dt)
+        x = step_fun(rng, x, t, dt)
         mat[i, :] = x
     return mat
 
 
-def sim_sample(n, x0, t0, deltat, step_fun):
+def sim_sample(rng, n, x0, t0, deltat, step_fun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
     advancing the state of the model
@@ -69,6 +73,8 @@ def sim_sample(n, x0, t0, deltat, step_fun):
 
     Parameters
     ----------
+    rng: Generator
+        A numpy random number generator.
     n: int
         The number of samples required.
     x0: array of numbers
@@ -89,14 +95,16 @@ def sim_sample(n, x0, t0, deltat, step_fun):
     Examples
     --------
     >>> import smfsb.models
+    >>> import numpy as np
     >>> lv = smfsb.models.lv()
     >>> stepLv = lv.step_gillespie()
-    >>> smfsb.sim_sample(10, [50, 100], 0, 30, stepLv)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_sample(rng, 10, [50, 100], 0, 30, stepLv)
     """
     u = len(x0)
     mat = np.zeros((n, u))
     for i in range(n):
-        mat[i, :] = step_fun(x0, t0, deltat)
+        mat[i, :] = step_fun(rng, x0, t0, deltat)
     return mat
 
 
@@ -154,17 +162,18 @@ def step_sde(drift, diffusion, dt=0.01):
     >>>                      [0 ,sig*np.sqrt(x[1])]])
     >>>
     >>> stepProc = smfsb.step_sde(myDrift, myDiff, dt=0.001)
-    >>> smfsb.sim_time_series(np.array([1, 0.1]), 0, 30, 0.01, stepProc)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, np.array([1, 0.1]), 0, 30, 0.01, stepProc)
     """
     sdt = np.sqrt(dt)
 
-    def step(x0, t0, deltat):
+    def step(rng, x0, t0, deltat):
         x = x0
         t = t0
         termt = t0 + deltat
         v = len(x)
         while True:
-            dw = np.random.normal(scale=sdt, size=v)
+            dw = rng.normal(scale=sdt, size=v)
             x = np.add(x, drift(x, t) * dt + diffusion(x, t).dot(dw))
             t = t + dt
             if t > termt:
@@ -176,7 +185,7 @@ def step_sde(drift, diffusion, dt=0.01):
 # Illustrative functions from early in the book
 
 
-def rfmc(n, p_mat, pi0):
+def rfmc(rng, n, p_mat, pi0):
     """Simulate a finite state space Markov chain
 
     This function simulates a single realisation from a discrete time
@@ -185,6 +194,8 @@ def rfmc(n, p_mat, pi0):
 
     Parameters
     ----------
+    rng: Generator
+        A numpy random number generator.
     n: int
         The number of states to be sampled from the Markov chain,
         including the initial state, which will be sampled using
@@ -214,13 +225,13 @@ def rfmc(n, p_mat, pi0):
     """
     v = np.zeros(n)
     r = len(pi0)
-    v[0] = np.random.choice(r, p=pi0)
+    v[0] = rng.choice(r, p=pi0)
     for i in range(1, n):
-        v[i] = np.random.choice(r, p=p_mat[int(v[i - 1]), :])
+        v[i] = rng.choice(r, p=p_mat[int(v[i - 1]), :])
     return v
 
 
-def rcfmc(n, q_mat, pi0):
+def rcfmc(rng, n, q_mat, pi0):
     """Simulate a continuous time finite state space Markov chain
 
     This function simulates a single realisation from a continuous
@@ -229,6 +240,8 @@ def rcfmc(n, q_mat, pi0):
 
     Parameters
     ----------
+    rng: Generator
+        A numpy random number generator.
     n: int
         The number of states to be sampled from the Markov chain,
         including the initial state, which will be sampled using
@@ -254,26 +267,27 @@ def rcfmc(n, q_mat, pi0):
     --------
     >>> import smfsb
     >>> import numpy as np
-    >>> smfsb.rcfmc(200, np.array([[-0.5,0.5],[1,-1]]), np.array([1,0]))
+    >>> rng = np.random.default_rng()
+    >>> smfsb.rcfmc(rng, 200, np.array([[-0.5,0.5],[1,-1]]), np.array([1,0]))
     """
     xvec = np.zeros(n + 1)
     tvec = np.zeros(n)
     r = len(pi0)
-    x = np.random.choice(r, p=pi0)
+    x = rng.choice(r, p=pi0)
     t = 0
     xvec[0] = x
     for i in range(n):
-        t = t + np.random.exponential(-q_mat[int(x), int(x)])
+        t = t + rng.exponential(-q_mat[int(x), int(x)])
         weights = q_mat[int(x), :].copy()
         weights[x] = 0
         weights = weights / np.sum(weights)
-        x = np.random.choice(r, p=weights)
+        x = rng.choice(r, p=weights)
         xvec[i + 1] = x
         tvec[i] = t
     return tvec, xvec
 
 
-def imdeath(n=20, x0=0, lamb=1, mu=0.1):
+def imdeath(rng, n=20, x0=0, lamb=1, mu=0.1):
     """Simulate a sample path from the homogeneous immigration-death process
 
     This function simulates a single realisation from a
@@ -281,6 +295,8 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
 
     Parameters
     ----------
+    rng: Generator
+        A numpy random number generator.
     n: int
         The number of states to be sampled from the process, not
         including the initial state, ‘x0’
@@ -301,7 +317,8 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     Examples
     --------
     >>> import smfsb
-    >>> smfsb.imdeath(100)
+    >>> import numpy as np
+    >>> smfsb.imdeath(np.random.default_rng(), 100)
     """
     xvec = np.zeros(n + 1)
     tvec = np.zeros(n)
@@ -309,8 +326,8 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     x = x0
     xvec[0] = x
     for i in range(n):
-        t = t + np.random.exponential(lamb + x * mu)
-        if np.random.random() < lamb / (lamb + x * mu):
+        t = t + rng.exponential(lamb + x * mu)
+        if rng.random() < lamb / (lamb + x * mu):
             x = x + 1
         else:
             x = x - 1
@@ -319,7 +336,7 @@ def imdeath(n=20, x0=0, lamb=1, mu=0.1):
     return tvec, xvec
 
 
-def rdiff(a_fun, b_fun, x0=0, t=50, dt=0.01):
+def rdiff(rng, a_fun, b_fun, x0=0, t=50, dt=0.01):
     """Simulate a sample path from a univariate diffusion process
 
     This function simulates a single realisation from a
@@ -327,6 +344,8 @@ def rdiff(a_fun, b_fun, x0=0, t=50, dt=0.01):
 
     Parameters
     ----------
+    rng: Generator
+        A numpy random number generator.
     a_fun: function
         A scalar-valued function representing the infinitesimal mean
         (drift) of the diffusion process. The argument is the current
@@ -354,7 +373,8 @@ def rdiff(a_fun, b_fun, x0=0, t=50, dt=0.01):
     --------
     >>> import smfsb
     >>> import numpy as np
-    >>> smfsb.rdiff(lambda x: 1 - 0.1*x, lambda x: np.sqrt(1 + 0.1*x))
+    >>> rng = np.random.default_rng()
+    >>> smfsb.rdiff(rng, lambda x: 1 - 0.1*x, lambda x: np.sqrt(1 + 0.1*x))
     """
     n = int(t / dt)
     xvec = np.zeros(n)
@@ -362,7 +382,7 @@ def rdiff(a_fun, b_fun, x0=0, t=50, dt=0.01):
     sdt = np.sqrt(dt)
     for i in range(n):
         t = i * dt
-        x = x + a_fun(x) * dt + b_fun(x) * np.random.normal(0, sdt)
+        x = x + a_fun(x) * dt + b_fun(x) * rng.normal(0, sdt)
         xvec[i] = x
     return xvec
 
