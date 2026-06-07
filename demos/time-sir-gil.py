@@ -3,6 +3,7 @@
 import smfsb
 import scipy as sp
 import time
+import numpy as np
 
 sir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
@@ -24,11 +25,12 @@ sir_sh = """
 
 sir = smfsb.shorthand_to_spn(sir_sh)
 step_sir = sir.step_gillespie()
-out = smfsb.sim_time_series(sir.m, 0, 40, 0.05, step_sir)
+rng = np.random.default_rng()
+out = smfsb.sim_time_series(rng, sir.m, 0, 40, 0.05, step_sir)
 print("Starting timed run now")
 # start timer
 start_time = time.time()
-out = smfsb.sim_sample(10000, sir.m, 0, 20, step_sir)
+out = smfsb.sim_sample(rng, 10000, sir.m, 0, 20, step_sir)
 # end timer
 end_time = time.time()
 elapsed = end_time - start_time
@@ -38,11 +40,11 @@ print(sp.stats.describe(out))
 # Compare with built-in version
 sir = smfsb.models.sir()
 step_sir = sir.step_gillespie()
-out = smfsb.sim_time_series(sir.m, 0, 40, 0.05, step_sir)
+out = smfsb.sim_time_series(rng, sir.m, 0, 40, 0.05, step_sir)
 print("Starting timed run now")
 # start timer
 start_time = time.time()
-out = smfsb.sim_sample(10000, sir.m, 0, 20, step_sir)
+out = smfsb.sim_sample(rng, 10000, sir.m, 0, 20, step_sir)
 # end timer
 end_time = time.time()
 elapsed = end_time - start_time

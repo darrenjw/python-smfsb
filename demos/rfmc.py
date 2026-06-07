@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 P = np.array([[0.9, 0.1], [0.2, 0.8]])
 pi0 = np.array([0.5, 0.5])
-out = smfsb.rfmc(200, P, pi0)
+out = smfsb.rfmc(np.random.default_rng(), 200, P, pi0)
 
 fig, axis = plt.subplots()
 axis.step(range(200), out)

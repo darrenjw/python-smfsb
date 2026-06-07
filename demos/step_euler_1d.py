@@ -11,9 +11,9 @@ x0 = np.zeros((2, N))
 lv = smfsb.models.lv()
 x0[:, int(N / 2)] = lv.m
 step_lv1d = lv.step_euler_1d(np.array([0.6, 0.6]))
-x1 = step_lv1d(x0, 0, 1)
+x1 = step_lv1d(None, x0, 0, 1)
 print(x1)
-out = smfsb.sim_time_series_1d(x0, 0, T, 1, step_lv1d, True)
+out = smfsb.sim_time_series_1d(None, x0, 0, T, 1, step_lv1d, True)
 # print(out)
 
 fig, axis = plt.subplots()

@@ -39,7 +39,8 @@ seir_sh = """
 
 seir = smfsb.shorthand_to_spn(seir_sh)
 step_seir = seir.step_gillespie()
-out = smfsb.sim_time_series(seir.m, 0, 50, 0.05, step_seir)
+rng = np.random.default_rng()
+out = smfsb.sim_time_series(rng, seir.m, 0, 50, 0.05, step_seir)
 
 fig, axis = plt.subplots()
 for i in range(len(seir.m)):
@@ -56,7 +57,7 @@ seir.lp[2]["gamma"] = 0.1
 
 # Now re-run the simulation with the updated parameters:
 
-out = smfsb.sim_time_series(seir.m, 0, 50, 0.05, step_seir)
+out = smfsb.sim_time_series(rng, seir.m, 0, 50, 0.05, step_seir)
 
 fig, axis = plt.subplots()
 for i in range(len(seir.m)):

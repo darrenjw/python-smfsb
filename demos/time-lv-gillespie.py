@@ -13,7 +13,7 @@ step = lvmod.step_gillespie()
 
 ## Start timer
 start_time = time.time()
-out = smfsb.sim_sample(10000, lvmod.m, 0, 20, step)
+out = smfsb.sim_sample(np.random.default_rng(), 10000, lvmod.m, 0, 20, step)
 end_time = time.time()
 ## End timer
 elapsed_time = end_time - start_time

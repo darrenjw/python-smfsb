@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Lotka-Volterra model simulated using the naive Gillespie implementation
+# and then discretised onto a regualar grid (this is not recommended).
+
 import smfsb
 import smfsb.models
 import numpy as np
@@ -10,7 +13,7 @@ dt = 0.01
 
 lv = smfsb.models.lv()
 print(lv)
-times, states = lv.gillespie(2000)
+times, states = lv.gillespie(np.random.default_rng(), 2000)
 out = smfsb.discretise(times, states, dt)
 
 fig, axis = plt.subplots()

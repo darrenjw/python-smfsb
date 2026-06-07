@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
+# Simulate a Lotka-Volterra model using the naive "gillespie" function.
+# Not actually recommended in practice.
+
 import smfsb
 import smfsb.models
+import numpy as np
 import matplotlib.pyplot as plt
 
 lv = smfsb.models.lv()
 print(lv)
-times, states = lv.gillespie(2000)
+times, states = lv.gillespie(np.random.default_rng(), 2000)
 
 
 fig, axis = plt.subplots()

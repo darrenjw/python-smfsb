@@ -1,13 +1,17 @@
 #!/usr/bin/env python3
 
+# Simulate a Michaelis-Menten kinetic model
+
 import smfsb
 import smfsb.models
+import numpy as np
 import matplotlib.pyplot as plt
 
 mm = smfsb.models.mm()
 print(mm)
 step = mm.step_gillespie()
-out = smfsb.sim_time_series(mm.m, 0, 100, 0.1, step)
+out = smfsb.sim_time_series(np.random.default_rng(),
+                            mm.m, 0, 100, 0.1, step)
 
 
 fig, axis = plt.subplots()

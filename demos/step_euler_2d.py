@@ -12,7 +12,7 @@ x0 = np.zeros((2, M, N))
 lv = smfsb.models.lv()
 x0[:, int(M / 2), int(N / 2)] = lv.m
 step_lv2d = lv.step_euler_2d(np.array([0.6, 0.6]))
-x1 = step_lv2d(x0, 0, T)
+x1 = step_lv2d(None, x0, 0, T)
 
 fig, axis = plt.subplots()
 for i in range(2):

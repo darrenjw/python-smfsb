@@ -2,12 +2,14 @@
 
 import smfsb
 import smfsb.models
+import numpy as np
 import matplotlib.pyplot as plt
 
 lv = smfsb.models.lv([0.2, 0.001, 0.1])
 print(lv)
 step_lv = lv.step_gillespie()
-out = smfsb.sim_time_series(lv.m, 0, 100, 0.1, step_lv)
+out = smfsb.sim_time_series(np.random.default_rng(),
+                            lv.m, 0, 100, 0.1, step_lv)
 
 
 fig, axis = plt.subplots()

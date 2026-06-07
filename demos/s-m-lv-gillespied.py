@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# Simulate a Lotka-Volterra model using "gillespied" - not actually recommended.
+
 import smfsb
 import smfsb.models
 import numpy as np
@@ -8,7 +10,7 @@ import matplotlib.pyplot as plt
 
 lv = smfsb.models.lv()
 print(lv)
-states = lv.gillespied(30, 0.1)
+states = lv.gillespied(np.random.default_rng(), 30, 0.1)
 print(states.shape)
 
 
