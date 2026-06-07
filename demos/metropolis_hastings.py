@@ -9,11 +9,14 @@ rng = np.random.default_rng()
 
 data = rng.normal(5, 2, 250)
 
+
 def llik(rng, x):
     return np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
 
+
 def prop(rng, x):
     return rng.normal(x, 0.1, 2)
+
 
 postmat = smfsb.metropolis_hastings(rng, [1, 1], llik, prop, verb=False)
 

@@ -30,8 +30,7 @@ seir_sh = """
 
 seir = smfsb.shorthand_to_spn(seir_sh)
 step_seir = seir.step_gillespie()
-out = smfsb.sim_time_series(np.random.default_rng(),
-                            seir.m, 0, 40, 0.05, step_seir)
+out = smfsb.sim_time_series(np.random.default_rng(), seir.m, 0, 40, 0.05, step_seir)
 
 
 fig, axis = plt.subplots()

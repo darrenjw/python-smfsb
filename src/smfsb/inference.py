@@ -299,7 +299,9 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     return go
 
 
-def abc_smc_step(rng, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor):
+def abc_smc_step(
+    rng, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
+):
     """Carry out one step of an ABC-SMC algorithm
 
     Not meant to be directly called by users. See abc_smc.

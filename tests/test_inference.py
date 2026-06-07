@@ -7,6 +7,7 @@ import scipy as sp
 
 rng = np.random.default_rng()
 
+
 def test_normal_gibbs():
     postmat = smfsb.normal_gibbs(rng, 100, 15, 3, 11, 10, 1 / 100, 25, 20)
     assert postmat.shape == (100, 2)
@@ -26,7 +27,9 @@ def test_metropolis_hastings():
     def prop(rng, x):
         return rng.normal(x, 0.1, 2)
 
-    out = smfsb.metropolis_hastings(rng, [1, 1], llik, prop, iters=1000, thin=2, verb=False)
+    out = smfsb.metropolis_hastings(
+        rng, [1, 1], llik, prop, iters=1000, thin=2, verb=False
+    )
     assert out.shape == (1000, 2)
 
 

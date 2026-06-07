@@ -10,6 +10,7 @@ print("ABC with calibrated summary stats")
 
 data = smfsb.data.lv_perfect[:, range(1, 3)]
 
+
 def rpr(rng):
     return np.exp(
         np.array(
@@ -23,8 +24,9 @@ def rpr(rng):
 
 
 def rmod(rng, th):
-    return smfsb.sim_time_series(rng, [50, 100], 0, 30, 2,
-                                 smfsb.models.lv(th).step_cle(0.1))
+    return smfsb.sim_time_series(
+        rng, [50, 100], 0, 30, 2, smfsb.models.lv(th).step_cle(0.1)
+    )
 
 
 def ss1d(vec):

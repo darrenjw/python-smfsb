@@ -8,8 +8,7 @@ import matplotlib.pyplot as plt
 lv = smfsb.models.lv()
 print(lv)
 step_lv = lv.step_first()
-out = smfsb.sim_time_series(np.random.default_rng(),
-                            lv.m, 0, 100, 0.1, step_lv)
+out = smfsb.sim_time_series(np.random.default_rng(), lv.m, 0, 100, 0.1, step_lv)
 
 
 fig, axis = plt.subplots()

@@ -10,8 +10,7 @@ import matplotlib.pyplot as plt
 dimer = smfsb.models.dimer()
 print(dimer)
 step = dimer.step_gillespie()
-out = smfsb.sim_time_series(np.random.default_rng(),
-                            dimer.m, 0, 100, 0.1, step)
+out = smfsb.sim_time_series(np.random.default_rng(), dimer.m, 0, 100, 0.1, step)
 
 fig, axis = plt.subplots()
 for i in range(2):

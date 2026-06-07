@@ -538,9 +538,7 @@ class Spn:
                     r = rng.choice(m * n, p=hrs.flatten() / hrss)  # pick a box
                     i = r // n
                     j = r % n
-                    k = rng.choice(
-                        v, p=hr[:, i, j] / hrs[i, j]
-                    )  # pick a reaction
+                    k = rng.choice(v, p=hr[:, i, j] / hrs[i, j])  # pick a reaction
                     x[:, i, j] = np.add(x[:, i, j], sto[:, k])
 
         return step

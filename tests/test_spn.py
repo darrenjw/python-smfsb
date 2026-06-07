@@ -6,6 +6,7 @@ import numpy as np
 
 rng = np.random.default_rng()
 
+
 def test_create():
     sir = smfsb.Spn(
         ["S", "I", "R"],

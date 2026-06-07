@@ -7,6 +7,7 @@ import smfsb.models
 
 rng = np.random.default_rng()
 
+
 def test_step_gillespie_1d():
     n = 20
     x0 = np.zeros((2, n))

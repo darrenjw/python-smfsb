@@ -13,9 +13,7 @@ data = smfsb.data.lv_perfect[:, range(1, 3)]
 
 
 def rpr(rng):
-    return np.array(
-        [rng.uniform(-2, 2), rng.uniform(-7, -3), rng.uniform(-3, 1)]
-    )
+    return np.array([rng.uniform(-2, 2), rng.uniform(-7, -3), rng.uniform(-3, 1)])
 
 
 def dpr(th):
@@ -33,8 +31,8 @@ def dpr(th):
 
 
 def rmod(rng, th):
-    return smfsb.sim_time_series(rng, 
-        [50, 100], 0, 30, 2, smfsb.models.lv(np.exp(th)).step_cle(0.1)
+    return smfsb.sim_time_series(
+        rng, [50, 100], 0, 30, 2, smfsb.models.lv(np.exp(th)).step_cle(0.1)
     )
 
 
@@ -61,6 +59,7 @@ def ssi(ts):
     return np.concatenate(
         (ss1d(ts[:, 0]), ss1d(ts[:, 1]), [np.corrcoef(ts[:, 0], ts[:, 1])[0, 1]])
     )
+
 
 rng = np.random.default_rng()
 
@@ -100,8 +99,8 @@ def dper(ne, ol):
     return np.sum(sp.stats.norm.logpdf(ne, ol, 0.5))
 
 
-postmat = smfsb.abc_smc(rng, 
-    10000, rpr, dpr, rdis, rper, dper, factor=5, steps=8, verb=True, debug=True
+postmat = smfsb.abc_smc(
+    rng, 10000, rpr, dpr, rdis, rper, dper, factor=5, steps=8, verb=True, debug=True
 )
 
 its, var = postmat.shape
