@@ -221,7 +221,7 @@ def rfmc(rng, n, p_mat, pi0):
     >>> import numpy as np
     >>> p_mat = np.array([[0.9,0.1],[0.2,0.8]])
     >>> pi0 = np.array([0.5,0.5])
-    >>> smfsb.rfmc(200, p_mat, pi0)
+    >>> smfsb.rfmc(np.random.default_rng(), 200, p_mat, pi0)
     """
     v = np.zeros(n)
     r = len(pi0)
@@ -470,7 +470,7 @@ def discretise(times, states, dt=1, start=0):
     >>> import smfsb
     >>> import smfsb.models
     >>> lv = smfsb.models.lv()
-    >>> times, states = lv.gillespie(1000)
+    >>> times, states = lv.gillespie(np.random.default_rng(), 1000)
     >>> smfsb.discretise(times, states, 0.1)
     """
     events = len(times)

@@ -370,10 +370,10 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv1d = lv.step_gillespie_1d(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_gillespie_1d(np.array([0.6, 0.6]))
         >>> N = 20
-        >>> x0 = np.zeros((2,N))
-        >>> x0[:,int(N/2)] = lv.m
+        >>> x0 = np.zeros((2, N))
+        >>> x0[:, int(N/2)] = lv.m
         >>> rng = np.random.default_rng()
         >>> stepLv1d(rng, x0, 0, 1)
         """
@@ -868,11 +868,11 @@ class Spn:
         >>> import smfsb.models
         >>> import numpy as np
         >>> lv = smfsb.models.lv()
-        >>> stepLv2d = lv.step_euler_2d(np.array([0.6,0.6]))
+        >>> stepLv2d = lv.step_euler_2d(np.array([0.6, 0.6]))
         >>> M = 15
         >>> N = 20
-        >>> x0 = np.zeros((2,M,N))
-        >>> x0[:,int(M/2),int(N/2)] = lv.m
+        >>> x0 = np.zeros((2, M, N))
+        >>> x0[:, int(M/2), int(N/2)] = lv.m
         >>> rng = np.random.default_rng()
         >>> stepLv2d(rng, x0, 0, 1)
         """

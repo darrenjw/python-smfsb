@@ -23,9 +23,11 @@ def bd(th=[1, 1.1]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> bd = smfsb.models.bd()
     >>> step = bd.step_gillespie()
-    >>> smfsb.sim_time_series(bd.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, bd.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["X"],
@@ -55,9 +57,11 @@ def dimer(th=[0.00166, 0.2]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> dimer = smfsb.models.dimer()
     >>> step = dimer.step_gillespie()
-    >>> smfsb.sim_time_series(dimer.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, dimer.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["P", "P2"],
@@ -87,9 +91,11 @@ def id(th=[1, 0.1]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> id = smfsb.models.id()
     >>> step = id.step_gillespie()
-    >>> smfsb.sim_time_series(id.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, id.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["X"],
@@ -120,9 +126,11 @@ def lv(th=[1, 0.005, 0.6]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> lv = smfsb.models.lv()
     >>> step = lv.step_gillespie()
-    >>> smfsb.sim_time_series(lv.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, lv.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["Prey", "Predator"],
@@ -152,9 +160,11 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> mm = smfsb.models.mm()
     >>> step = mm.step_gillespie()
-    >>> smfsb.sim_time_series(mm.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, mm.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["S", "E", "SE", "P"],
@@ -184,9 +194,11 @@ def sir(th=[0.0015, 0.1]):
     Examples
     --------
     >>> import smfsb
+    >>> import numpy as np
     >>> sir = smfsb.models.sir()
     >>> step = sir.step_gillespie()
-    >>> smfsb.sim_time_series(sir.m, 0, 50, 0.1, step)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series(rng, sir.m, 0, 50, 0.1, step)
     """
     return Spn(
         ["S", "I", "R"],

@@ -245,7 +245,7 @@ def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     >>> import scipy as sp
     >>> import smfsb
     >>> def obsll(x, t, y, th):
-    >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10)
+    >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10))
     >>>
     >>> def simX(rng, t0, th):
     >>>     return np.array([rng.poisson(50), rng.poisson(100)])
@@ -497,7 +497,7 @@ def normal_gibbs(rng, iters, n, a, b, c, d, xbar, ssquared):
     >>> rng = np.random.default_rng()
     >>> postmat = smfsb.normal_gibbs(rng, iters=1100, n=15, a=3, b=11, c=10, d=1/100,
     >>>   xbar=25, ssquared=20)
-    >>> postmat = postmat[range(100,1100),:]
+    >>> postmat = postmat[range(100,1100), :]
     """
     mat = np.zeros((iters, 2))
     mu = c
