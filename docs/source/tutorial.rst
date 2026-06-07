@@ -23,7 +23,7 @@ model:
 
    lvmod = smfsb.models.lv()
    step = lvmod.step_gillespie()
-   rng = np.random.default.rng()
+   rng = np.random.default_rng()
    out = smfsb.sim_time_series(rng, lvmod.m, 0, 30, 0.1, step)
    assert(out.shape == (300, 2))
 
@@ -129,6 +129,7 @@ realisation from a discrete stochastic SEIR model.
 
    seir = smfsb.shorthand_to_spn(seir_sh)
    step_seir = seir.step_gillespie()
+   rng = np.random.default_rng()
    out = smfsb.sim_time_series(rng, seir.m, 0, 40, 0.05, step_seir)
 
    import matplotlib.pyplot as plt
@@ -165,7 +166,8 @@ For 1d simulation, the state is a matrix with rows representing the levels of a 
    lv = smfsb.models.lv()
    x0[:, int(N / 2)] = lv.m
    step_lv_1d = lv.step_gillespie_1d(np.array([0.6, 0.6]))
-   x1 = step_lv_1d(x0, 0, 1)
+   rng = np.random.default_rng()
+   x1 = step_lv_1d(rng, x0, 0, 1)
    print(x1)
    out = smfsb.sim_time_series_1d(rng, x0, 0, T, 1, step_lv_1d, True)
 
@@ -193,8 +195,8 @@ For 2d simulation, the state is a 3d array containing the levels of each species
    x0 = np.zeros((2, M, N))
    lv = smfsb.models.lv()
    x0[:, int(M / 2), int(N / 2)] = lv.m
-   step_lv_2d = lv.step_cle_2d(rng, np.array([0.6, 0.6]), 0.1)
-   x1 = step_lv_2d(x0, 0, T)
+   step_lv_2d = lv.step_cle_2d(np.array([0.6, 0.6]), 0.1)
+   x1 = step_lv_2d(np.random.default_rng(), x0, 0, T)
 
    fig, axis = plt.subplots()
    for i in range(2):
@@ -338,7 +340,8 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
        )
 
    rng = np.random.default_rng()
-   p, d = smfsb.abc_run(rng, 20000, rpr, lambda th: ssi(rmod(th)), verb=False)
+   p, d = smfsb.abc_run(rng, 20000, rpr,
+	  lambda rng, th: ssi(rmod(rng, th)), verb=False)
    prmat = np.vstack(p)
    dmat = np.vstack(d)
    print(prmat.shape)
@@ -433,9 +436,7 @@ documentation <https://python-smfsb.readthedocs.io/en/latest/index.html>`__.
 The ``jax-smfsb`` python package
 --------------------------------
 
-If you like this package, but find it to be too slow for serious work, then you may be interested in the `jax-smfsb <https://github.com/darrenjw/jax-smfsb/>`__ package. This is a port of the main simulation and inference functions from this library to the `JAX <https://jax.readthedocs.io/>`__ machine learning framework, offering JIT compilation and parallelisation. The API for the library is very similar to that of this one. The main difference is that non-deterministic (random)
-functions have an extra argument (typically the first argument) that
-corresponds to a JAX random number key. The functions in the JAX port can often be two orders of magnitude faster than those in this package for non-trivial simulation or inference algorithms.
+If you like this package, but find it to be too slow for serious work, then you may be interested in the `jax-smfsb <https://github.com/darrenjw/jax-smfsb/>`__ package. This is a port of the main simulation and inference functions from this library to the `JAX <https://jax.readthedocs.io/>`__ machine learning framework, offering JIT compilation and parallelisation. The API for the library is very similar to that of this one. The main difference is that non-deterministic (random) functions take as input a JAX random number key rather than a numpy random number generator. The functions in the JAX port can often be two orders of magnitude faster than those in this package for non-trivial simulation or inference algorithms.
 
 
 
