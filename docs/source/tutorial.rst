@@ -19,10 +19,12 @@ model:
 .. code:: python
 
    import smfsb
+   import numpy as np
 
    lvmod = smfsb.models.lv()
    step = lvmod.step_gillespie()
-   out = smfsb.sim_time_series(lvmod.m, 0, 30, 0.1, step)
+   rng = np.random.default.rng()
+   out = smfsb.sim_time_series(rng, lvmod.m, 0, 30, 0.1, step)
    assert(out.shape == (300, 2))
 
 Here we used the ``lv`` model. Other built-in models include ``id`` (immigration-death), ``bd`` (birth-death), ``dimer`` (dimerisation kinetics), ``mm`` (Michaelis-Menten enzyme kinetics) and ``sir`` (SIR epdiemic model). The models are of class ``Spn`` (stochastic Petri net), the main data type used in the package. Note the use of the ``step_gillespie`` method, defined on all ``Spn`` models, which returns a function for simulating from the transition kernel of the model, using the Gillespie algorithm. This function can be used with the ``sim_time_series`` function for simulating model trajectories on a regular time grid. Alternative simulation algorithms include ``step_poisson`` (Poisson time-stepping), ``step_cle`` (Euler-Maruyama simulation from the associated chemical Langevin equation) and ``step_euler`` (Euler simulation from the continuous deterministic approximation to the model).
@@ -61,7 +63,7 @@ specifying a stochastic Petri net ``Spn`` object explicitly. We must provide spe
        lambda x, t: np.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
        [197.0, 3, 0])
    step_sir = sir.step_poisson()
-   sample = smfsb.sim_sample(500, sir.m, 0, 20, step_sir)
+   sample = smfsb.sim_sample(rng, 500, sir.m, 0, 20, step_sir)
    fig, axis = plt.subplots()
    axis.hist(sample[:,1], 30)
    axis.set_title("Infected at time 20")
@@ -127,7 +129,7 @@ realisation from a discrete stochastic SEIR model.
 
    seir = smfsb.shorthand_to_spn(seir_sh)
    step_seir = seir.step_gillespie()
-   out = smfsb.sim_time_series(seir.m, 0, 40, 0.05, step_seir)
+   out = smfsb.sim_time_series(rng, seir.m, 0, 40, 0.05, step_seir)
 
    import matplotlib.pyplot as plt
    fig, axis = plt.subplots()
@@ -165,7 +167,7 @@ For 1d simulation, the state is a matrix with rows representing the levels of a 
    step_lv_1d = lv.step_gillespie_1d(np.array([0.6, 0.6]))
    x1 = step_lv_1d(x0, 0, 1)
    print(x1)
-   out = smfsb.sim_time_series_1d(x0, 0, T, 1, step_lv_1d, True)
+   out = smfsb.sim_time_series_1d(rng, x0, 0, T, 1, step_lv_1d, True)
 
    fig, axis = plt.subplots()
    for i in range(2):
@@ -191,7 +193,7 @@ For 2d simulation, the state is a 3d array containing the levels of each species
    x0 = np.zeros((2, M, N))
    lv = smfsb.models.lv()
    x0[:, int(M / 2), int(N / 2)] = lv.m
-   step_lv_2d = lv.step_cle_2d(np.array([0.6, 0.6]), 0.1)
+   step_lv_2d = lv.step_cle_2d(rng, np.array([0.6, 0.6]), 0.1)
    x1 = step_lv_2d(x0, 0, T)
 
    fig, axis = plt.subplots()
@@ -221,19 +223,19 @@ In a very basic version of ABC, a candidate parameter vector is drawn from a pri
 
    data = smfsb.data.lv_perfect[:, 1:3]
 
-   def rpr():
+   def rpr(rng):
        return np.exp(
 	   np.array(
 	       [
-		   np.random.uniform(-3, 3),
-		   np.random.uniform(-8, -2),
-		   np.random.uniform(-4, 2),
+		   rng.uniform(-3, 3),
+		   rng.uniform(-8, -2),
+		   rng.uniform(-4, 2),
 	       ]
 	   )
        )
 
-   def rmod(th):
-       return smfsb.sim_time_series(
+   def rmod(rng, th):
+       return smfsb.sim_time_series(rng, 
 	   np.array([50.0, 100.0]), 0, 30, 2, smfsb.models.lv(th).step_cle(0.1)
        )
 
@@ -246,10 +248,10 @@ In a very basic version of ABC, a candidate parameter vector is drawn from a pri
        diff = ss - ssd
        return np.sqrt(np.sum(diff * diff))
 
-   def rdis(th):
-       return dist(sum_stats(rmod(th)))
+   def rdis(rng, th):
+       return dist(sum_stats(rmod(rng, th)))
 
-   p, d = smfsb.abc_run(100000, rpr, rdis, verb=False)
+   p, d = smfsb.abc_run(np.random.default_rng(), 100000, rpr, rdis, verb=False)
 
    q = np.nanquantile(d, 0.02)
    prmat = np.vstack(p)
@@ -285,12 +287,12 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
 
    data = smfsb.data.lv_perfect[:, 1:3]
 
-   def rpr():
+   def rpr(rng):
        return np.array(
 	   [
-	       np.random.uniform(-2, 2),
-	       np.random.uniform(-7, -3),
-	       np.random.uniform(-3, 1),
+	       rng.uniform(-2, 2),
+	       rng.uniform(-7, -3),
+	       rng.uniform(-3, 1),
 	   ]
        )
 
@@ -307,8 +309,8 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
 	   )
        )
 
-   def rmod(th):
-       return smfsb.sim_time_series(
+   def rmod(rng, th):
+       return smfsb.sim_time_series(rng, 
 	   [50.0, 100], 0, 30, 2, smfsb.models.lv(np.exp(th)).step_cle(0.1)
        )
 
@@ -335,7 +337,8 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
 	   )
        )
 
-   p, d = smfsb.abc_run(20000, rpr, lambda th: ssi(rmod(th)), verb=False)
+   rng = np.random.default_rng()
+   p, d = smfsb.abc_run(rng, 20000, rpr, lambda th: ssi(rmod(th)), verb=False)
    prmat = np.vstack(p)
    dmat = np.vstack(d)
    print(prmat.shape)
@@ -355,16 +358,16 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
        diff = ss - ssd
        return np.sqrt(np.sum(diff * diff))
 
-   def rdis(th):
-       return dist(sum_stats(rmod(th)))
+   def rdis(rng, th):
+       return dist(sum_stats(rmod(rng, th)))
 
-   def rper(th):
-       return th + np.random.normal(0, 0.5, 3)
+   def rper(rng, th):
+       return th + rng.normal(0, 0.5, 3)
 
    def dper(ne, ol):
        return np.sum(sp.stats.norm.logpdf(ne, ol, 0.5))
 
-   postmat = smfsb.abc_smc(
+   postmat = smfsb.abc_smc(rng, 
        5000, rpr, dpr, rdis, rper, dper, factor=5, steps=6, verb=True
    )
 
@@ -397,19 +400,19 @@ PMMH is in many ways the "gold standard" likelihood free inference strategy (at 
    def obsll(x, t, y, th):
        return np.sum(sp.stats.norm.logpdf(y - x, scale=10))
 
-   def sim_x(t0, th):
-       return np.array([np.random.poisson(50), np.random.poisson(100)])
+   def sim_x(rng, t0, th):
+       return np.array([rng.poisson(50), rng.poisson(100)])
 
-   def step(x, t, dt, th):
+   def step(rng, x, t, dt, th):
        sf = smfsb.models.lv(th).step_cle(0.1)
-       return sf(x, t, dt)
+       return sf(rng, x, t, dt)
 
    mll = smfsb.pf_marginal_ll(100, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
 
-   def prop(th, tune=0.01):
-       return np.exp(np.random.normal(0, tune, (3))) * th
+   def prop(rng, th, tune=0.01):
+       return np.exp(rng.normal(0, tune, (3))) * th
 
-   thmat = smfsb.metropolis_hastings(
+   thmat = smfsb.metropolis_hastings(np.random.default_rng(),
 	  np.array([1, 0.005, 0.6]), mll, prop, iters=5000, thin=1, verb=True
    )
 

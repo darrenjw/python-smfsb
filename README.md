@@ -19,6 +19,8 @@ import smfsb
 ```
 at a python prompt. If it returns silently, then it is probably installed correctly.
 
+**Note that a major breaking change has been introduced in version 1.2.0, and that the documentation has been updated to reflect this change. Following recommended good practice for numpy random number generation, random number generators are now explicity threaded through the code. This has the side-benefit of making the API more similar to the JAX version of the library.**
+
 ## Documentation
 
 Note that **the book**, and its associated [github repo](https://github.com/darrenjw/smfsb) is the main source of documentation for this library. The code in the book is in R, but the code in this library is supposed to mirror the R code, but in Python.
