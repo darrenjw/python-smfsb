@@ -8,21 +8,21 @@ print("ABC")
 
 data = smfsb.data.lv_perfect[:, range(1, 3)]
 
-
-def rpr():
+def rpr(rng):
     return np.exp(
         np.array(
             [
-                np.random.uniform(-3, 3),
-                np.random.uniform(-8, -2),
-                np.random.uniform(-4, 2),
+                rng.uniform(-3, 3),
+                rng.uniform(-8, -2),
+                rng.uniform(-4, 2),
             ]
         )
     )
 
 
-def rmod(th):
-    return smfsb.sim_time_series([50, 100], 0, 30, 2, smfsb.models.lv(th).step_cle(0.1))
+def rmod(rng, th):
+    return smfsb.sim_time_series(rng, [50, 100], 0, 30, 2,
+                                 smfsb.models.lv(th).step_cle(0.1))
 
 
 def sum_stats(dat):
@@ -37,11 +37,12 @@ def dist(ss):
     return np.sqrt(np.sum(diff * diff))
 
 
-def rdis(th):
-    return dist(sum_stats(rmod(th)))
+def rdis(rng, th):
+    return dist(sum_stats(rmod(rng, th)))
 
+rng = np.random.default_rng()
 
-p, d = smfsb.abc_run(1000000, rpr, rdis, verb=True)
+p, d = smfsb.abc_run(rng, 1000000, rpr, rdis, verb=True)
 
 q = np.nanquantile(d, 0.01)
 prmat = np.vstack(p)

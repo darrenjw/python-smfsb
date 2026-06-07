@@ -13,7 +13,8 @@ sir = smfsb.Spn(
     [197, 3, 0],
 )
 step_sir = sir.step_poisson()
-sample = smfsb.sim_sample(100, sir.m, 0, 20, step_sir)
+rng = np.random.default_rng()
+sample = smfsb.sim_sample(rng, 100, sir.m, 0, 20, step_sir)
 fig, axis = plt.subplots()
 axis.hist(sample[:, 1], 30)
 axis.set_title("Infected at time 20")

@@ -5,18 +5,17 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
-data = np.random.normal(5, 2, 250)
+rng = np.random.default_rng()
 
+data = rng.normal(5, 2, 250)
 
-def llik(x):
+def llik(rng, x):
     return np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
 
+def prop(rng, x):
+    return rng.normal(x, 0.1, 2)
 
-def prop(x):
-    return np.random.normal(x, 0.1, 2)
-
-
-postmat = smfsb.metropolis_hastings([1, 1], llik, prop, verb=False)
+postmat = smfsb.metropolis_hastings(rng, [1, 1], llik, prop, verb=False)
 
 fig, axes = plt.subplots(3, 2)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

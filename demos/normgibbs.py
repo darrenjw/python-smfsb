@@ -4,7 +4,8 @@ import smfsb
 import numpy as np
 import matplotlib.pyplot as plt
 
-postmat = smfsb.normal_gibbs(11000, 15, 3, 11, 10, 1 / 100, 25, 20)
+rng = np.random.default_rng()
+postmat = smfsb.normal_gibbs(rng, 11000, 15, 3, 11, 10, 1 / 100, 25, 20)
 postmat = postmat[range(1000, 11000), :]
 
 

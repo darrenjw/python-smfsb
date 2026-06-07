@@ -12,9 +12,9 @@ print("ABC-SMC")
 data = smfsb.data.lv_perfect[:, range(1, 3)]
 
 
-def rpr():
+def rpr(rng):
     return np.array(
-        [np.random.uniform(-2, 2), np.random.uniform(-7, -3), np.random.uniform(-3, 1)]
+        [rng.uniform(-2, 2), rng.uniform(-7, -3), rng.uniform(-3, 1)]
     )
 
 
@@ -32,8 +32,8 @@ def dpr(th):
     )
 
 
-def rmod(th):
-    return smfsb.sim_time_series(
+def rmod(rng, th):
+    return smfsb.sim_time_series(rng, 
         [50, 100], 0, 30, 2, smfsb.models.lv(np.exp(th)).step_cle(0.1)
     )
 
@@ -62,8 +62,9 @@ def ssi(ts):
         (ss1d(ts[:, 0]), ss1d(ts[:, 1]), [np.corrcoef(ts[:, 0], ts[:, 1])[0, 1]])
     )
 
+rng = np.random.default_rng()
 
-p, d = smfsb.abc_run(20000, rpr, lambda th: ssi(rmod(th)), verb=False)
+p, d = smfsb.abc_run(rng, 20000, rpr, lambda rng, th: ssi(rmod(rng, th)), verb=False)
 prmat = np.vstack(p)
 dmat = np.vstack(d)
 print(prmat.shape)
@@ -87,19 +88,19 @@ def dist(ss):
     return np.sqrt(np.sum(diff * diff))
 
 
-def rdis(th):
-    return dist(sum_stats(rmod(th)))
+def rdis(rng, th):
+    return dist(sum_stats(rmod(rng, th)))
 
 
-def rper(th):
-    return th + np.random.normal(0, 0.5, 3)
+def rper(rng, th):
+    return th + rng.normal(0, 0.5, 3)
 
 
 def dper(ne, ol):
     return np.sum(sp.stats.norm.logpdf(ne, ol, 0.5))
 
 
-postmat = smfsb.abc_smc(
+postmat = smfsb.abc_smc(rng, 
     10000, rpr, dpr, rdis, rper, dper, factor=5, steps=8, verb=True, debug=True
 )
 

@@ -20,7 +20,7 @@ def test_metrop():
 def test_metropolis_hastings():
     data = rng.normal(5, 2, 250)
 
-    def llik(x):
+    def llik(rng, x):
         return np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
 
     def prop(rng, x):

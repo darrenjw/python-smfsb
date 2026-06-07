@@ -4,15 +4,17 @@ import smfsb
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.random.normal(5, 2, 250)
+rng = np.random.default_rng()
+
+data = rng.normal(5, 2, 250)
 
 
-def rpr():
-    return np.exp(np.random.uniform(-3, 3, 2))
+def rpr(rng):
+    return np.exp(rng.uniform(-3, 3, 2))
 
 
-def rmod(th):
-    return np.random.normal(th[0], th[1], 250)
+def rmod(rng, th):
+    return rng.normal(th[0], th[1], 250)
 
 
 def sum_stats(dat):
@@ -27,11 +29,11 @@ def dist(ss):
     return np.sqrt(np.sum(diff * diff))
 
 
-def rdis(th):
-    return dist(sum_stats(rmod(th)))
+def rdis(rng, th):
+    return dist(sum_stats(rmod(rng, th)))
 
 
-p, d = smfsb.abc_run(1000000, rpr, rdis)
+p, d = smfsb.abc_run(rng, 1000000, rpr, rdis)
 
 q = np.quantile(d, 0.01)
 prmat = np.vstack(p)

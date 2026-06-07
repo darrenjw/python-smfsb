@@ -34,13 +34,15 @@ def metropolis_hastings(
       A numpy random number generator.
     init : vector
       A parameter vector with which to initialise the MCMC algorithm.
-    log_lik : function
-      A function which takes a parameter (such as `init`) as its
-      only required argument and returns the log-likelihood of the
+    log_lik : (stochastic) function
+      A function which takes two arguments: a numpy random number generator
+      and a parameter (such as `init`). It returns the log-likelihood of the
       data. Note that it is fine for this to return the log of an
       unbiased estimate of the likelihood, in which case the
       algorithm will be an "exact approximate" pseudo-marginal MH
-      algorithm.
+      algorithm. This is why the function should take an rng as an
+      argument. In the "vanilla" case where the log-likelihood can
+      be evaluated deterministically, the rng can just be ignored.
     rprop : stochastic function
       A function which takes a rng and a current parameter as its two
       required arguments and returns a single sample from a proposal
@@ -86,7 +88,7 @@ def metropolis_hastings(
     >>> import scipy as sp
     >>> rng = np.random.default_rng()
     >>> data = rng.normal(5, 2, 250)
-    >>> llik = lambda x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
+    >>> llik = lambda rng, x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
     >>> prop = lambda rng, x: rng.normal(x, 0.1, 2)
     >>> smfsb.metropolis_hastings(rng, [1,1], llik, prop)
     """
@@ -102,7 +104,7 @@ def metropolis_hastings(
         for j in range(thin):
             prop = rprop(rng, x)
             if ldprior(prop) > -math.inf:
-                llprop = log_lik(prop)
+                llprop = log_lik(rng, prop)
                 a = (
                     llprop
                     - ll
