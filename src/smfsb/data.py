@@ -3,7 +3,6 @@
 
 import numpy as np
 
-
 # time, prey, predator
 lv_perfect = np.array(
     [

@@ -8,7 +8,6 @@ import smfsb.models
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 dt = 0.01
 
 lv = smfsb.models.lv()

@@ -4,7 +4,6 @@
 import numpy as np
 import inspect
 
-
 # Some simulation functions
 
 

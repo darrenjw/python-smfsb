@@ -7,7 +7,6 @@ import smfsb.models
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 lv = smfsb.models.lv()
 print(lv)
 step_lv = lv.step_cle()

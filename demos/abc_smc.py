@@ -6,7 +6,6 @@ import scipy as sp
 import math
 import matplotlib.pyplot as plt
 
-
 print("ABC-SMC")
 
 data = smfsb.data.lv_perfect[:, range(1, 3)]

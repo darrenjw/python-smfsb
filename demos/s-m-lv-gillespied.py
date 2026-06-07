@@ -7,7 +7,6 @@ import smfsb.models
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 lv = smfsb.models.lv()
 print(lv)
 states = lv.gillespied(np.random.default_rng(), 30, 0.1)
