@@ -100,7 +100,7 @@ def metropolis_hastings(
         if verb:
             print(f"{i} ", end="", flush=True)
         for j in range(thin):
-            prop = rprop(x)
+            prop = rprop(rng, x)
             if ldprior(prop) > -math.inf:
                 llprop = log_lik(prop)
                 a = (

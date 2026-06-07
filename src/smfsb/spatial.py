@@ -4,7 +4,7 @@
 import numpy as np
 
 
-def sim_time_series_1d(x0, t0, tt, dt, step_fun, verb=False):
+def sim_time_series_1d(rng, x0, t0, tt, dt, step_fun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -15,6 +15,8 @@ def sim_time_series_1d(x0, t0, tt, dt, step_fun, verb=False):
 
     Parameters
     ----------
+    rng: Generator
+      A numpy random number generator.
     x0 : array
       The initial state of the process at time `t0`, a matrix with
       rows corresponding to reacting species and columns
@@ -48,7 +50,8 @@ def sim_time_series_1d(x0, t0, tt, dt, step_fun, verb=False):
     >>> T = 5
     >>> x0 = np.zeros((2,N))
     >>> x0[:,int(N/2)] = lv.m
-    >>> smfsb.sim_time_series_1d(x0, 0, T, 1, stepLv1d, True)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series_1d(rng, x0, 0, T, 1, stepLv1d, True)
     """
     nt = int((tt - t0) // dt + 1)
     u, n = x0.shape
@@ -60,12 +63,12 @@ def sim_time_series_1d(x0, t0, tt, dt, step_fun, verb=False):
         if verb:
             print(nt - i)
         t = t + dt
-        x = step_fun(x, t, dt)
+        x = step_fun(rng, x, t, dt)
         arr[:, :, i] = x
     return arr
 
 
-def sim_time_series_2d(x0, t0, tt, dt, step_fun, verb=False):
+def sim_time_series_2d(rng, x0, t0, tt, dt, step_fun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -76,6 +79,8 @@ def sim_time_series_2d(x0, t0, tt, dt, step_fun, verb=False):
 
     Parameters
     ----------
+    rng: Generator
+      A numpy random number generator.
     x0 : array
       The initial state of the process at time `t0`, a 3d array with
       dimensions corresponding to reacting species and then two
@@ -110,7 +115,8 @@ def sim_time_series_2d(x0, t0, tt, dt, step_fun, verb=False):
     >>> T = 5
     >>> x0 = np.zeros((2,M,N))
     >>> x0[:,int(M/2),int(N/2)] = lv.m
-    >>> smfsb.sim_time_series_2d(x0, 0, T, 1, stepLv2d, True)
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_time_series_2d(rng, x0, 0, T, 1, stepLv2d, True)
     """
     nt = int((tt - t0) // dt + 1)
     u, m, n = x0.shape
@@ -122,7 +128,7 @@ def sim_time_series_2d(x0, t0, tt, dt, step_fun, verb=False):
         if verb:
             print(nt - i)
         t = t + dt
-        x = step_fun(x, t, dt)
+        x = step_fun(rng, x, t, dt)
         arr[:, :, :, i] = x
     return arr
 
