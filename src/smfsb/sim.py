@@ -276,7 +276,7 @@ def rcfmc(rng, n, q_mat, pi0):
     t = 0
     xvec[0] = x
     for i in range(n):
-        t = t + rng.exponential(-q_mat[int(x), int(x)])
+        t = t + rng.exponential(-1.0 / q_mat[int(x), int(x)])
         weights = q_mat[int(x), :].copy()
         weights[x] = 0
         weights = weights / np.sum(weights)
