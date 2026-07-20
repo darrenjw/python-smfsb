@@ -325,7 +325,7 @@ def imdeath(rng, n=20, x0=0, lamb=1, mu=0.1):
     x = x0
     xvec[0] = x
     for i in range(n):
-        t = t + rng.exponential(lamb + x * mu)
+        t = t + rng.exponential(1.0 / (lamb + x * mu))
         if rng.random() < lamb / (lamb + x * mu):
             x = x + 1
         else:
