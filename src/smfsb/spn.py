@@ -59,8 +59,8 @@ class Spn:
 
     def __str__(self):
         """A very simple string representation of the Spn object, mainly for debugging."""
-        return "n: {}\n t: {}\npre: {}\npost: {}\nh: {}\nm: {}".format(
-            str(self.n),
+        return "p: {}\n t: {}\npre: {}\npost: {}\nh: {}\nm: {}".format(
+            str(self.p),
             str(self.t),
             str(self.pre),
             str(self.post),
