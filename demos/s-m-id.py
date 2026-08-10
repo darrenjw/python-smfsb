@@ -16,7 +16,7 @@ out = smfsb.sim_time_series(np.random.default_rng(), id.m, 0, 100, 0.1, step)
 fig, axis = plt.subplots()
 axis.plot(range(out.shape[0]), out[:, 0])
 
-axis.legend(id.n)
+axis.legend(id.p)
 fig.savefig("s-m-id.pdf")
 
 # eof

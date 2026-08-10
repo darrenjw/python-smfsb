@@ -16,7 +16,7 @@ fig, axis = plt.subplots()
 for i in range(2):
     axis.plot(range(out.shape[0]), out[:, i])
 
-axis.legend(dimer.n)
+axis.legend(dimer.p)
 fig.savefig("s-m-dimer.pdf")
 
 # eof

@@ -52,6 +52,10 @@ class Spn:
         self.post = np.array(post)
         self.h = h  # hazard function
         self.m = np.array(m)  # initial marking
+        assert self.pre.shape == self.post.shape
+        assert len(self.p) == self.pre.shape[1]
+        assert len(self.t) == self.pre.shape[0]
+        assert len(self.p) == len(self.m)
 
     def __str__(self):
         """A very simple string representation of the Spn object, mainly for debugging."""
