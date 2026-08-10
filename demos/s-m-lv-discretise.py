@@ -19,7 +19,7 @@ fig, axis = plt.subplots()
 for i in range(2):
     axis.step(np.arange(0, times[-1], dt), out[:, i], where="post")
 
-axis.legend(lv.n)
+axis.legend(lv.p)
 fig.savefig("s-m-lv-discretise.pdf")
 
 # eof

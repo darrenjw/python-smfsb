@@ -17,7 +17,7 @@ x1 = step_lv2d(np.random.default_rng(), x0, 0, T)
 fig, axis = plt.subplots()
 for i in range(2):
     axis.imshow(x1[i, :, :])
-    axis.set_title(lv.n[i])
+    axis.set_title(lv.p[i])
     fig.savefig(f"step_gillespie_2d{i}.pdf")
 
 

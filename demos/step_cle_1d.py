@@ -20,7 +20,7 @@ out = smfsb.sim_time_series_1d(rng, x0, 0, T, 1, step_lv1d, True)
 fig, axis = plt.subplots()
 for i in range(2):
     axis.imshow(out[i, :, :])
-    axis.set_title(lv.n[i])
+    axis.set_title(lv.p[i])
     fig.savefig(f"step_cle_1d{i}.pdf")
 
 

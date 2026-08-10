@@ -17,7 +17,7 @@ fig, axis = plt.subplots()
 for i in range(2):
     axis.step(np.arange(0, 30, 0.1), states[:, i], where="post")
 
-axis.legend(lv.n)
+axis.legend(lv.p)
 fig.savefig("s-m-lv-gillespied.pdf")
 
 # eof
