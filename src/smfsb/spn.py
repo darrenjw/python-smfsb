@@ -9,7 +9,7 @@ import numpy as np
 class Spn:
     """Class for stochastic Petri net models."""
 
-    def __init__(self, n, t, pre, post, h, m):
+    def __init__(self, p, t, pre, post, h, m):
         """Constructor method for Spn objects
 
         Create a Spn object for representing a stochastic Petri net model that
@@ -17,8 +17,8 @@ class Spn:
 
         Parameters
         ----------
-        n : list of strings
-            Names of the species/tokens in the model
+        p : list of strings
+            Names of the species/places in the model
         t : list of strings
             Names of the reactions/transitions in the model
         pre : matrix
@@ -46,8 +46,8 @@ class Spn:
         >>> stepSir = sir.step_poisson()
         >>> smfsb.sim_sample(np.random.default_rng(), 10, sir.m, 0, 20, stepSir)
         """
-        self.n = n  # species names
-        self.t = t  # reaction names
+        self.p = p  # species names - places
+        self.t = t  # reaction names - transitions
         self.pre = np.array(pre)
         self.post = np.array(post)
         self.h = h  # hazard function
