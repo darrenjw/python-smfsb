@@ -60,6 +60,58 @@ def sim_time_series(rng, x0, t0, tt, dt, step_fun):
     return mat
 
 
+def sim_times(rng, x0, t0, times, step_fun):
+    """Simulate a model on a provided grid of times, using a function (closure)
+    for advancing the state of the model
+
+    This function simulates single realisation of a model on a provided
+    grid of times using a function (closure) for advancing the state
+    of the model, such as created by ‘step_gillespie’ or
+    ‘step_euler’.
+
+    Parameters
+    ----------
+    rng: Generator
+        A number random number generator.
+    x0: array of numbers
+        The intial state of the system at time t0
+    t0: float
+        This intial time to be associated with the intial state.
+    times: array of numbers
+        A vector of times at which the process is required. It is assumed
+        that the times are in increasing order and that the first time is
+        at least as big as `t0`.
+    step_fun: function
+        A function (closure) for advancing the state of the process,
+        such as produced by ‘step_gillespie’ or ‘step_euler’.
+
+    Returns
+    -------
+    A matrix with rows representing the state of the system at the
+    required times.
+
+    Examples
+    --------
+    >>> import smfsb.models
+    >>> import numpy as np
+    >>> lv = smfsb.models.lv()
+    >>> stepLv = lv.step_gillespie()
+    >>> rng = np.random.default_rng()
+    >>> smfsb.sim_times(rng, [50, 100], 0, [1, 2, 5, 10], stepLv)
+    """
+    times = np.array(times)
+    n = len(times)
+    u = len(x0)
+    mat = np.zeros((n, u))
+    x = x0
+    t = t0
+    for i in range(n):
+        x = step_fun(rng, x, t, times[i] - t)
+        t = times[i]
+        mat[i, :] = x
+    return mat
+
+
 def sim_sample(rng, n, x0, t0, deltat, step_fun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for

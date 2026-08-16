@@ -39,6 +39,23 @@ def test_sim_time_series():
     assert out[4, 0] >= 0
 
 
+def test_sim_times():
+    bd = smfsb.models.bd()
+    step = bd.step_gillespie()
+    out = smfsb.sim_times(rng, bd.m, 0, [0, 2, 5, 10], step)
+    assert out.shape == (4, 1)
+    assert out[0, :] == bd.m
+    assert out[3, 0] >= 0
+
+
+def test_sim_sample():
+    lv = smfsb.models.lv()
+    step = lv.step_gillespie()
+    out = smfsb.sim_sample(rng, 20, lv.m, 0, 10, step)
+    assert out.shape == (20, 2)
+    assert out[3, 0] >= 0
+
+
 def test_dimer():
     dimer = smfsb.models.dimer()
     step = dimer.step_gillespie()
