@@ -4,7 +4,7 @@
 import smfsb
 import numpy as np
 
-rng = np.random.default_rng()
+rng = np.random.default_rng(33)
 
 
 def test_create():
