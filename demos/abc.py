@@ -48,8 +48,7 @@ rng = np.random.default_rng()
 p, d = smfsb.abc_run(rng, 1000000, rpr, rdis, verb=True)
 
 q = np.nanquantile(d, 0.01)
-prmat = np.vstack(p)
-postmat = prmat[d < q, :]
+postmat = p[d < q, :]
 its, var = postmat.shape
 print(its, var)
 

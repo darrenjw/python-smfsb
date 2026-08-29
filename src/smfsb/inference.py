@@ -154,8 +154,8 @@ def abc_run(rng, n, rprior, rdist, verb=False):
 
     Returns
     -------
-    A tuple with first component a list of parameters and second component
-    a list of corresponding distances.
+    A tuple with first component a matrix of parameters (in rows) and
+    second component a vector of corresponding distances.
 
     Examples
     --------
@@ -194,7 +194,7 @@ def abc_run(rng, n, rprior, rdist, verb=False):
         d.append(di)
     if verb:
         print(" - Done.")
-    return (p, d)
+    return (np.vstack(p), np.array(d))
 
 
 def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):

@@ -36,8 +36,7 @@ def rdis(rng, th):
 p, d = smfsb.abc_run(rng, 1000000, rpr, rdis)
 
 q = np.quantile(d, 0.01)
-prmat = np.vstack(p)
-postmat = prmat[d < q, :]
+postmat = p[d < q, :]
 its, var = postmat.shape
 
 fig, axes = plt.subplots(3, 2)

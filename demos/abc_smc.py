@@ -63,12 +63,8 @@ def ssi(ts):
 rng = np.random.default_rng()
 
 p, d = smfsb.abc_run(rng, 20000, rpr, lambda rng, th: ssi(rmod(rng, th)), verb=False)
-prmat = np.vstack(p)
-dmat = np.vstack(d)
-print(prmat.shape)
-print(dmat.shape)
-dmat[dmat == math.inf] = math.nan
-sds = np.nanstd(dmat, 0)
+d[d == math.inf] = math.nan
+sds = np.nanstd(d, 0)
 print(sds)
 
 

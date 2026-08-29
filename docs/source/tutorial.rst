@@ -256,8 +256,7 @@ In a very basic version of ABC, a candidate parameter vector is drawn from a pri
    p, d = smfsb.abc_run(np.random.default_rng(), 100000, rpr, rdis, verb=False)
 
    q = np.nanquantile(d, 0.02)
-   prmat = np.vstack(p)
-   postmat = prmat[d < q, :]
+   postmat = p[d < q, :]
    its, var = postmat.shape
    print(its, var)
 
@@ -342,12 +341,8 @@ Even using well-tuned summary statistics, naive rejection-based ABC is a rather 
    rng = np.random.default_rng()
    p, d = smfsb.abc_run(rng, 20000, rpr,
 	  lambda rng, th: ssi(rmod(rng, th)), verb=False)
-   prmat = np.vstack(p)
-   dmat = np.vstack(d)
-   print(prmat.shape)
-   print(dmat.shape)
-   dmat[dmat == np.inf] = np.nan
-   sds = np.nanstd(dmat, 0)
+   d[d == np.inf] = np.nan
+   sds = np.nanstd(d, 0)
    print(sds)
 
    def sum_stats(dat):
