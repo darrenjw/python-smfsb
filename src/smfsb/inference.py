@@ -620,7 +620,7 @@ def pf_marginal_ll1(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     >>>     sf = smfsb.models.lv(th).step_gillespie()
     >>>     return sf(rng, x, t, dt)
     >>>
-    >>> mll = smfsb.pf_marginal_ll(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+    >>> mll = smfsb.pf_marginal_ll1(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
     >>> rng = np.random.default_rng()
     >>> mll(rng, np.array([1, 0.005, 0.6]))
     >>> mll(rng, np.array([2, 0.005, 0.6]))
