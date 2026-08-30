@@ -74,6 +74,41 @@ def test_pfmllik():
     assert mll(rng, np.array([1, 0.005, 0.6])) > mll(rng, np.array([2, 0.005, 0.6]))
 
 
+def test_pfmllik1():
+    def obsll(x, t, y, th):
+        return np.sum(sp.stats.norm.logpdf((y - x) / 10))
+
+    def sim_x(rng, t0, th):
+        return np.array([rng.poisson(50), rng.poisson(100)])
+
+    def step(rng, x, t, dt, th):
+        sf = smfsb.models.lv(th).step_cle()
+        return sf(rng, x, t, dt)
+
+    mll = smfsb.pf_marginal_ll1(50, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
+    assert mll(rng, np.array([1, 0.005, 0.6])) > mll(rng, np.array([2, 0.005, 0.6]))
+
+
+def test_pfmllik01():
+    def obsll(x, t, y, th):
+        return np.sum(sp.stats.norm.logpdf((y - x) / 10))
+
+    def sim_x(rng, t0, th):
+        return np.array([rng.poisson(50), rng.poisson(100)])
+
+    def step(rng, x, t, dt, th):
+        sf = smfsb.models.lv(th).step_cle()
+        return sf(rng, x, t, dt)
+
+    mll0 = smfsb.pf_marginal_ll(50, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
+    mll1 = smfsb.pf_marginal_ll1(50, sim_x, 0, step, obsll, smfsb.data.lv_noise_10)
+    rng0 = np.random.default_rng(3)
+    ll0 = mll0(rng0, np.array([1, 0.005, 0.6]))
+    rng1 = np.random.default_rng(3)
+    ll1 = mll1(rng1, np.array([1, 0.005, 0.6]))
+    assert np.abs(ll0 - ll1) < 1e05
+
+
 def test_abcsmcstep():
     data = rng.normal(5, 2, 250)
 

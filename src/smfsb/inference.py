@@ -557,4 +557,112 @@ def metrop(rng, n, alpha):
     return vec
 
 
+def pf_marginal_ll1(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
+    """Create a function for computing the log of an unbiased estimate of
+    marginal likelihood of a time course data set
+
+    THIS FUNCTION IS FOR ILLUSTRATIVE PURPOSES ONLY. This function is vulnerable
+    to numerical underflow. Instead use `pf_marginal_ll` which incorporates the
+    log-sum-exp trick to avoid numerical underflow.
+
+    Create a function for computing the log of an unbiased estimate of
+    marginal likelihood of a time course data set using a simple
+    bootstrap particle filter.
+
+    Parameters
+    ----------
+    n :  int
+      An integer representing the number of particles to use in the
+      particle filter.
+    sim_x0 : function
+      A function with arguments `rng`, `t0` and `th`, where ‘t0’ is a time
+      at which to simulate from an initial distribution for the state of the
+      particle filter and `th` is a vector of parameters. The return value
+      should be a state vector randomly sampled from the prior distribution.
+      The function therefore represents a prior distribution on the initial
+      state of the Markov process.
+    t0 : float
+      The time corresponding to the starting point of the Markov
+      process. Can be no bigger than the smallest observation time.
+    step_fun : function
+      A function for advancing the state of the Markov process, with
+      arguments `rng`, `x`, `t0`, `deltat` and `th`, with `th` representing a
+      vector of parameters.
+    data_ll : function
+      A function with arguments `x`, `t`, `y`, `th`,
+      where `x` and `t` represent the true state and time of the
+      process, `y` is the observed data, and `th` is a parameter vector.
+      The return value should be the log of the likelihood of the observation. The
+      function therefore represents the observation model.
+    data : matrix
+      A matrix with first column an increasing set of times. The remaining
+      columns represent the observed values of `y` at those times.
+
+    Returns
+    -------
+    A function with single arguments `rng`, a generator, and `th`,
+    representing a parameter vector, which
+    evaluates to the log of the particle filters unbiased estimate of the
+    marginal likelihood of the data (for parameter `th`).
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import scipy as sp
+    >>> import smfsb
+    >>> def obsll(x, t, y, th):
+    >>>     return np.sum(sp.stats.norm.logpdf(y-x, scale=10))
+    >>>
+    >>> def simX(rng, t0, th):
+    >>>     return np.array([rng.poisson(50), rng.poisson(100)])
+    >>>
+    >>> def step(rng, x, t, dt, th):
+    >>>     sf = smfsb.models.lv(th).step_gillespie()
+    >>>     return sf(rng, x, t, dt)
+    >>>
+    >>> mll = smfsb.pf_marginal_ll(80, simX, 0, step, obsll, smfsb.data.lv_noise_10)
+    >>> rng = np.random.default_rng()
+    >>> mll(rng, np.array([1, 0.005, 0.6]))
+    >>> mll(rng, np.array([2, 0.005, 0.6]))
+    """
+    no = data.shape[1]
+    times = np.concatenate(([t0], data[:, 0]))
+    deltas = np.diff(times)
+    obs = data[:, range(1, no)]
+    if debug:
+        print(data.shape)
+        print(times[range(5)])
+        print(deltas[range(5)])
+        print(len(deltas))
+        print(obs[range(5), :])
+
+    def go(rng, th):
+        ll = 0
+        xmat = np.zeros((n, 1))
+        xmat = np.apply_along_axis(lambda x: sim_x0(rng, t0, th), 1, xmat)
+        sh = xmat.shape
+        if debug:
+            print(xmat.shape)
+            print(xmat[range(5), :])
+        for i in range(len(deltas)):
+            xmat = np.apply_along_axis(
+                lambda x: step_fun(rng, x, times[i], deltas[i], th), 1, xmat
+            )
+            lw = np.apply_along_axis(
+                lambda x: data_ll(x, times[i + 1], obs[i,], th), 1, xmat
+            )
+            w = np.exp(lw)  # dangerous operation
+            if np.max(w) < 1e-20:
+                print("Warning: Particle filter bombed")
+                return -1e99
+            nw = w / np.sum(w)  # normalised weights
+            ll = ll + np.log(np.mean(w))
+            rows = rng.choice(n, n, p=nw)
+            xmat = xmat[rows, :]
+            assert xmat.shape == sh
+        return ll
+
+    return go
+
+
 # eof
