@@ -18,12 +18,15 @@ def acf(x, lag_max):
 
 
 def mcmc_summary(
-        mat, 
-        file_name="mcmc.pdf", 
-        labels=False, 
-		truth=False,
-        bins=30, lag_max=100, show=True, plot=True
-		):
+    mat,
+    file_name="mcmc.pdf",
+    labels=False,
+    truth=False,
+    bins=30,
+    lag_max=100,
+    show=True,
+    plot=True,
+):
     n, p = mat.shape
     summ = sp.stats.describe(mat)
     med = np.median(mat, 0)
@@ -39,20 +42,20 @@ def mcmc_summary(
         fig.tight_layout()
         for i in range(p):
             axes[i, 0].plot(range(n), mat[:, i], linewidth=0.4)
-            axes[i, 0].set_title('Traceplot')
+            axes[i, 0].set_title("Traceplot")
             if labels:
                 axes[i, 0].set_ylabel(labels[i])
             if truth:
-                axes[i, 0].hlines(truth[i], 0, n, 'r')
+                axes[i, 0].hlines(truth[i], 0, n, "r")
             axes[i, 1].plot(range(lag_max), acf(mat[:, i], lag_max))
             axes[i, 1].set_ylim([-0.5, 1])
-            axes[i, 1].set_title('ACF')
+            axes[i, 1].set_title("ACF")
             axes[i, 1].axhline(y=0, color="g", linewidth=0.6)
             h, b, bc = axes[i, 2].hist(mat[:, i], bins=bins, density=True)
-            axes[i, 2].set_title('Density')
+            axes[i, 2].set_title("Density")
             if truth:
-                axes[i, 2].vlines(truth[i], 0, np.max(h), 'r')
-        fig.savefig(file_name, dpi=300, bbox_inches='tight')
+                axes[i, 2].vlines(truth[i], 0, np.max(h), "r")
+        fig.savefig(file_name, dpi=300, bbox_inches="tight")
     return summ
 
 

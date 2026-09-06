@@ -46,7 +46,7 @@ thmat = smfsb.metropolis_hastings(
 
 print("MCMC done. Now processing the results...")
 
-mcmc.mcmc_summary(thmat, "pmmh.pdf", labels=['th1','th2','th3'])
+mcmc.mcmc_summary(thmat, "pmmh.pdf", labels=["th1", "th2", "th3"])
 
 print("All finished.")
 
